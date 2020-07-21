@@ -18,7 +18,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import withStyles from '@material-ui/core/styles/withStyles';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
-import NotesIcon from '@material-ui/icons/Notes';
+// import NotesIcon from '@material-ui/icons/Notes';
+import NatureIcon from '@material-ui/icons/LocalFlorist';
+import BankIcon from '@material-ui/icons/HomeWork';
+import DealIcon from '@material-ui/icons/Telegram';
 import Avatar from '@material-ui/core/Avatar';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -158,12 +161,28 @@ class home extends Component {
 						</center>
 						<Divider />
 						<List>
-							<ListItem button key="Todo" onClick={this.loadTodoPage}>
+							<ListItem button key="Farms" onClick={this.loadTodoPage}>
 								<ListItemIcon>
 									{' '}
-									<NotesIcon />{' '}
+									<NatureIcon />{' '}
 								</ListItemIcon>
-								<ListItemText primary="Todo" />
+								<ListItemText primary="Farms" />
+							</ListItem>
+
+                            <ListItem button key="Food Banks" onClick={this.loadTodoPage}>
+								<ListItemIcon>
+									{' '}
+									<BankIcon />{' '}
+								</ListItemIcon>
+								<ListItemText primary="Food Banks" />
+							</ListItem>
+
+                            <ListItem button key="Deals" onClick={this.loadTodoPage}>
+								<ListItemIcon>
+									{' '}
+									<DealIcon />{' '}
+								</ListItemIcon>
+								<ListItemText primary="Deals" />
 							</ListItem>
 
 							<ListItem button key="Account" onClick={this.loadAccountPage}>
