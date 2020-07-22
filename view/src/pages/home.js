@@ -5,6 +5,7 @@ import axios from 'axios';
 
 import Account from '../components/account';
 import Todo from '../components/todo';
+import Produce from '../components/produce';
 
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -22,6 +23,7 @@ import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import NatureIcon from '@material-ui/icons/LocalFlorist';
 import BankIcon from '@material-ui/icons/HomeWork';
 import DealIcon from '@material-ui/icons/Telegram';
+import EcoIcon from '@material-ui/icons/Eco';
 import Avatar from '@material-ui/core/Avatar';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -48,6 +50,9 @@ const styles = (theme) => ({
 		flexGrow: 1,
 		padding: theme.spacing(3)
 	},
+	contentContainer : {
+		width: '80%',
+	},
 	avatar: {
 		height: 64,
 		width: 64,
@@ -68,15 +73,19 @@ const styles = (theme) => ({
 
 class home extends Component {
 	state = {
-		render: false
+		render: 'todos',
 	};
 
 	loadAccountPage = (event) => {
-		this.setState({ render: true });
+		this.setState({ render: 'account'});
 	};
 
 	loadTodoPage = (event) => {
-		this.setState({ render: false });
+		this.setState({ render: 'todos'});
+	};
+
+	loadProducePage = (event) => {
+		this.setState({ render: 'produce'});
 	};
 
 	logoutHandler = (event) => {
@@ -92,7 +101,7 @@ class home extends Component {
 			lastName: '',
 			profilePicture: '',
 			uiLoading: true,
-			imageLoading: false
+			imageLoading: false,
 		};
 	}
 
@@ -136,7 +145,7 @@ class home extends Component {
 			return (
 				<div className={classes.root}>
 					<CssBaseline />
-					<AppBar position="fixed" className={classes.appBar} color="white">
+					<AppBar position="fixed" className={classes.appBar} color="primary">
 						<Toolbar>
 							<Typography variant="h6" noWrap>
 								The FarmLink Project
@@ -185,6 +194,14 @@ class home extends Component {
 								<ListItemText primary="Deals" />
 							</ListItem>
 
+							<ListItem button key="Produce" onClick={this.loadProducePage}>
+								<ListItemIcon>
+									{' '}
+									<EcoIcon />{' '}
+								</ListItemIcon>
+								<ListItemText primary="Produce" />
+							</ListItem>
+
 							<ListItem button key="Account" onClick={this.loadAccountPage}>
 								<ListItemIcon>
 									{' '}
@@ -203,7 +220,17 @@ class home extends Component {
 						</List>
 					</Drawer>
 
-					<div>{this.state.render ? <Account /> : <Todo />}</div>
+					<div className={classes.contentContainer}>
+						{
+							this.state.render == 'todos' ?
+							<Todo/>
+							:
+							this.state.render == 'account' ?
+							<Account/> 
+							:
+							<Produce/>
+						}
+					</div>
 				</div>
 			);
 		}

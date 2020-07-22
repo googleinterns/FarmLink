@@ -326,96 +326,138 @@ class todo extends Component {
 								</Button>
 							</Toolbar>
 						</AppBar>
-						<Container maxWidth="md">
-							<form className={classes.form} noValidate>
-								<Grid container spacing={2}>
-									<Grid item xs={12}>
-										<TextField
-											variant="outlined"
-											required
-											fullWidth
-											id="todoTitle"
-											label="Todo Title"
-											name="title"
-											autoComplete="todoTitle"
-											helperText={errors.title}
-											value={this.state.title}
-											error={errors.title ? true : false}
-											onChange={this.handleChange}
-										/>
-									</Grid>
-									<Grid item xs={12}>
-										<TextField
-											variant="outlined"
-											required
-											fullWidth
-											id="todoDetails"
-											label="Todo Details"
-											name="body"
-											autoComplete="todoDetails"
-											multiline
-											rows={25}
-											rowsMax={25}
-											helperText={errors.body}
-											error={errors.body ? true : false}
-											onChange={this.handleChange}
-											value={this.state.body}
-										/>
-									</Grid>
-								</Grid>
-							</form>
-						</Container>
+                        <Container maxWidth="lg">
+                            <form className={classes.form} noValidate>
+                                <Grid container spacing={4}
+                                      allignItems="center"
+                                >
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            variant="outlined"
+                                            required
+                                            fullWidth
+                                            id="todoTitle"
+                                            label="Todo Title"
+                                            name="title"
+                                            autoComplete="todoTitle"
+                                            helperText={errors.title}
+                                            value={this.state.title}
+                                            error={errors.title ? true : false}
+                                            onChange={this.handleChange}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            variant="outlined"
+                                            required
+                                            fullWidth
+                                            id="todoTitle"
+                                            label="Todo Title"
+                                            name="title"
+                                            autoComplete="todoTitle"
+                                            helperText={errors.title}
+                                            value={this.state.title}
+                                            error={errors.title ? true : false}
+                                            onChange={this.handleChange}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            variant="outlined"
+                                            required
+                                            fullWidth
+                                            id="todoTitle"
+                                            label="Todo Title"
+                                            name="title"
+                                            autoComplete="todoTitle"
+                                            helperText={errors.title}
+                                            value={this.state.title}
+                                            error={errors.title ? true : false}
+                                            onChange={this.handleChange}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            variant="outlined"
+                                            required
+                                            fullWidth
+                                            id="todoTitle"
+                                            label="Todo Title"
+                                            name="title"
+                                            autoComplete="todoTitle"
+                                            helperText={errors.title}
+                                            value={this.state.title}
+                                            error={errors.title ? true : false}
+                                            onChange={this.handleChange}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            variant="outlined"
+                                            required
+                                            fullWidth
+                                            id="todoTitle"
+                                            label="Todo Title"
+                                            name="title"
+                                            autoComplete="todoTitle"
+                                            helperText={errors.title}
+                                            value={this.state.title}
+                                            error={errors.title ? true : false}
+                                            onChange={this.handleChange}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </form>
+                        </Container>
 					</Dialog>
-					<Container maxWidth="lg">
-						<Grid container spacing={2}
-							alignItems="center">
-								<Grid item xs={12}>
-									<div className={classes.search}>
-										<div className={classes.searchIcon}>
-										<SearchIcon />
-										</div>
-										<InputBase
-										fullWidth={true}
-										placeholder="Search…"
-										classes={{
-											root: classes.inputRoot,
-											input: classes.inputInput,
-										}}
-										inputProps={{ 'aria-label': 'search' }}
-										/>
-									</div>
-								</Grid>
-							{this.state.todos.map((todo) => (
-								<Grid item xs={12}>
-									<Card className={classes.root} variant="outlined">
-										<CardContent>
-											<Typography variant="h5" component="h2">
-												{todo.title}
-											</Typography>
-											<Typography className={classes.pos} color="textSecondary">
-												{dayjs(todo.createdAt).fromNow()}
-											</Typography>
-											<Typography variant="body2" component="p">
-												{`${todo.body.substring(0, 65)}`}
-											</Typography>
-										</CardContent>
-										<CardActions>
-											<Button size="small" color="primary" onClick={() => this.handleViewOpen({ todo })}>
-												{' '}
-												View{' '}
-											</Button>
-											<Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ todo })}>
-												Edit
-											</Button>
-											<Button size="small" color="primary" onClick={() => this.deleteTodoHandler({ todo })}>
-												Delete
-											</Button>
-										</CardActions>
-									</Card>
-								</Grid>
-							))}
-						</Grid>
-					</Container>
+
+					<Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <div className={classes.search}>
+                                    <div className={classes.searchIcon}>
+                                    <SearchIcon />
+                                    </div>
+                                    <InputBase
+									fullWidth={true}
+                                    placeholder="Search…"
+                                    classes={{
+                                        root: classes.inputRoot,
+                                        input: classes.inputInput,
+                                    }}
+                                    inputProps={{ 'aria-label': 'search' }}
+                                    />
+                                </div>
+                            </Grid>
+						{this.state.todos.map((todo) => (
+							<Grid item xs={12}>
+								<Card className={classes.root} variant="outlined">
+									<CardContent>
+										<Typography variant="h5" component="h2">
+											{todo.title}
+										</Typography>
+										<Typography className={classes.pos} color="textSecondary">
+											{dayjs(todo.createdAt).fromNow()}
+										</Typography>
+										<Typography variant="body2" component="p">
+											{`${todo.body.substring(0, 65)}`}
+										</Typography>
+									</CardContent>
+									<CardActions>
+										<Button size="small" color="primary" onClick={() => this.handleViewOpen({ todo })}>
+											{' '}
+											View{' '}
+										</Button>
+										<Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ todo })}>
+											Edit
+										</Button>
+										<Button size="small" color="primary" onClick={() => this.deleteTodoHandler({ todo })}>
+											Delete
+										</Button>
+									</CardActions>
+								</Card>
+							</Grid>
+						))}
+					</Grid>
 
 					<Dialog
 						onClose={handleViewClose}
