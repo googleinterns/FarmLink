@@ -6,6 +6,8 @@ import axios from 'axios';
 import Account from '../components/account';
 import Todo from '../components/todo';
 import Produce from '../components/produce';
+import Surplus from '../components/surplus';
+import Farms from '../components/farms'
 
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -23,6 +25,7 @@ import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import NatureIcon from '@material-ui/icons/LocalFlorist';
 import BankIcon from '@material-ui/icons/HomeWork';
 import DealIcon from '@material-ui/icons/Telegram';
+import ChartIcon from '@material-ui/icons/ShowChart'
 import EcoIcon from '@material-ui/icons/Eco';
 import Avatar from '@material-ui/core/Avatar';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
@@ -86,6 +89,14 @@ class home extends Component {
 
 	loadProducePage = (event) => {
 		this.setState({ render: 'produce'});
+	};
+
+	loadSurplusPage = (event) => {
+		this.setState({ render: 'surplus'});
+	};
+
+	loadFarmsPage = (event) => {
+		this.setState({ render: 'farms'});
 	};
 
 	logoutHandler = (event) => {
@@ -170,7 +181,7 @@ class home extends Component {
 						</center>
 						<Divider />
 						<List>
-							<ListItem button key="Farms" onClick={this.loadTodoPage}>
+							<ListItem button key="Farms" onClick={this.loadFarmsPage}>
 								<ListItemIcon>
 									{' '}
 									<NatureIcon />{' '}
@@ -192,6 +203,14 @@ class home extends Component {
 									<DealIcon />{' '}
 								</ListItemIcon>
 								<ListItemText primary="Deals" />
+							</ListItem>
+
+							<ListItem button key="Surplus" onClick={this.loadSurplusPage}>
+								<ListItemIcon>
+									{' '}
+									<ChartIcon />{' '}
+								</ListItemIcon>
+								<ListItemText primary="Surplus" />
 							</ListItem>
 
 							<ListItem button key="Produce" onClick={this.loadProducePage}>
@@ -222,13 +241,19 @@ class home extends Component {
 
 					<div className={classes.contentContainer}>
 						{
-							this.state.render == 'todos' ?
+							this.state.render === 'todos' ?
 							<Todo/>
 							:
-							this.state.render == 'account' ?
+							this.state.render === 'account' ?
 							<Account/> 
 							:
+							this.state.render === 'produce' ?
 							<Produce/>
+							:
+							this.state.render === 'surplus' ?
+							<Surplus/>
+							:
+							<Farms/>
 						}
 					</div>
 				</div>

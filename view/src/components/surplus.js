@@ -24,6 +24,13 @@ import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Box from '@material-ui/core/Box';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -334,30 +341,48 @@ class todo extends Component {
                                       allignItems="center"
                                 >
                                     <Grid item xs={6}>
-                                        <TextField
-                                            variant="outlined"
-                                            required
+                                        <Autocomplete
+                                            id="originFarm"
+                                            options={farmsExamples}
+                                            getOptionLabel={(option) => option.title}
                                             fullWidth
+                                            renderInput={(params) => <TextField {...params} label="Origin Farm" variant="outlined" />}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Autocomplete
                                             id="produceName"
-                                            label="Produce Name"
-                                            name="name"
-                                            autoComplete="produceName"
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            options={produceExamples}
+                                            getOptionLabel={(option) => option.title}
+                                            fullWidth
+                                            renderInput={(params) => <TextField {...params} label="Produce Types" variant="outlined" />}
                                         />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <FormControl variant="outlined" fullWidth>
+                                            <InputLabel id="available-label">Status</InputLabel>
+                                            <Select
+                                            labelId="available-outlined-label"
+                                            id="available"
+                                            // value={age}
+                                            onChange={this.handleChange}
+                                            label="Status"
+                                            >
+                                            <MenuItem value={true}>Available</MenuItem>
+                                            <MenuItem value={false}>Not Available</MenuItem>
+                                            </Select>
+                                        </FormControl>
                                     </Grid>
                                     <Grid item xs={3}>
                                         <TextField
                                             variant="outlined"
                                             required
                                             fullWidth
-                                            id="usdaPrice"
-                                            label="USDA Price"
-                                            name="usdaPrice"
+                                            id="cost"
+                                            label="Cost (per lb)"
+                                            name="cost"
                                             type="number"
-                                            autoComplete="usdaPrice"
+                                            autoComplete="cost"
                                             InputProps={{
                                                 startAdornment: <InputAdornment position="start">$</InputAdornment>,
                                             }}
@@ -372,13 +397,13 @@ class todo extends Component {
                                             variant="outlined"
                                             required
                                             fullWidth
-                                            id="avgPrice"
-                                            label="Average Price Paid"
-                                            name="avgPrice"
+                                            id="totalQuantityAvailable"
+                                            label="Total Quantity Available"
+                                            name="totalQuantityAvailable"
                                             type="number"
-                                            autoComplete="avg"
+                                            autoComplete="totalQuantityAvailable"
                                             InputProps={{
-                                                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                                                endAdornment: <InputAdornment position="end">lbs</InputAdornment>,
                                             }}
                                             // helperText={errors.title}
                                             // value={this.state.title}
@@ -386,62 +411,21 @@ class todo extends Component {
                                             // onChange={this.handleChange}
                                         />
                                     </Grid>
-                                    <Grid item xs={4}>
-                                        <TextField
-                                            variant="outlined"
-                                            required
-                                            fullWidth
-                                            id="shippingMaintenanceTemperatureLow"
-                                            label="Shipping Maintenance Temperature Low"
-                                            name="shippingMaintenanceTemperatureLow"
-                                            type="number"
-                                            autoComplete="shippingMaintenanceTemperatureLow"
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position="end">°F</InputAdornment>,
-                                            }}
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                        <TextField
-                                            variant="outlined"
-                                            required
-                                            fullWidth
-                                            id="shippingMaintenanceTemperatureHigh"
-                                            label="Shipping Maintenance Temperature High"
-                                            name="shippingMaintenanceTemperatureHigh"
-                                            type="number"
-                                            autoComplete="shippingMaintenanceTemperatureHigh"
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position="end">°F</InputAdornment>,
-                                            }}
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                        <TextField
-                                            variant="outlined"
-                                            required
-                                            fullWidth
-                                            id="shippingPresetTemperature"
-                                            label="Shipping Preset Temperature"
-                                            name="shippingPresetTemperature"
-                                            type="number"
-                                            autoComplete="shippingPresetTemperature"
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position="end">°F</InputAdornment>,
-                                            }}
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
-                                        />
+                                    <Grid item xs={3}>
+                                        <FormControl variant="outlined" fullWidth>
+                                            <InputLabel id="packagingType-label">Packaging Type</InputLabel>
+                                            <Select
+                                            labelId="packagingType-outlined-label"
+                                            id="packagingType"
+                                            // value={age}
+                                            onChange={this.handleChange}
+                                            label="Packaging Type"
+                                            >
+                                            <MenuItem value="Open Crates">Open Crates</MenuItem>
+                                            <MenuItem value="Closed Crates">Closed Crates</MenuItem>
+                                            <MenuItem value="Sacks">Sacks</MenuItem>
+                                            </Select>
+                                        </FormControl>
                                     </Grid>
                                 </Grid>
                             </form>
@@ -471,36 +455,32 @@ class todo extends Component {
                                     <Card className={classes.root} variant="outlined">
                                         <CardContent>
                                             <Typography variant="h5" component="h2">
-                                                Stone Fruits
+                                                50k lbs of Apples from Taylor Farms
                                                 {/* {todo.title} */}
                                             </Typography>
                                             <Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
                                                 <Box p={3}>
                                                     <Typography className={classes.pos} color="textSecondary">
-                                                        Shipping Temperatures in Reefer (°F):
+                                                        Logistics:
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
-                                                        Maintenance Temperature: 35-62
+                                                        Origin: Taylor Farms (link with card + info)
                                                         <br />
-                                                       Preset Temperature: 65
+                                                        Packing Type: Crates
+                                                        <br />
+                                                        Available: yes
                                                     </Typography>
                                                 </Box>
                                                 <Box p={3}>
                                                     <Typography className={classes.pos} color="textSecondary">
-                                                        Pricing (in USD / lb):
+                                                        Details:
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
-                                                        USDA Price: $0.72
+                                                        Type of Produce: Apples
                                                         <br />
-                                                        Average Price Paid by Farmlink: $0.34
-                                                    </Typography>
-                                                </Box>
-                                                <Box p={3}>
-                                                    <Typography className={classes.pos} color="textSecondary">
-                                                        Internal Statistics:
-                                                    </Typography>
-                                                    <Typography variant="body2" component="p">
-                                                        Amount Moved by FarmLink (lbs): 50k
+                                                        Total Quantity Available (lbs): 50,000
+                                                        <br />
+                                                        Cost (USD / lb): $0.62
                                                     </Typography>
                                                 </Box>
                                             </Box> 
@@ -532,7 +512,7 @@ class todo extends Component {
 						classes={{ paperFullWidth: classes.dialogeStyle }}
 					>
 						<DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-							Stone Fruits
+							50k lbs of Apples from Taylor Farms
                             {/* {this.state.title} */}
 						</DialogTitle>
 						<DialogContent dividers>
@@ -549,33 +529,29 @@ class todo extends Component {
 									disableUnderline: true
 								}}
 							/> */}
-                            <Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
+                             <Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
                                 <Box p={3}>
                                     <Typography className={classes.pos} color="textSecondary">
-                                        Shipping Temperatures in Reefer (°F):
+                                        Logistics:
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        Maintenance Temperature: 35-62
+                                        Origin: Taylor Farms (link with card + info)
                                         <br />
-                                        Preset Temperature: 65
+                                        Packing Type: Crates
+                                        <br />
+                                        Available: yes
                                     </Typography>
                                 </Box>
                                 <Box p={3}>
                                     <Typography className={classes.pos} color="textSecondary">
-                                        Pricing (in USD / lb):
+                                        Details:
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        USDA Price: $0.72
+                                        Type of Produce: Apples
                                         <br />
-                                        Average Price Paid by Farmlink: $0.34
-                                    </Typography>
-                                </Box>
-                                <Box p={3}>
-                                    <Typography className={classes.pos} color="textSecondary">
-                                        Internal Statistics:
-                                    </Typography>
-                                    <Typography variant="body2" component="p">
-                                        Amount Moved by FarmLink (lbs): 50k
+                                        Total Quantity Available (lbs): 50,000
+                                        <br />
+                                        Cost (USD / lb): $0.62
                                     </Typography>
                                 </Box>
                             </Box> 
@@ -586,5 +562,17 @@ class todo extends Component {
 		}
 	}
 }
+
+const farmsExamples = [
+    { title: 'Borden Farms', id: 0 },
+    { title: 'San Cristobal Apple Orchars', id:1 },
+    { title: 'Taylor Farms', id:2 }
+];
+
+const produceExamples = [
+    { title: 'Stone Fruits' },
+    { title: 'Potatoes' },
+    { title: 'Dairy/Eggs' }
+];
 
 export default (withStyles(styles)(todo));
