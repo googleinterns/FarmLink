@@ -7,7 +7,8 @@ import Account from '../components/account';
 import Todo from '../components/todo';
 import Produce from '../components/produce';
 import Surplus from '../components/surplus';
-import Farms from '../components/farms'
+import Farms from '../components/farms';
+import FoodBanks from '../components/foodbanks'
 
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -97,6 +98,10 @@ class home extends Component {
 
 	loadFarmsPage = (event) => {
 		this.setState({ render: 'farms'});
+	};
+
+	loadFoodBanksPage = (event) => {
+		this.setState({ render: 'foodbanks'});
 	};
 
 	logoutHandler = (event) => {
@@ -189,7 +194,7 @@ class home extends Component {
 								<ListItemText primary="Farms" />
 							</ListItem>
 
-                            <ListItem button key="Food Banks" onClick={this.loadTodoPage}>
+                            <ListItem button key="Food Banks" onClick={this.loadFoodBanksPage}>
 								<ListItemIcon>
 									{' '}
 									<BankIcon />{' '}
@@ -253,7 +258,10 @@ class home extends Component {
 							this.state.render === 'surplus' ?
 							<Surplus/>
 							:
+							this.state.render === 'farms' ?
 							<Farms/>
+							:
+							<FoodBanks/>
 						}
 					</div>
 				</div>

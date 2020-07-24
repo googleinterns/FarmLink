@@ -391,11 +391,11 @@ class todo extends Component {
                                             variant="outlined"
                                             required
                                             fullWidth
-                                            id="farmName"
-                                            label="Farm Name"
-                                            name="farmName"
+                                            id="foodbankName"
+                                            label="Food Bank Name"
+                                            name="foodbankName"
                                             type="text"
-                                            autoComplete="farmName"
+                                            autoComplete="foodbankName"
                                             // helperText={errors.title}
                                             // value={this.state.title}
                                             // error={errors.title ? true : false}
@@ -403,7 +403,8 @@ class todo extends Component {
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
-										<Address/>
+										<Address/> 
+                                        {/* can we get the hours from the location query? */}
                                     </Grid>
 									<Grid item xs={3}>
                                         <TextField
@@ -460,10 +461,10 @@ class todo extends Component {
                                             id="loadingDoc"
                                             // value={age}
                                             onChange={this.handleChange}
-                                            label="Have Loading Doc"
+                                            label="Loading Doc Present"
                                             >
-                                            <MenuItem value="yes">Yes</MenuItem>
-                                            <MenuItem value="no">No</MenuItem>
+                                            <MenuItem value={true}>Yes</MenuItem>
+                                            <MenuItem value={false}>No</MenuItem>
                                             </Select>
                                         </FormControl>
                                     </Grid>
@@ -475,27 +476,80 @@ class todo extends Component {
                                             id="loadingDoc"
                                             // value={age}
                                             onChange={this.handleChange}
-                                            label="Have Forklift"
+                                            label="Forklift Present"
                                             >
-                                            <MenuItem value="yes">Yes</MenuItem>
-                                            <MenuItem value="no">No</MenuItem>
+                                            <MenuItem value={true}>Yes</MenuItem>
+                                            <MenuItem value={false}>No</MenuItem>
                                             </Select>
                                         </FormControl>
                                     </Grid>
-									<Grid item xs={9}>
+                                    <Grid item xs={3}>
+                                        <FormControl variant="outlined" fullWidth>
+                                            <InputLabel id="pallet-label">Pallet Present</InputLabel>
+                                            <Select
+                                            labelId="pallet-outlined-label"
+                                            id="pallet"
+                                            // value={age}
+                                            onChange={this.handleChange}
+                                            label="Pallet Present"
+                                            >
+                                            <MenuItem value={true}>Yes</MenuItem>
+                                            <MenuItem value={false}>No</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            variant="outlined"
+                                            required
+                                            fullWidth
+                                            id="maxLoadSize"
+                                            label="Max Load Size"
+                                            name="maxLoadSize"
+                                            type="number"
+                                            autoComplete="maxLoadSize"
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position="end">pallets</InputAdornment>,
+                                            }}
+                                            // helperText={errors.title}
+                                            // value={this.state.title}
+                                            // error={errors.title ? true : false}
+                                            // onChange={this.handleChange}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            variant="outlined"
+                                            required
+                                            fullWidth
+                                            id="refrigerationSpace"
+                                            label="Refrigeration Space"
+                                            name="refrigerationSpace"
+                                            type="number"
+                                            autoComplete="refrigerationSpace"
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position="end">pallets</InputAdornment>,
+                                            }}
+                                            // helperText={errors.title}
+                                            // value={this.state.title}
+                                            // error={errors.title ? true : false}
+                                            // onChange={this.handleChange}
+                                        />
+                                    </Grid>
+									<Grid item xs={12}>
 										<Autocomplete
 											multiple
 											id="tags-filled"
 											options={tagExamples.map((option) => option.title)}
-											// defaultValue={[top100Films[].title]}
-											freeSolo
+                                            // defaultValue={[top100Films[].title]}
+                                            freeSolo
 											renderTags={(value, getTagProps) =>
 											value.map((option, index) => (
 												<Chip label={option} {...getTagProps({ index })} />
 											))
 											}
 											renderInput={(params) => (
-											<TextField {...params} variant="outlined" label="Farm Tags" placeholder="tags..." />
+											<TextField {...params} variant="outlined" label="Food Bank Tags" placeholder="tags..." />
 											)}
 										/>
 										{/* <Autocomplete
@@ -542,11 +596,11 @@ class todo extends Component {
                                     <Card className={classes.root} variant="outlined">
                                         <CardContent>
                                             <Typography variant="h5" component="h2">
-                                                Taylor Farms
+                                                Los Angeles Regional Food Bank
                                                 {/* {todo.title} */}
                                             </Typography>
-                                            <Chip className={classes.chip} label="Black Owned" size="small" />
-                                            <Chip className={classes.chip} label="Great Environmental Rating" size="small" />
+                                            <Chip className={classes.chip} label="High Food Insecurity" size="small" />
+                                            <Chip className={classes.chip} label="Major City" size="small" />
                                             <Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
                                                 <Box p={3}>
                                                     <Typography className={classes.pos} color="textSecondary">
@@ -554,6 +608,8 @@ class todo extends Component {
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
                                                         Location of Farm: Salinas, CA
+                                                        <br />
+                                                        Regrigeration Space (in pallets): 100
                                                     </Typography>
                                                 </Box>
                                                 <Box p={3}>
@@ -565,7 +621,7 @@ class todo extends Component {
                                                         <br />
                                                         Phone: (615) 812-9984
                                                         <br />
-                                                        Email: jane@taylorfarms.com
+                                                        Email: jane@lafoodbank.com
                                                     </Typography>
                                                 </Box>
                                                 <Box p={3}>
@@ -573,9 +629,23 @@ class todo extends Component {
                                                         Logistics:
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
-                                                        Have Transportation Means: yes
+                                                        Forklift: yes
                                                         <br />
-                                                        Loading Dock or Forklift: yes
+                                                        Pallet: yes
+                                                        <br />
+                                                        Loading Dock: no
+                                                    </Typography>
+                                                </Box>
+                                                <Box p={3}>
+                                                    <Typography className={classes.pos} color="textSecondary">
+                                                        Hours of Operation:
+                                                    </Typography>
+                                                    <Typography variant="body2" component="p">
+                                                        Monday-Friday: 9am - 5pm
+                                                        <br />
+                                                        Saturday: 10am - 4pm
+                                                        <br />
+                                                        Sunday: closed
                                                     </Typography>
                                                 </Box>
                                             </Box> 
@@ -607,32 +677,21 @@ class todo extends Component {
 						classes={{ paperFullWidth: classes.dialogeStyle }}
 					>
 						<DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-							Taylor Farms 
+							Los Angeles Regional Food Bank
                             {/* {this.state.title} */}
 						</DialogTitle>
 						<DialogContent dividers>
-                            <Chip className={classes.chip} label="Black Owned" size="small" />
-                            <Chip className={classes.chip} label="Great Environmental Rating" size="small" />
-							{/* <TextField
-								fullWidth
-								id="todoDetails"
-								name="body"
-								multiline
-								readonly
-								rows={1}
-								rowsMax={25}
-								value={this.state.body}
-								InputProps={{
-									disableUnderline: true
-								}}
-							/> */}
-                             <Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
+                            <Chip className={classes.chip} label="High Food Insecurity" size="small" />
+                            <Chip className={classes.chip} label="Major City" size="small" />
+                            <Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
                                 <Box p={3}>
                                     <Typography className={classes.pos} color="textSecondary">
                                         Details:
                                     </Typography>
                                     <Typography variant="body2" component="p">
                                         Location of Farm: Salinas, CA
+                                        <br />
+                                        Regrigeration Space (in pallets): 100
                                     </Typography>
                                 </Box>
                                 <Box p={3}>
@@ -644,7 +703,7 @@ class todo extends Component {
                                         <br />
                                         Phone: (615) 812-9984
                                         <br />
-                                        Email: jane@taylorfarms.com
+                                        Email: jane@lafoodbank.com
                                     </Typography>
                                 </Box>
                                 <Box p={3}>
@@ -652,9 +711,23 @@ class todo extends Component {
                                         Logistics:
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        Have Transportation Means: yes
+                                        Forklift: yes
                                         <br />
-                                        Loading Dock or Forklift: yes
+                                        Pallet: yes
+                                        <br />
+                                        Loading Dock: no
+                                    </Typography>
+                                </Box>
+                                <Box p={3}>
+                                    <Typography className={classes.pos} color="textSecondary">
+                                        Hours of Operation:
+                                    </Typography>
+                                    <Typography variant="body2" component="p">
+                                        Monday-Friday: 9am - 5pm
+                                        <br />
+                                        Saturday: 10am - 4pm
+                                        <br />
+                                        Sunday: closed
                                     </Typography>
                                 </Box>
                             </Box> 
@@ -673,8 +746,8 @@ const farmsExamples = [
 ];
 
 const tagExamples = [
-    { title: 'Black Owned' },
-    { title: 'Great Environmental Rating' },
+    { title: 'High Food Insecurity' },
+    { title: 'Major City' },
 ];
 
 export default (withStyles(styles)(todo));
