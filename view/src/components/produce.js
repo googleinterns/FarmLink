@@ -277,7 +277,7 @@ class produce extends Component {
 				shippingMaintenanceTemperatureHigh: parseFloat(this.state.shippingMaintenanceTemperatureHigh),
 				price: parseFloat(this.state.price),
 				pricePaid: parseFloat(this.state.pricePaid),
-				amountMoved: 0,
+				amountMoved: parseFloat(this.state.amountMoved),
 			};
 			let options = {};
 			if (this.state.buttonType === 'Edit') {
@@ -582,7 +582,7 @@ class produce extends Component {
                                         Shipping Temperatures in Reefer (°F):
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        Maintenance Temperature: {this.state.shippingMaintenanceTemperatureLow}-{this.state.shippingMaintenanceTemperatureLow}
+                                        Maintenance Temperature: {this.state.shippingMaintenanceTemperatureLow} - {this.state.shippingMaintenanceTemperatureLow}
                                         <br />
                                         Preset Temperature: {this.state.shippingPresetTemperature}
                                     </Typography>
