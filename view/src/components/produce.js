@@ -135,15 +135,20 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
 });
 
-class todo extends Component {
+class produce extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			todos: '',
-			title: '',
-			body: '',
-			todoId: '',
+			produceObjects: '',
+			name: '',
+			produceId: '',
+			shippingPresetTemperature: '',
+			shippingMaintenanceTemperatureLow: '',
+			shippingMaintenanceTemperatureHigh: '',
+			price: '',
+			pricePaid: '',
+			amountMoved: '',
 			errors: [],
 			open: false,
 			uiLoading: true,
@@ -167,10 +172,10 @@ class todo extends Component {
 		const authToken = localStorage.getItem('AuthToken');
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
 		axios
-			.get('/todos')
+			.get('/produce')
 			.then((response) => {
 				this.setState({
-					todos: response.data,
+					produceObjects: response.data,
 					uiLoading: false
 				});
 			})
@@ -183,9 +188,9 @@ class todo extends Component {
 		authMiddleWare(this.props.history);
 		const authToken = localStorage.getItem('AuthToken');
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
-		let todoId = data.todo.todoId;
+		let produceId = data.produce.produceId;
 		axios
-			.delete(`todo/${todoId}`)
+			.delete(`produce/${produceId}`)
 			.then(() => {
 				window.location.reload();
 			})
@@ -196,9 +201,14 @@ class todo extends Component {
 
 	handleEditClickOpen(data) {
 		this.setState({
-			title: data.todo.title,
-			body: data.todo.body,
-			todoId: data.todo.todoId,
+			name: data.produce.name,
+			produceId: data.produce.produceId,
+			shippingPresetTemperature: data.produce.shippingPresetTemperature,
+			shippingMaintenanceTemperatureLow: data.produce.shippingMaintenanceTemperatureLow,
+			shippingMaintenanceTemperatureHigh: data.produce.shippingMaintenanceTemperatureHigh,
+			amountMoved: data.produce.amountMoved,
+			price: data.produce.price,
+			pricePaid: data.produce.pricePaid,
 			buttonType: 'Edit',
 			open: true
 		});
@@ -206,8 +216,13 @@ class todo extends Component {
 
 	handleViewOpen(data) {
 		this.setState({
-			title: data.todo.title,
-			body: data.todo.body,
+			name: data.produce.name,
+			shippingPresetTemperature: data.produce.shippingPresetTemperature,
+			shippingMaintenanceTemperatureLow: data.produce.shippingMaintenanceTemperatureLow,
+			shippingMaintenanceTemperatureHigh: data.produce.shippingMaintenanceTemperatureHigh,
+			amountMoved: data.produce.amountMoved,
+			price: data.produce.price,
+			pricePaid: data.produce.pricePaid,
 			viewOpen: true
 		});
 	}
@@ -239,9 +254,14 @@ class todo extends Component {
 
 		const handleClickOpen = () => {
 			this.setState({
-				todoId: '',
-				title: '',
-				body: '',
+				name: '',
+				produceId: '',
+				shippingPresetTemperature: 0,
+				shippingMaintenanceTemperatureLow: '',
+				shippingMaintenanceTemperatureHigh: '',
+				price: '',
+				pricePaid: '',
+				amountMoved: '',
 				buttonType: '',
 				open: true
 			});
@@ -250,22 +270,27 @@ class todo extends Component {
 		const handleSubmit = (event) => {
 			authMiddleWare(this.props.history);
 			event.preventDefault();
-			const userTodo = {
-				title: this.state.title,
-				body: this.state.body
+			const newProduce = {
+				name: this.state.name,
+				shippingPresetTemperature: parseFloat(this.state.shippingPresetTemperature),
+				shippingMaintenanceTemperatureLow: parseFloat(this.state.shippingMaintenanceTemperatureLow),
+				shippingMaintenanceTemperatureHigh: parseFloat(this.state.shippingMaintenanceTemperatureHigh),
+				price: parseFloat(this.state.price),
+				pricePaid: parseFloat(this.state.pricePaid),
+				amountMoved: 0,
 			};
 			let options = {};
 			if (this.state.buttonType === 'Edit') {
 				options = {
-					url: `/todo/${this.state.todoId}`,
+					url: `/produce/${this.state.produceId}`,
 					method: 'put',
-					data: userTodo
+					data: newProduce
 				};
 			} else {
 				options = {
-					url: '/todo',
+					url: '/produce',
 					method: 'post',
-					data: userTodo
+					data: newProduce
 				};
 			}
 			const authToken = localStorage.getItem('AuthToken');
@@ -277,7 +302,7 @@ class todo extends Component {
 				})
 				.catch((error) => {
 					this.setState({ open: true, errors: error.response.data });
-					console.log(error);
+					console.log(newProduce);
 				});
 		};
 
@@ -304,7 +329,7 @@ class todo extends Component {
 					<IconButton
 						className={classes.floatingButton}
 						color="primary"
-						aria-label="Add Todo"
+						aria-label="Add Produce"
 						onClick={handleClickOpen}
 					>
 						<AddCircleIcon style={{ fontSize: 60 }} />
@@ -316,7 +341,7 @@ class todo extends Component {
 									<CloseIcon />
 								</IconButton>
 								<Typography variant="h6" className={classes.title}>
-									{this.state.buttonType === 'Edit' ? 'Edit Todo' : 'Create a new Todo'}
+									{this.state.buttonType === 'Edit' ? 'Edit Produce' : 'Create a new Produce'}
 								</Typography>
 								<Button
 									autoFocus
@@ -333,7 +358,7 @@ class todo extends Component {
                                 <Grid container spacing={4}
                                       allignItems="center"
                                 >
-                                    <Grid item xs={6}>
+                                    <Grid item xs={3}>
                                         <TextField
                                             variant="outlined"
                                             required
@@ -342,10 +367,26 @@ class todo extends Component {
                                             label="Produce Name"
                                             name="name"
                                             autoComplete="produceName"
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            helperText={errors.name}
+                                            value={this.state.name}
+                                            error={errors.name ? true : false}
+                                            onChange={this.handleChange}
+                                        />
+                                    </Grid>
+									<Grid item xs={3}>
+                                        <TextField
+                                            variant="outlined"
+                                            required
+                                            fullWidth
+                                            id="amountMoved"
+                                            label="Amount Moved"
+                                            name="amountMoved"
+											autoComplete="amountMoved"
+											defaultValue="0"
+                                            helperText={errors.amountMoved}
+                                            value={this.state.amountMoved}
+                                            error={errors.amountMoved ? true : false}
+                                            onChange={this.handleChange}
                                         />
                                     </Grid>
                                     <Grid item xs={3}>
@@ -353,18 +394,18 @@ class todo extends Component {
                                             variant="outlined"
                                             required
                                             fullWidth
-                                            id="usdaPrice"
+                                            id="price"
                                             label="USDA Price"
-                                            name="usdaPrice"
+                                            name="price"
                                             type="number"
-                                            autoComplete="usdaPrice"
+                                            autoComplete="price"
                                             InputProps={{
                                                 startAdornment: <InputAdornment position="start">$</InputAdornment>,
                                             }}
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            helperText={errors.price}
+                                            value={this.state.price}
+                                            error={errors.price ? true : false}
+                                            onChange={this.handleChange}
                                         />
                                     </Grid>
                                     <Grid item xs={3}>
@@ -372,18 +413,18 @@ class todo extends Component {
                                             variant="outlined"
                                             required
                                             fullWidth
-                                            id="avgPrice"
+                                            id="pricePaid"
                                             label="Average Price Paid"
-                                            name="avgPrice"
+                                            name="pricePaid"
                                             type="number"
-                                            autoComplete="avg"
+                                            autoComplete="pricePaid"
                                             InputProps={{
                                                 startAdornment: <InputAdornment position="start">$</InputAdornment>,
                                             }}
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            helperText={errors.pricePaid}
+                                            value={this.state.pricePaid}
+                                            error={errors.pricePaid ? true : false}
+                                            onChange={this.handleChange}
                                         />
                                     </Grid>
                                     <Grid item xs={4}>
@@ -399,10 +440,10 @@ class todo extends Component {
                                             InputProps={{
                                                 endAdornment: <InputAdornment position="end">°F</InputAdornment>,
                                             }}
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            helperText={errors.shippingMaintenanceTemperatureLow}
+                                            value={this.state.shippingMaintenanceTemperatureLow}
+                                            error={errors.shippingMaintenanceTemperatureLow ? true : false}
+                                            onChange={this.handleChange}
                                         />
                                     </Grid>
                                     <Grid item xs={4}>
@@ -418,10 +459,10 @@ class todo extends Component {
                                             InputProps={{
                                                 endAdornment: <InputAdornment position="end">°F</InputAdornment>,
                                             }}
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            helperText={errors.shippingMaintenanceTemperatureHigh}
+                                            value={this.state.shippingMaintenanceTemperatureHigh}
+                                            error={errors.shippingMaintenanceTemperatureHigh ? true : false}
+                                            onChange={this.handleChange}
                                         />
                                     </Grid>
                                     <Grid item xs={4}>
@@ -437,10 +478,10 @@ class todo extends Component {
                                             InputProps={{
                                                 endAdornment: <InputAdornment position="end">°F</InputAdornment>,
                                             }}
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            helperText={errors.shippingPresetTemperature}
+                                            value={this.state.shippingPresetTemperature}
+                                            error={errors.shippingPresetTemperature ? true : false}
+                                            onChange={this.handleChange}
                                         />
                                     </Grid>
                                 </Grid>
@@ -466,23 +507,22 @@ class todo extends Component {
                                         />
                                     </div>
                                 </Grid>
-                            {this.state.todos.map((todo) => (
+                            {this.state.produceObjects.map((produce) => (
                                 <Grid item xs={12}>
                                     <Card className={classes.root} variant="outlined">
                                         <CardContent>
                                             <Typography variant="h5" component="h2">
-                                                Stone Fruits
-                                                {/* {todo.title} */}
+                                                {produce.name}
                                             </Typography>
                                             <Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
                                                 <Box p={3}>
                                                     <Typography className={classes.pos} color="textSecondary">
-                                                        Shipping Temperatures in Reefer (°F):
+                                                        Shipping Temperatures in Reefer (°F): 
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
-                                                        Maintenance Temperature: 35-62
+                                                        Maintenance Temperature: {produce.shippingMaintenanceTemperatureLow} - {produce.shippingMaintenanceTemperatureHigh}
                                                         <br />
-                                                       Preset Temperature: 65
+                                                        Preset Temperature: {produce.shippingPresetTemperature}
                                                     </Typography>
                                                 </Box>
                                                 <Box p={3}>
@@ -490,9 +530,9 @@ class todo extends Component {
                                                         Pricing (in USD / lb):
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
-                                                        USDA Price: $0.72
+                                                        USDA Price: ${produce.price}
                                                         <br />
-                                                        Average Price Paid by Farmlink: $0.34
+                                                        Average Price Paid by Farmlink: ${produce.pricePaid}
                                                     </Typography>
                                                 </Box>
                                                 <Box p={3}>
@@ -500,21 +540,21 @@ class todo extends Component {
                                                         Internal Statistics:
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
-                                                        Amount Moved by FarmLink (lbs): 50k
+                                                        Amount Moved by FarmLink (lbs): {produce.amountMoved}
                                                     </Typography>
                                                 </Box>
                                             </Box> 
                                             
                                         </CardContent>
                                         <CardActions>
-                                            <Button size="small" color="primary" onClick={() => this.handleViewOpen({ todo })}>
+                                            <Button size="small" color="primary" onClick={() => this.handleViewOpen({ produce })}>
                                                 {' '}
                                                 View{' '}
                                             </Button>
-                                            <Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ todo })}>
+                                            <Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ produce })}>
                                                 Edit
                                             </Button>
-                                            <Button size="small" color="primary" onClick={() => this.deleteTodoHandler({ todo })}>
+                                            <Button size="small" color="primary" onClick={() => this.deleteTodoHandler({ produce })}>
                                                 Delete
                                             </Button>
                                         </CardActions>
@@ -533,31 +573,18 @@ class todo extends Component {
 					>
 						<DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
 							Stone Fruits
-                            {/* {this.state.title} */}
+                            {this.state.name}
 						</DialogTitle>
 						<DialogContent dividers>
-							{/* <TextField
-								fullWidth
-								id="todoDetails"
-								name="body"
-								multiline
-								readonly
-								rows={1}
-								rowsMax={25}
-								value={this.state.body}
-								InputProps={{
-									disableUnderline: true
-								}}
-							/> */}
                             <Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
                                 <Box p={3}>
                                     <Typography className={classes.pos} color="textSecondary">
                                         Shipping Temperatures in Reefer (°F):
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        Maintenance Temperature: 35-62
+                                        Maintenance Temperature: {this.state.shippingPresentTemperatureLow}-{this.state.shippingPresentTemperatureHigh}
                                         <br />
-                                        Preset Temperature: 65
+                                        Preset Temperature: {this.state.shippingPresetTemperature}
                                     </Typography>
                                 </Box>
                                 <Box p={3}>
@@ -565,9 +592,9 @@ class todo extends Component {
                                         Pricing (in USD / lb):
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        USDA Price: $0.72
+                                        USDA Price: ${this.state.price}
                                         <br />
-                                        Average Price Paid by Farmlink: $0.34
+                                        Average Price Paid by Farmlink: ${this.state.pricePaid}
                                     </Typography>
                                 </Box>
                                 <Box p={3}>
@@ -575,7 +602,7 @@ class todo extends Component {
                                         Internal Statistics:
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        Amount Moved by FarmLink (lbs): 50k
+                                        Amount Moved by FarmLink (lbs): {this.state.amountMoved}
                                     </Typography>
                                 </Box>
                             </Box> 
@@ -587,4 +614,4 @@ class todo extends Component {
 	}
 }
 
-export default (withStyles(styles)(todo));
+export default (withStyles(styles)(produce));
