@@ -186,16 +186,21 @@ TextMaskCustom.propTypes = {
 	inputRef: PropTypes.func.isRequired
 };  
 
-class todo extends Component {
+class farms extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			todos: '',
-			title: '',
-			body: '',
-			todoId: '',
-			contactPhone: "(1  )    -    ",
+			farmName: '',
+			farmId: '',
+			contactName: '',
+			contactEmail: '',
+			contactPhone: '(1  )    -    ',
+			farmTags: '',
+			forklift: '',
+			loadingDoc: '',
+			location: '',
+			transportation: '',
 			errors: [],
 			open: false,
 			uiLoading: true,
@@ -219,10 +224,10 @@ class todo extends Component {
 		const authToken = localStorage.getItem('AuthToken');
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
 		axios
-			.get('/todos')
+			.get('/farms')
 			.then((response) => {
 				this.setState({
-					todos: response.data,
+					farms: response.data,
 					uiLoading: false
 				});
 			})
@@ -235,9 +240,9 @@ class todo extends Component {
 		authMiddleWare(this.props.history);
 		const authToken = localStorage.getItem('AuthToken');
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
-		let todoId = data.todo.todoId;
+		let farmId = data.farm.farmId;
 		axios
-			.delete(`todo/${todoId}`)
+			.delete(`farm/${farmId}`)
 			.then(() => {
 				window.location.reload();
 			})
@@ -248,9 +253,16 @@ class todo extends Component {
 
 	handleEditClickOpen(data) {
 		this.setState({
-			title: data.todo.title,
-			body: data.todo.body,
-			todoId: data.todo.todoId,
+			farmName: data.farm.farmName,
+			farmId: data.farm.farmId,
+			contactName: data.farm.contactName,
+			contactEmail: data.farm.contactEmail,
+			contactPhone: data.farm.contactPhone,
+			farmTags: data.farm.farmTags,
+			forklift: data.farm.forklift,
+			loadingDoc: data.farm.loadingDoc,
+			location: data.farm.location,
+			transportation: data.farm.transportation,
 			buttonType: 'Edit',
 			open: true
 		});
@@ -258,8 +270,15 @@ class todo extends Component {
 
 	handleViewOpen(data) {
 		this.setState({
-			title: data.todo.title,
-			body: data.todo.body,
+			farmName: this.state.farmName,
+			contactName: this.state.contactName,
+			contactEmail: this.state.contactEmail,
+			contactPhone: this.state.contactPhone,
+			farmTags: this.state.farmTags,
+			forklift: this.state.forklift,
+			loadingDoc: this.state.loadingDoc,
+			location: this.state.location,
+			transportation: this.state.transportation,
 			viewOpen: true
 		});
 	}
@@ -291,11 +310,16 @@ class todo extends Component {
 
 		const handleClickOpen = () => {
 			this.setState({
-				todoId: '',
-				title: '',
-				body: '',
-				buttonType: '',
-				contactPhone: "(1  )    -    ",
+				farmName: '',
+				farmId: '',
+				contactName: '',
+				contactEmail: '',
+				contactPhone: '(1  )    -    ',
+				farmTags: '',
+				forklift: '',
+				loadingDoc: '',
+				location: '',
+				transportation: '',
 				open: true
 			});
 		};
@@ -303,22 +327,29 @@ class todo extends Component {
 		const handleSubmit = (event) => {
 			authMiddleWare(this.props.history);
 			event.preventDefault();
-			const userTodo = {
-				title: this.state.title,
-				body: this.state.body
+			const newFarm = {
+				farmName: this.state.farmName,
+				contactName: this.state.contactName,
+				contactEmail: this.state.contactEmail,
+				contactPhone: this.state.contactPhone,
+				farmTags: this.state.farmTags,
+				forklift: this.state.forklift,
+				loadingDoc: this.state.loadingDoc,
+				location: this.state.location,
+				transportation: this.state.transportation,
 			};
 			let options = {};
 			if (this.state.buttonType === 'Edit') {
 				options = {
-					url: `/todo/${this.state.todoId}`,
+					url: `/farm/${this.state.farmId}`,
 					method: 'put',
-					data: userTodo
+					data: newFarm
 				};
 			} else {
 				options = {
-					url: '/todo',
+					url: '/farm',
 					method: 'post',
-					data: userTodo
+					data: newFarm
 				};
 			}
 			const authToken = localStorage.getItem('AuthToken');
@@ -357,7 +388,7 @@ class todo extends Component {
 					<IconButton
 						className={classes.floatingButton}
 						color="primary"
-						aria-label="Add Todo"
+						aria-label="Add Farm"
 						onClick={handleClickOpen}
 					>
 						<AddCircleIcon style={{ fontSize: 60 }} />
@@ -369,7 +400,7 @@ class todo extends Component {
 									<CloseIcon />
 								</IconButton>
 								<Typography variant="h6" className={classes.title}>
-									{this.state.buttonType === 'Edit' ? 'Edit Todo' : 'Create a new Todo'}
+									{this.state.buttonType === 'Edit' ? 'Edit Farm' : 'Create a new Farm'}
 								</Typography>
 								<Button
 									autoFocus
@@ -396,10 +427,10 @@ class todo extends Component {
                                             name="farmName"
                                             type="text"
                                             autoComplete="farmName"
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            helperText={errors.farmName}
+                                            value={this.state.farmName}
+                                            error={errors.farmName ? true : false}
+                                            onChange={this.handleChange}
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
@@ -415,10 +446,10 @@ class todo extends Component {
                                             name="contactName"
                                             type="text"
                                             autoComplete="contactName"
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            helperText={errors.contactName}
+                                            value={this.state.contactName}
+                                            error={errors.contactName ? true : false}
+                                            onChange={this.handleChange}
                                         />
                                     </Grid>
                                     <Grid item xs={3}>
@@ -428,10 +459,13 @@ class todo extends Component {
 											</InputLabel>
 											<OutlinedInput
 											label="Point of Contact - Phone"
-											value={this.state.contactPhone}
 											onChange={this.handleChange}
 											name="contactPhone"
 											id="contactPhone"
+											autoComplete="contactName"
+                                            helperText={errors.contactPhone}
+                                            value={this.state.contactPhone}
+                                            error={errors.contactPhone ? true : false}
 											inputComponent={TextMaskCustom}
 											/>
 										</FormControl>
@@ -446,10 +480,10 @@ class todo extends Component {
                                             name="contactEmail"
                                             type="email"
                                             autoComplete="contactEmail"
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            helperText={errors.contactEmail}
+                                            value={this.state.contactEmail}
+                                            error={errors.contactEmail ? true : false}
+                                            onChange={this.handleChange}
                                         />
                                     </Grid>
                                     <Grid item xs={3}>
@@ -458,12 +492,14 @@ class todo extends Component {
                                             <Select
                                             labelId="loadingDoc-outlined-label"
                                             id="loadingDoc"
-                                            // value={age}
-                                            onChange={this.handleChange}
+                                            value={this.state.loadingDoc}
+											onChange={this.handleChange}
+											helperText={errors.loadingDoc}
+											error={errors.loadingDoc ? true : false}
                                             label="Have Loading Doc"
                                             >
-                                            <MenuItem value="yes">Yes</MenuItem>
-                                            <MenuItem value="no">No</MenuItem>
+                                            <MenuItem value={true}>Yes</MenuItem>
+                                            <MenuItem value={false}>No</MenuItem>
                                             </Select>
                                         </FormControl>
                                     </Grid>
@@ -472,7 +508,7 @@ class todo extends Component {
                                             <InputLabel id="forklift-label">Forklift Present</InputLabel>
                                             <Select
                                             labelId="forklift-outlined-label"
-                                            id="loadingDoc"
+                                            id="forklift"
                                             // value={age}
                                             onChange={this.handleChange}
                                             label="Have Forklift"
@@ -482,11 +518,26 @@ class todo extends Component {
                                             </Select>
                                         </FormControl>
                                     </Grid>
-									<Grid item xs={9}>
+									<Grid item xs={3}>
+                                        <FormControl variant="outlined" fullWidth>
+                                            <InputLabel id="transportation-label">Forklift Present</InputLabel>
+                                            <Select
+                                            labelId="transportation-outlined-label"
+                                            id="transportation"
+                                            // value={age}
+                                            onChange={this.handleChange}
+                                            label="Have Transportation"
+                                            >
+                                            <MenuItem value="yes">Yes</MenuItem>
+                                            <MenuItem value="no">No</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+									<Grid item xs={6}>
 										<Autocomplete
 											multiple
-											id="tags-filled"
-											options={tagExamples.map((option) => option.title)}
+											id="farmTags"
+											options={tagExamples.map((option) => option.title)} // need to create agregated tags array
 											// defaultValue={[top100Films[].title]}
 											freeSolo
 											renderTags={(value, getTagProps) =>
@@ -537,23 +588,23 @@ class todo extends Component {
                                         />
                                     </div>
                                 </Grid>
-                            {this.state.todos.map((todo) => (
+                            {this.state.farms.map((farm) => (
                                 <Grid item xs={12}>
                                     <Card className={classes.root} variant="outlined">
                                         <CardContent>
                                             <Typography variant="h5" component="h2">
-                                                Taylor Farms
-                                                {/* {todo.title} */}
+                                                {farm.farmName}
                                             </Typography>
-                                            <Chip className={classes.chip} label="Black Owned" size="small" />
-                                            <Chip className={classes.chip} label="Great Environmental Rating" size="small" />
+											{farm.farmTags.map((tag) => (
+												<Chip className={classes.chip} label={tag} size="small" />
+											))}     
                                             <Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
                                                 <Box p={3}>
                                                     <Typography className={classes.pos} color="textSecondary">
                                                         Details:
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
-                                                        Location of Farm: Salinas, CA
+                                                        Location of Farm: {farm.location}
                                                     </Typography>
                                                 </Box>
                                                 <Box p={3}>
@@ -561,11 +612,11 @@ class todo extends Component {
                                                         Point of Contact:
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
-                                                        Name: Jane Doe
+                                                        Name: {farm.contactName}
                                                         <br />
-                                                        Phone: (615) 812-9984
+                                                        Phone: {farm.contactPhone}
                                                         <br />
-                                                        Email: jane@taylorfarms.com
+                                                        Email: {farm.contactEmail}
                                                     </Typography>
                                                 </Box>
                                                 <Box p={3}>
@@ -573,23 +624,23 @@ class todo extends Component {
                                                         Logistics:
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
-                                                        Have Transportation Means: yes
+                                                        Have Transportation Means: {farms.transportation ? 'yes' : 'no'}
                                                         <br />
-                                                        Loading Dock or Forklift: yes
+														Loading Dock or Forklift: {farms.loadingDoc || farms.forklift ? 'yes' : 'no'}
                                                     </Typography>
                                                 </Box>
                                             </Box> 
                                             
                                         </CardContent>
                                         <CardActions>
-                                            <Button size="small" color="primary" onClick={() => this.handleViewOpen({ todo })}>
+                                            <Button size="small" color="primary" onClick={() => this.handleViewOpen({ farm })}>
                                                 {' '}
                                                 View{' '}
                                             </Button>
-                                            <Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ todo })}>
+                                            <Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ farm })}>
                                                 Edit
                                             </Button>
-                                            <Button size="small" color="primary" onClick={() => this.deleteTodoHandler({ todo })}>
+                                            <Button size="small" color="primary" onClick={() => this.deleteTodoHandler({ farm })}>
                                                 Delete
                                             </Button>
                                         </CardActions>
@@ -607,32 +658,19 @@ class todo extends Component {
 						classes={{ paperFullWidth: classes.dialogeStyle }}
 					>
 						<DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-							Taylor Farms 
-                            {/* {this.state.title} */}
+							this.state.farmName
 						</DialogTitle>
 						<DialogContent dividers>
-                            <Chip className={classes.chip} label="Black Owned" size="small" />
-                            <Chip className={classes.chip} label="Great Environmental Rating" size="small" />
-							{/* <TextField
-								fullWidth
-								id="todoDetails"
-								name="body"
-								multiline
-								readonly
-								rows={1}
-								rowsMax={25}
-								value={this.state.body}
-								InputProps={{
-									disableUnderline: true
-								}}
-							/> */}
+							{this.state.farmTags.map((tag) => (
+								<Chip className={classes.chip} label={tag} size="small" />
+							))}  
                              <Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
                                 <Box p={3}>
                                     <Typography className={classes.pos} color="textSecondary">
                                         Details:
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        Location of Farm: Salinas, CA
+                                        Location of Farm: {this.state.location}
                                     </Typography>
                                 </Box>
                                 <Box p={3}>
@@ -640,11 +678,11 @@ class todo extends Component {
                                         Point of Contact:
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        Name: Jane Doe
+                                        Name: {this.state.contactName}
                                         <br />
-                                        Phone: (615) 812-9984
+                                        Phone: {this.state.contactPhone}
                                         <br />
-                                        Email: jane@taylorfarms.com
+                                        Email: {this.state.contactEmail}
                                     </Typography>
                                 </Box>
                                 <Box p={3}>
@@ -652,9 +690,9 @@ class todo extends Component {
                                         Logistics:
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        Have Transportation Means: yes
+                                        Have Transportation Means: {this.state.transportation ? 'yes' : 'no'}
                                         <br />
-                                        Loading Dock or Forklift: yes
+                                        Loading Dock or Forklift: {this.state.forklift || this.state.loadingDoc ? 'yes' : 'no'}
                                     </Typography>
                                 </Box>
                             </Box> 
@@ -677,4 +715,4 @@ const tagExamples = [
     { title: 'Great Environmental Rating' },
 ];
 
-export default (withStyles(styles)(todo));
+export default (withStyles(styles)(farms));

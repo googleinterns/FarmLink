@@ -341,7 +341,7 @@ class produce extends Component {
 									<CloseIcon />
 								</IconButton>
 								<Typography variant="h6" className={classes.title}>
-									{this.state.buttonType === 'Edit' ? 'Edit Produce' : 'Create a new Produce'}
+									{this.state.buttonType === 'Edit' ? 'Edit Produce' : 'Create a new Produce Object'}
 								</Typography>
 								<Button
 									autoFocus
