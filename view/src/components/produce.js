@@ -582,7 +582,7 @@ class produce extends Component {
                                         Shipping Temperatures in Reefer (°F):
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        Maintenance Temperature: {this.state.shippingPresentTemperatureLow}-{this.state.shippingPresentTemperatureHigh}
+                                        Maintenance Temperature: {this.state.shippingMaintenanceTemperatureLow}-{this.state.shippingMaintenanceTemperatureLow}
                                         <br />
                                         Preset Temperature: {this.state.shippingPresetTemperature}
                                     </Typography>
