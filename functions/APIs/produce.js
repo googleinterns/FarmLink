@@ -36,7 +36,7 @@ exports.getOneProduce = (request, response) => {
 }
 
 exports.postOneProduce = (request, response) => {
-    const produce = {
+    const newProduceItem = {
         name: request.body.name,
         shippingPresetTemperature: parseFloat(request.body.shippingPresetTemperature),
         shippingMaintenanceTemperatureLow: parseFloat(request.body.shippingMaintenanceTemperatureLow),
@@ -45,31 +45,44 @@ exports.postOneProduce = (request, response) => {
         price: parseFloat(request.body.price),
         pricePaid: parseFloat(request.body.pricePaid),
     };
-    db.collection('produce').add(produce)
-    .then((doc) => {
-        return response.json(doc.data());
-    })
-    .catch((err) => {
-        console.log(err);
-        return response.status(500).json({error: err.code});
-    });
+    db
+        .collection('produce')
+        .add(newProduceItem)
+        .then((doc) => {
+            let responseProduceItem = newProduceItem;
+            responseProduceItem.id = doc.id;
+            return response.json(responseProduceItem);
+        })
+        .catch((err) => {
+            console.log(err);
+            return response.status(500).json({error: err.code});
+        });
 }
 
 exports.deleteProduce = (request, response) => {
-    db.doc(`/produce/${request.params.produceId}`).delete()
-    .then((doc) => {
-        return response.json(doc.data());
-    })
-    .catch((err) => {
-        console.log(err);
-        return response.status(500).json({error: err.code});
-    });
+    const document = db.doc(`/produce/${request.params.produceId}`);
+    document
+        .get()
+        .then((doc) => {
+            if (!doc.exists) {
+                return response.status(404).json({ error: 'Produce Object not found' })
+            }
+            return document.delete();
+        })
+        .then(() => {
+            response.json({ message: 'Delete successfull' });
+        })
+        .catch((err) => {
+            console.log(err);
+            return response.status(500).json({error: err.code});
+        });
 }
 
 exports.editProduce = (request, response) => {
-    db.doc(`/produce/${request.params.produceId}`).update(request.body)
-    .then((doc) => {
-        return response.json(doc.data());
+    let document = db.collection('produce').doc(`${request.params.produceId}`)
+    document.update(request.body)
+    .then(() => {
+        response.json({message: 'Updated successfully'});
     })
     .catch((err) => {
         console.log(err);
