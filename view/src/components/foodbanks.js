@@ -33,6 +33,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 import PropTypes from "prop-types";
 import MaskedInput from "react-text-mask";
@@ -186,16 +188,26 @@ TextMaskCustom.propTypes = {
 	inputRef: PropTypes.func.isRequired
 };  
 
-class todo extends Component {
+class foodbank extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			todos: '',
-			title: '',
-			body: '',
-			todoId: '',
-			contactPhone: "(1  )    -    ",
+            foodbanks:"",
+			foodbankName: "",
+            location: "",
+            locationId: "",
+			hours: "",
+			foodbankId: "",
+            contactPhone: "(1  )    -    ",
+            contactName: "",
+            contactEmail: "",
+            forklift: false,
+            pallet: false,
+            loadingDock: false,
+            maxLoadSize: "",
+            refrigerationSpaceAvailable: "",
+            foodbankTags: [],
 			errors: [],
 			open: false,
 			uiLoading: true,
@@ -212,17 +224,42 @@ class todo extends Component {
 		this.setState({
 			[event.target.name]: event.target.value
 		});
-	};
+    };
+    
+    handleChecked = name => event => {
+		this.setState({ ...this.state, [name]: event.target.checked });
+    };
+    
+    onTagsChange = (event, values) => {
+		this.setState({
+			farmTags: values
+		}, () => {
+			// This will output an array of objects
+			// given by Autocompelte options property.
+			console.log(this.state.farmTags);
+		});
+    }
+    
+
+	handleLocation = (newValue) => {
+		if (newValue === null) {
+			return;
+		}
+		this.setState({
+			location: newValue.description,
+			locationId: newValue.place_id
+		})
+	}
 
 	componentWillMount = () => {
 		authMiddleWare(this.props.history);
 		const authToken = localStorage.getItem('AuthToken');
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
 		axios
-			.get('/todos')
+			.get('/foodbanks')
 			.then((response) => {
 				this.setState({
-					todos: response.data,
+					foodbanks: response.data,
 					uiLoading: false
 				});
 			})
@@ -235,9 +272,9 @@ class todo extends Component {
 		authMiddleWare(this.props.history);
 		const authToken = localStorage.getItem('AuthToken');
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
-		let todoId = data.todo.todoId;
+		let foodbankId = data.foodbank.foodbankId;
 		axios
-			.delete(`todo/${todoId}`)
+			.delete(`foodbanks/${foodbankId}`)
 			.then(() => {
 				window.location.reload();
 			})
@@ -248,9 +285,20 @@ class todo extends Component {
 
 	handleEditClickOpen(data) {
 		this.setState({
-			title: data.todo.title,
-			body: data.todo.body,
-			todoId: data.todo.todoId,
+			foodbankName: data.foodbank.foodbankName,
+            location: data.foodbank.location,
+            locationId: data.foodbank.locationId,
+			hours: data.foodbank.hours,
+			foodbankId: data.foodbank.foodbankId,
+            contactPhone: data.foodbank.contactPhone,
+            contactName: data.foodbank.contactName,
+            contactEmail: data.foodbank.contactEmail,
+            forklift: data.foodbank.forklift,
+            pallet: data.foodbank.pallet,
+            loadingDock: data.foodbank.loadingDock,
+            maxLoadSize: data.foodbank.maxLoadSize,
+            refrigerationSpaceAvailable: data.foodbank.refrigerationSpaceAvailable,
+            foodbankTags: data.foodbank.foodbankTags,
 			buttonType: 'Edit',
 			open: true
 		});
@@ -258,8 +306,19 @@ class todo extends Component {
 
 	handleViewOpen(data) {
 		this.setState({
-			title: data.todo.title,
-			body: data.todo.body,
+			foodbankName: data.foodbank.foodbankName,
+            location: data.foodbank.location,
+            locationId: data.foodbank.locationId,
+			hours: data.foodbank.hours,
+            contactPhone: data.foodbank.contactPhone,
+            contactName: data.foodbank.contactName,
+            contactEmail: data.foodbank.contactEmail,
+            forklift: data.foodbank.forklift,
+            pallet: data.foodbank.pallet,
+            loadingDock: data.foodbank.loadingDock,
+            maxLoadSize: data.foodbank.maxLoadSize,
+            refrigerationSpaceAvailable: data.foodbank.refrigerationSpaceAvailable,
+            foodbankTags: data.foodbank.foodbankTags,
 			viewOpen: true
 		});
 	}
@@ -291,11 +350,20 @@ class todo extends Component {
 
 		const handleClickOpen = () => {
 			this.setState({
-				todoId: '',
-				title: '',
-				body: '',
-				buttonType: '',
-				contactPhone: "(1  )    -    ",
+                foodbankName: "",
+                location: "",
+                locationId: "",
+                hours: "",
+                foodbankId: "",
+                contactPhone: "(1  )    -    ",
+                contactName: "",
+                contactEmail: "",
+                forklift: false,
+                pallet: false,
+                loadingDock: false,
+                maxLoadSize: "",
+                refrigerationSpaceAvailable: "",
+                foodbankTags: [],
 				open: true
 			});
 		};
@@ -303,22 +371,33 @@ class todo extends Component {
 		const handleSubmit = (event) => {
 			authMiddleWare(this.props.history);
 			event.preventDefault();
-			const userTodo = {
-				title: this.state.title,
-				body: this.state.body
+			const newFoodBank = {
+                foodbankName: this.state.foodbankName,
+                location: this.state.location,
+                locationId: this.state.locationId,
+                hours: this.state.hours,
+                contactPhone: this.state.contactPhone,
+                contactName: this.state.contactName,
+                contactEmail: this.state.contactEmail,
+                forklift: this.state.forklift,
+                pallet: this.state.pallet,
+                loadingDock: this.state.loadingDock,
+                maxLoadSize: parseFloat(this.state.maxLoadSize),
+                refrigerationSpaceAvailable: parseFloat(this.state.refrigerationSpaceAvailable),
+                foodbankTags: this.state.foodbankTags,
 			};
 			let options = {};
 			if (this.state.buttonType === 'Edit') {
 				options = {
-					url: `/todo/${this.state.todoId}`,
+					url: `/foodbanks/${this.state.foodbankId}`,
 					method: 'put',
-					data: userTodo
+					data: newFoodBank
 				};
 			} else {
 				options = {
-					url: '/todo',
+					url: '/foodbanks',
 					method: 'post',
-					data: userTodo
+					data: newFoodBank
 				};
 			}
 			const authToken = localStorage.getItem('AuthToken');
@@ -357,7 +436,7 @@ class todo extends Component {
 					<IconButton
 						className={classes.floatingButton}
 						color="primary"
-						aria-label="Add Todo"
+						aria-label="Add Food Bank"
 						onClick={handleClickOpen}
 					>
 						<AddCircleIcon style={{ fontSize: 60 }} />
@@ -369,7 +448,7 @@ class todo extends Component {
 									<CloseIcon />
 								</IconButton>
 								<Typography variant="h6" className={classes.title}>
-									{this.state.buttonType === 'Edit' ? 'Edit Todo' : 'Create a new Todo'}
+									{this.state.buttonType === 'Edit' ? 'Edit Food Bank' : 'Create a new Food Bank'}
 								</Typography>
 								<Button
 									autoFocus
@@ -396,14 +475,14 @@ class todo extends Component {
                                             name="foodbankName"
                                             type="text"
                                             autoComplete="foodbankName"
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            helperText={errors.foodbankName}
+                                            value={this.state.foodbankName}
+                                            error={errors.foodbankName ? true : false}
+                                            onChange={this.handleChange}
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
-										<Address/> 
+										<Address handleLocation={this.handleLocation} location={this.state.location}/> 
                                         {/* can we get the hours from the location query? */}
                                     </Grid>
 									<Grid item xs={3}>
@@ -416,10 +495,10 @@ class todo extends Component {
                                             name="contactName"
                                             type="text"
                                             autoComplete="contactName"
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            helperText={errors.contactName}
+                                            value={this.state.contactName}
+                                            error={errors.contactName ? true : false}
+                                            onChange={this.handleChange}
                                         />
                                     </Grid>
                                     <Grid item xs={3}>
@@ -430,7 +509,9 @@ class todo extends Component {
 											<OutlinedInput
 											label="Point of Contact - Phone"
 											value={this.state.contactPhone}
-											onChange={this.handleChange}
+                                            onChange={this.handleChange}
+                                            helperText={errors.contactPhone}
+                                            error={errors.contactPhone ? true : false}
 											name="contactPhone"
 											id="contactPhone"
 											inputComponent={TextMaskCustom}
@@ -447,56 +528,53 @@ class todo extends Component {
                                             name="contactEmail"
                                             type="email"
                                             autoComplete="contactEmail"
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            helperText={errors.contactEmail}
+                                            value={this.state.contactEmail}
+                                            error={errors.contactEmail ? true : false}
+                                            onChange={this.handleChange}
                                         />
                                     </Grid>
                                     <Grid item xs={3}>
-                                        <FormControl variant="outlined" fullWidth>
-                                            <InputLabel id="loadingDoc-label">Loading Doc Present</InputLabel>
-                                            <Select
-                                            labelId="loadingDoc-outlined-label"
-                                            id="loadingDoc"
-                                            // value={age}
-                                            onChange={this.handleChange}
-                                            label="Loading Doc Present"
-                                            >
-                                            <MenuItem value={true}>Yes</MenuItem>
-                                            <MenuItem value={false}>No</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <FormControlLabel
+											control={
+											<Checkbox
+												checked={this.state.loadingDock}
+												onChange={this.handleChecked("loadingDock")}
+												value={"loadingDock"}
+												name="loadingDock"
+												color="primary"
+											/>
+											}
+											label="Loading Doc Present"
+										/>
                                     </Grid>
 									<Grid item xs={3}>
-                                        <FormControl variant="outlined" fullWidth>
-                                            <InputLabel id="forklift-label">Forklift Present</InputLabel>
-                                            <Select
-                                            labelId="forklift-outlined-label"
-                                            id="loadingDoc"
-                                            // value={age}
-                                            onChange={this.handleChange}
-                                            label="Forklift Present"
-                                            >
-                                            <MenuItem value={true}>Yes</MenuItem>
-                                            <MenuItem value={false}>No</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <FormControlLabel
+											control={
+											<Checkbox
+												checked={this.state.forklift}
+												onChange={this.handleChecked("forklift")}
+												value={"forklift"}
+												name="forklift"
+												color="primary"
+											/>
+											}
+											label="Forklift Present"
+										/>
                                     </Grid>
                                     <Grid item xs={3}>
-                                        <FormControl variant="outlined" fullWidth>
-                                            <InputLabel id="pallet-label">Pallet Present</InputLabel>
-                                            <Select
-                                            labelId="pallet-outlined-label"
-                                            id="pallet"
-                                            // value={age}
-                                            onChange={this.handleChange}
-                                            label="Pallet Present"
-                                            >
-                                            <MenuItem value={true}>Yes</MenuItem>
-                                            <MenuItem value={false}>No</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <FormControlLabel
+											control={
+											<Checkbox
+												checked={this.state.pallet}
+												onChange={this.handleChecked("pallet")}
+												value={"pallet"}
+												name="pallet"
+												color="primary"
+											/>
+											}
+											label="Pallet Present"
+										/>
                                     </Grid>
                                     <Grid item xs={3}>
                                         <TextField
@@ -511,10 +589,10 @@ class todo extends Component {
                                             InputProps={{
                                                 endAdornment: <InputAdornment position="end">pallets</InputAdornment>,
                                             }}
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            helperText={errors.maxLoadSize}
+                                            value={this.state.maxLoadSize}
+                                            error={errors.maxLoadSize ? true : false}
+                                            onChange={this.handleChange}
                                         />
                                     </Grid>
                                     <Grid item xs={3}>
@@ -522,26 +600,27 @@ class todo extends Component {
                                             variant="outlined"
                                             required
                                             fullWidth
-                                            id="refrigerationSpace"
-                                            label="Refrigeration Space"
-                                            name="refrigerationSpace"
+                                            id="refrigerationSpaceAvailable"
+                                            label="Refrigeration Space Available"
+                                            name="refrigerationSpaceAvailable"
                                             type="number"
-                                            autoComplete="refrigerationSpace"
+                                            autoComplete="refrigerationSpaceAvailable"
                                             InputProps={{
                                                 endAdornment: <InputAdornment position="end">pallets</InputAdornment>,
                                             }}
-                                            // helperText={errors.title}
-                                            // value={this.state.title}
-                                            // error={errors.title ? true : false}
-                                            // onChange={this.handleChange}
+                                            helperText={errors.refrigerationSpaceAvailable}
+                                            value={this.state.refrigerationSpaceAvailable}
+                                            error={errors.refrigerationSpaceAvailable ? true : false}
+                                            onChange={this.handleChange}
                                         />
                                     </Grid>
 									<Grid item xs={12}>
 										<Autocomplete
 											multiple
-											id="tags-filled"
+                                            id="tags-filled"
+                                            onChange={this.onTagsChange}
 											options={tagExamples.map((option) => option.title)}
-                                            // defaultValue={[top100Films[].title]}
+                                            defaultValue={[this.state.foodbankTags]}
                                             freeSolo
 											renderTags={(value, getTagProps) =>
 											value.map((option, index) => (
@@ -552,21 +631,6 @@ class todo extends Component {
 											<TextField {...params} variant="outlined" label="Food Bank Tags" placeholder="tags..." />
 											)}
 										/>
-										{/* <Autocomplete
-											fillWidth
-											multiple
-											id="farmTags"
-											options={tagExamples.map((option) => option.title)}
-											filterSelectedOptions
-											renderTags={(value, getTagProps) =>
-												value.map((option, index) => (
-												  <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-												))
-											}
-											renderInput={(params) => (
-												<TextField {...params} variant="filled" label="freeSolo" placeholder="Favorites" />
-											)}
-										/> */}
 									</Grid>
                                 </Grid>
                             </form>
@@ -591,13 +655,13 @@ class todo extends Component {
                                         />
                                     </div>
                                 </Grid>
-                            {this.state.todos.map((todo) => (
+                            {this.state.foodbanks.map((foodbank) => (
                                 <Grid item xs={12}>
                                     <Card className={classes.root} variant="outlined">
                                         <CardContent>
                                             <Typography variant="h5" component="h2">
-                                                Los Angeles Regional Food Bank
-                                                {/* {todo.title} */}
+                                                {/* Los Angeles Regional Food Bank */}
+                                                {foodbank.foodbankName}
                                             </Typography>
                                             <Chip className={classes.chip} label="High Food Insecurity" size="small" />
                                             <Chip className={classes.chip} label="Major City" size="small" />
@@ -607,9 +671,12 @@ class todo extends Component {
                                                         Details:
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
-                                                        Location of Farm: Salinas, CA
-                                                        <br />
-                                                        Regrigeration Space (in pallets): 100
+                                                        Location of Food Bank: {`${foodbank.location.substring(0, 30)}`} 
+														<br />
+														{`${foodbank.location.substring(30, 78)}`}
+                                                        Regrigeration Space (in pallets): {foodbank.refrigerationSpaceAvailable}
+                                                        <br/>
+                                                        Max Load Size (in pallets): {foodbank.maxLoadSize}
                                                     </Typography>
                                                 </Box>
                                                 <Box p={3}>
@@ -617,11 +684,11 @@ class todo extends Component {
                                                         Point of Contact:
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
-                                                        Name: Jane Doe
+                                                        Name: {foodbank.contactName}
                                                         <br />
-                                                        Phone: (615) 812-9984
+                                                        Phone: {foodbank.contactPhone}
                                                         <br />
-                                                        Email: jane@lafoodbank.com
+                                                        Email: {foodbank.contactEmail}
                                                     </Typography>
                                                 </Box>
                                                 <Box p={3}>
@@ -629,11 +696,11 @@ class todo extends Component {
                                                         Logistics:
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
-                                                        Forklift: yes
+                                                        Forklift: {foodbank.forklift ? "yes" : "no"}
                                                         <br />
-                                                        Pallet: yes
+                                                        Pallet: {foodbank.pallet ? "yes" : "no"}
                                                         <br />
-                                                        Loading Dock: no
+                                                        Loading Dock: {foodbank.loadingDock ? "yes" : "no"}
                                                     </Typography>
                                                 </Box>
                                                 <Box p={3}>
@@ -652,14 +719,14 @@ class todo extends Component {
                                             
                                         </CardContent>
                                         <CardActions>
-                                            <Button size="small" color="primary" onClick={() => this.handleViewOpen({ todo })}>
+                                            <Button size="small" color="primary" onClick={() => this.handleViewOpen({ foodbank })}>
                                                 {' '}
                                                 View{' '}
                                             </Button>
-                                            <Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ todo })}>
+                                            <Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ foodbank })}>
                                                 Edit
                                             </Button>
-                                            <Button size="small" color="primary" onClick={() => this.deleteTodoHandler({ todo })}>
+                                            <Button size="small" color="primary" onClick={() => this.deleteTodoHandler({ foodbank })}>
                                                 Delete
                                             </Button>
                                         </CardActions>
@@ -677,8 +744,8 @@ class todo extends Component {
 						classes={{ paperFullWidth: classes.dialogeStyle }}
 					>
 						<DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-							Los Angeles Regional Food Bank
-                            {/* {this.state.title} */}
+							{/* Los Angeles Regional Food Bank */}
+                            {this.state.foodbankName}
 						</DialogTitle>
 						<DialogContent dividers>
                             <Chip className={classes.chip} label="High Food Insecurity" size="small" />
@@ -689,9 +756,12 @@ class todo extends Component {
                                         Details:
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        Location of Farm: Salinas, CA
+                                        Location of Food Bank: {`${this.state.location.substring(0, 30)}`} 
                                         <br />
-                                        Regrigeration Space (in pallets): 100
+                                        {`${this.state.location.substring(30, 78)}`}
+                                        Regrigeration Space (in pallets): {this.state.refrigerationSpaceAvailable}
+                                        <br/>
+                                        Max Load Size (in pallets): {this.state.maxLoadSize}
                                     </Typography>
                                 </Box>
                                 <Box p={3}>
@@ -699,11 +769,11 @@ class todo extends Component {
                                         Point of Contact:
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        Name: Jane Doe
+                                        Name: {this.state.contactName}
                                         <br />
-                                        Phone: (615) 812-9984
+                                        Phone: {this.state.contactPhone}
                                         <br />
-                                        Email: jane@lafoodbank.com
+                                        Email: {this.state.contactEmail}
                                     </Typography>
                                 </Box>
                                 <Box p={3}>
@@ -711,11 +781,11 @@ class todo extends Component {
                                         Logistics:
                                     </Typography>
                                     <Typography variant="body2" component="p">
-                                        Forklift: yes
+                                        Forklift: {this.state.forklift ? "yes" : "no"}
                                         <br />
-                                        Pallet: yes
+                                        Pallet: {this.state.pallet ? "yes" : "no"}
                                         <br />
-                                        Loading Dock: no
+                                        Loading Dock: {this.state.loadingDock ? "yes" : "no"}
                                     </Typography>
                                 </Box>
                                 <Box p={3}>
@@ -750,4 +820,4 @@ const tagExamples = [
     { title: 'Major City' },
 ];
 
-export default (withStyles(styles)(todo));
+export default (withStyles(styles)(foodbank));

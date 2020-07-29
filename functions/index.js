@@ -66,5 +66,20 @@ app.post('/farms', auth, postOneFarm);
 app.delete('/farms/:farmId', auth, deleteFarm);
 app.put('/farms/:farmId', auth, editFarm);
 
+// Foodbanks
+const {
+    getAllFoodBanks,
+    postOneFoodBank,
+    getOneFoodBank,
+    deleteFoodBank,
+    editFoodBank,
+} = require('./APIs/foodbanks')
+
+app.get('/foodbanks', auth, getAllFoodBanks);
+app.get('/foodbanks/:foodbankId', auth, getOneFoodBank);
+app.post('/foodbanks', auth, postOneFoodBank);
+app.delete('/foodbanks/:foodbankId', auth, deleteFoodBank);
+app.put('/foodbanks/:foodbankId', auth, editFoodBank);
+
 
 

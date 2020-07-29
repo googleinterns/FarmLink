@@ -195,6 +195,7 @@ class farms extends Component {
 		super(props);
 
 		this.state = {
+			farms: "",
 			farmName: "",
 			farmId: "",
 			contactName: "",
