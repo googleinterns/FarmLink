@@ -34,6 +34,7 @@ app.post('/user/image', auth, uploadProfilePhoto);
 app.get('/user', auth, getUserDetail);
 app.post('/user', auth, updateUserDetails);
 
+// Produce
 const {
     getAllProduce,
     postOneProduce,
@@ -48,5 +49,22 @@ app.get('/produce/:produceId', auth, getOneProduce);
 app.post('/produce', auth, postOneProduce);
 app.delete('/produce/:produceId', auth, deleteProduce);
 app.put('/produce/:produceId', auth, editProduce);
+
+// Farms
+const {
+    getAllFarms,
+    postOneFarm,
+    getOneFarm,
+    deleteFarm,
+    editFarm,
+} = require('./APIs/farms')
+
+exports.api = functions.https.onRequest(app);
+app.get('/farms', auth, getAllFarms);
+app.get('/farms/:farmId', auth, getOneFarm);
+app.post('/farms', auth, postOneFarm);
+app.delete('/farms/:farmId', auth, deleteFarm);
+app.put('/farms/:farmId', auth, editFarm);
+
 
 
