@@ -204,6 +204,7 @@ class farms extends Component {
 			forklift: false,
 			loadingDock: false,
 			location: "",
+			locationId: "",
 			transportation: false,
 			errors: [],
 			open: false,
@@ -234,13 +235,18 @@ class farms extends Component {
 		}, () => {
 			// This will output an array of objects
 			// given by Autocompelte options property.
-			console.log(this.state.tags);
+			console.log(this.state.farmTags);
 		});
 	}
 
-	handleLocation(newValue) {
+	handleLocation = (newValue) => {
+		if (newValue === null) {
+			return;
+		}
+		console.log(newValue);
 		this.setState({
-			location: newValue
+			location: newValue.description,
+			locationId: newValue.place_id
 		})
 	}
 
@@ -288,6 +294,7 @@ class farms extends Component {
 			forklift: data.farm.forklift,
 			loadingDock: data.farm.loadingDock,
 			location: data.farm.location,
+			locationId: data.farm.locationId,
 			transportation: data.farm.transportation,
 			buttonType: "Edit",
 			open: true
@@ -304,6 +311,7 @@ class farms extends Component {
 			forklift: this.state.forklift,
 			loadingDock: this.state.loadingDock,
 			location: this.state.location,
+			locationId: this.state.locationId,
 			transportation: this.state.transportation,
 			viewOpen: true
 		});
@@ -345,6 +353,7 @@ class farms extends Component {
 				forklift: false,
 				loadingDock: false,
 				location: "",
+				locationId: "",
 				transportation: false,
 				open: true
 			});
@@ -362,6 +371,7 @@ class farms extends Component {
 				forklift: this.state.forklift,
 				loadingDock: this.state.loadingDock,
 				location: this.state.location,
+				locationId: this.state.locationId,
 				transportation: this.state.transportation,
 			};
 			console.log(newFarm);
@@ -461,7 +471,7 @@ class farms extends Component {
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
-										<Address onChange={this.handleLocation} location={this.state.location}/>
+										<Address handleLocation={this.handleLocation} location={this.state.location}/>
                                     </Grid>
 									<Grid item xs={3}>
                                         <TextField
@@ -575,6 +585,7 @@ class farms extends Component {
 											onChange={this.onTagsChange}
 											options={tagExamples.map((option) => option.title)} // need to create agregated tags array
 											// defaultValue={[top100Films[].title]}
+											defaultValue={this.state.farmTags}
 											freeSolo
 											renderTags={(value, getTagProps) =>
 											value.map((option, index) => (
@@ -640,7 +651,9 @@ class farms extends Component {
                                                         Details:
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
-                                                        Location of Farm: {farm.location}
+                                                        Location of Farm: {`${farm.location.substring(0, 30)}`} 
+														<br />
+														{`${farm.location.substring(30, 78)}`} 
                                                     </Typography>
                                                 </Box>
                                                 <Box p={3}>
@@ -671,10 +684,10 @@ class farms extends Component {
                                             
                                         </CardContent>
                                         <CardActions>
-                                            <Button size="small" color="primary" onClick={() => this.handleViewOpen({ farm })}>
+                                            {/* <Button size="small" color="primary" onClick={() => this.handleViewOpen({ farm })}>
                                                 {" "}
                                                 View{" "}
-                                            </Button>
+                                            </Button> */}
                                             <Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ farm })}>
                                                 Edit
                                             </Button>

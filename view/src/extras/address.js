@@ -56,6 +56,10 @@ export default function GoogleMaps(props) {
     [],
   );
 
+  const handleLocation = (newValue) => {
+    props.handleLocation(newValue);
+  }
+
   React.useEffect(() => {
     let active = true;
 
@@ -84,7 +88,6 @@ export default function GoogleMaps(props) {
         }
 
         setOptions(newOptions);
-        console.log(props.location);
       }
     });
 
@@ -107,8 +110,9 @@ export default function GoogleMaps(props) {
       onChange={(event, newValue) => {
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
-        console.log(newValue);
-        //props.handleLocation(newValue);
+        props.handleLocation(newValue);
+        // console.log(newValue);
+        
       }}
       renderTags={(value) => {
         props.handleLocation(value);

@@ -17,6 +17,7 @@ exports.getAllFarms = (request, response) => {
                 loadingDock: doc.data().loadingDoc,
                 forklift: doc.data().forklift,
                 farmTags: doc.data().farmTags,
+                locationId: doc.data().locationId
             });
         });
         return response.json(farms);
@@ -50,6 +51,7 @@ exports.postOneFarm = (request, response) => {
         loadingDock: request.body.loadingDock,// === 'true',
         forklift: request.body.forklift,// === 'true',
         farmTags: request.body.farmTags,
+        locationId: request.body.locationId
     };
     db
         .collection('farms')
