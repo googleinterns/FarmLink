@@ -29,9 +29,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function GoogleMaps() {
+export default function GoogleMaps(props) {
   const classes = useStyles();
-  const [value, setValue] = React.useState(null);
+  const [value, setValue] = React.useState(props.location);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState([]);
   const loaded = React.useRef(false);
@@ -84,6 +84,7 @@ export default function GoogleMaps() {
         }
 
         setOptions(newOptions);
+        console.log(props.location);
       }
     });
 
@@ -106,6 +107,11 @@ export default function GoogleMaps() {
       onChange={(event, newValue) => {
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
+        console.log(newValue);
+        //props.handleLocation(newValue);
+      }}
+      renderTags={(value) => {
+        props.handleLocation(value);
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);

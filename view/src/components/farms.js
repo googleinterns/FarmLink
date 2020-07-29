@@ -1,47 +1,51 @@
-import React, { Component } from 'react'
+import React, { Component } from "react"
 
-import Address from '../extras/address'
+import Address from "../extras/address"
 
-import withStyles from '@material-ui/core/styles/withStyles';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Slide from '@material-ui/core/Slide';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import Container from '@material-ui/core/Container';
-import CardActions from '@material-ui/core/CardActions';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import CardContent from '@material-ui/core/CardContent';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import InputBase from '@material-ui/core/InputBase';
-import Chip from '@material-ui/core/Chip';
-// import { fade } from '@material-ui/core/styles';
-import SearchIcon from '@material-ui/icons/Search';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Box from '@material-ui/core/Box';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import withStyles from "@material-ui/core/styles/withStyles";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+import Slide from "@material-ui/core/Slide";
+import TextField from "@material-ui/core/TextField";
+import Grid from "@material-ui/core/Grid";
+import Card from "@material-ui/core/Card";
+import Container from "@material-ui/core/Container";
+import CardActions from "@material-ui/core/CardActions";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import CardContent from "@material-ui/core/CardContent";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
+import MuiDialogContent from "@material-ui/core/DialogContent";
+import InputBase from "@material-ui/core/InputBase";
+import Chip from "@material-ui/core/Chip";
+// import { fade } from "@material-ui/core/styles";
+import SearchIcon from "@material-ui/icons/Search";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Box from "@material-ui/core/Box";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
+
 
 import PropTypes from "prop-types";
 import MaskedInput from "react-text-mask";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 
-import axios from 'axios';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import { authMiddleWare } from '../util/auth';
+import axios from "axios";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { authMiddleWare } from "../util/auth";
 
 const styles = (theme) => ({
 	content: {
@@ -49,27 +53,27 @@ const styles = (theme) => ({
 		padding: theme.spacing(3)
 	},
 	appBar: {
-		position: 'relative'
+		position: "relative"
 	},
 	title: {
 		marginLeft: theme.spacing(2),
 		flex: 1
 	},
 	submitButton: {
-		display: 'block',
-		color: 'white',
-		textAlign: 'center',
-		position: 'absolute',
+		display: "block",
+		color: "white",
+		textAlign: "center",
+		position: "absolute",
 		top: 14,
 		right: 10
 	},
 	floatingButton: {
-		position: 'fixed',
+		position: "fixed",
 		bottom: 0,
 		right: 0
 	},
 	form: {
-		width: '98%',
+		width: "98%",
 		marginLeft: 13,
 		marginTop: theme.spacing(3)
 	},
@@ -78,67 +82,67 @@ const styles = (theme) => ({
 		minWidth: 470
 	},
 	bullet: {
-		display: 'inline-block',
-		margin: '0 2px',
-		transform: 'scale(0.8)'
+		display: "inline-block",
+		margin: "0 2px",
+		transform: "scale(0.8)"
 	},
 	pos: {
 		marginBottom: 12
 	},
 	uiProgess: {
-		position: 'fixed',
-		zIndex: '1000',
-		height: '31px',
-		width: '31px',
-		left: '50%',
-		top: '35%'
+		position: "fixed",
+		zIndex: "1000",
+		height: "31px",
+		width: "31px",
+		left: "50%",
+		top: "35%"
 	},
 	dialogeStyle: {
-		maxWidth: '50%'
+		maxWidth: "50%"
 	},
 	viewRoot: {
 		margin: 0,
 		padding: theme.spacing(2)
 	},
 	closeButton: {
-		position: 'absolute',
+		position: "absolute",
 		right: theme.spacing(1),
 		top: theme.spacing(1),
 		color: theme.palette.grey[500]
     },
     search: {
-        position: 'relative',
+        position: "relative",
         borderRadius: theme.shape.borderRadius,
         // backgroundColor: fade(theme.palette.primary.main, 0.15),
-        // '&:hover': {
+        // "&:hover": {
         // backgroundColor: fade(theme.palette.primary.main, 0.25),
         // },
         // //backgroundColor: theme.palette.primary.main,
         marginLeft: 0,
-        width: '100%',
+        width: "100%",
     },
     searchIcon: {
         padding: theme.spacing(0, 2),
-        height: '100%',
-        position: 'absolute',
-        pointerEvents: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        height: "100%",
+        position: "absolute",
+        pointerEvents: "none",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
     },
     inputRoot: {
-        color: 'inherit',
+        color: "inherit",
     },
     inputInput: {
         padding: theme.spacing(1, 1, 1, 0),
         // vertical padding + font size from searchIcon
         paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-        //transition: theme.transitions.create('width'),
-        width: '100%',
-        // [theme.breakpoints.up('sm')]: {
-        // width: '100ch',
-        // '&:focus': {
-        //     width: '100ch',
+        //transition: theme.transitions.create("width"),
+        width: "100%",
+        // [theme.breakpoints.up("sm")]: {
+        // width: "100ch",
+        // "&:focus": {
+        //     width: "100ch",
         // },
         // },
     },
@@ -191,23 +195,24 @@ class farms extends Component {
 		super(props);
 
 		this.state = {
-			farmName: '',
-			farmId: '',
-			contactName: '',
-			contactEmail: '',
-			contactPhone: '(1  )    -    ',
-			farmTags: '',
-			forklift: '',
-			loadingDoc: '',
-			location: '',
-			transportation: '',
+			farmName: "",
+			farmId: "",
+			contactName: "",
+			contactEmail: "",
+			contactPhone: "(1  )    -    ",
+			farmTags: [],
+			forklift: false,
+			loadingDock: false,
+			location: "",
+			transportation: false,
 			errors: [],
 			open: false,
 			uiLoading: true,
-			buttonType: '',
+			buttonType: "",
 			viewOpen: false
 		};
 
+		this.onTagsChange = this.onTagsChange.bind(this);
 		this.deleteTodoHandler = this.deleteTodoHandler.bind(this);
 		this.handleEditClickOpen = this.handleEditClickOpen.bind(this);
 		this.handleViewOpen = this.handleViewOpen.bind(this);
@@ -219,12 +224,32 @@ class farms extends Component {
 		});
 	};
 
+	handleChecked = name => event => {
+		this.setState({ ...this.state, [name]: event.target.checked });
+	};
+
+	onTagsChange = (event, values) => {
+		this.setState({
+			farmTags: values
+		}, () => {
+			// This will output an array of objects
+			// given by Autocompelte options property.
+			console.log(this.state.tags);
+		});
+	}
+
+	handleLocation(newValue) {
+		this.setState({
+			location: newValue
+		})
+	}
+
 	componentWillMount = () => {
 		authMiddleWare(this.props.history);
-		const authToken = localStorage.getItem('AuthToken');
+		const authToken = localStorage.getItem("AuthToken");
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
 		axios
-			.get('/farms')
+			.get("/farms")
 			.then((response) => {
 				this.setState({
 					farms: response.data,
@@ -238,11 +263,12 @@ class farms extends Component {
 
 	deleteTodoHandler(data) {
 		authMiddleWare(this.props.history);
-		const authToken = localStorage.getItem('AuthToken');
+		const authToken = localStorage.getItem("AuthToken");
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
 		let farmId = data.farm.farmId;
+		console.log(farmId)
 		axios
-			.delete(`farm/${farmId}`)
+			.delete(`farms/${farmId}`)
 			.then(() => {
 				window.location.reload();
 			})
@@ -260,10 +286,10 @@ class farms extends Component {
 			contactPhone: data.farm.contactPhone,
 			farmTags: data.farm.farmTags,
 			forklift: data.farm.forklift,
-			loadingDoc: data.farm.loadingDoc,
+			loadingDock: data.farm.loadingDock,
 			location: data.farm.location,
 			transportation: data.farm.transportation,
-			buttonType: 'Edit',
+			buttonType: "Edit",
 			open: true
 		});
 	}
@@ -276,7 +302,7 @@ class farms extends Component {
 			contactPhone: this.state.contactPhone,
 			farmTags: this.state.farmTags,
 			forklift: this.state.forklift,
-			loadingDoc: this.state.loadingDoc,
+			loadingDock: this.state.loadingDock,
 			location: this.state.location,
 			transportation: this.state.transportation,
 			viewOpen: true
@@ -310,16 +336,16 @@ class farms extends Component {
 
 		const handleClickOpen = () => {
 			this.setState({
-				farmName: '',
-				farmId: '',
-				contactName: '',
-				contactEmail: '',
-				contactPhone: '(1  )    -    ',
-				farmTags: '',
-				forklift: '',
-				loadingDoc: '',
-				location: '',
-				transportation: '',
+				farmName: "",
+				farmId: "",
+				contactName: "",
+				contactEmail: "",
+				contactPhone: "(1  )    -    ",
+				farmTags: "",
+				forklift: false,
+				loadingDock: false,
+				location: "",
+				transportation: false,
 				open: true
 			});
 		};
@@ -334,25 +360,26 @@ class farms extends Component {
 				contactPhone: this.state.contactPhone,
 				farmTags: this.state.farmTags,
 				forklift: this.state.forklift,
-				loadingDoc: this.state.loadingDoc,
+				loadingDock: this.state.loadingDock,
 				location: this.state.location,
 				transportation: this.state.transportation,
 			};
+			console.log(newFarm);
 			let options = {};
-			if (this.state.buttonType === 'Edit') {
+			if (this.state.buttonType === "Edit") {
 				options = {
-					url: `/farm/${this.state.farmId}`,
-					method: 'put',
+					url: `/farms/${this.state.farmId}`,
+					method: "put",
 					data: newFarm
 				};
 			} else {
 				options = {
-					url: '/farm',
-					method: 'post',
+					url: "/farms",
+					method: "post",
 					data: newFarm
 				};
 			}
-			const authToken = localStorage.getItem('AuthToken');
+			const authToken = localStorage.getItem("AuthToken");
 			axios.defaults.headers.common = { Authorization: `${authToken}` };
 			axios(options)
 				.then(() => {
@@ -400,7 +427,7 @@ class farms extends Component {
 									<CloseIcon />
 								</IconButton>
 								<Typography variant="h6" className={classes.title}>
-									{this.state.buttonType === 'Edit' ? 'Edit Farm' : 'Create a new Farm'}
+									{this.state.buttonType === "Edit" ? "Edit Farm" : "Create a new Farm"}
 								</Typography>
 								<Button
 									autoFocus
@@ -408,7 +435,7 @@ class farms extends Component {
 									onClick={handleSubmit}
 									className={classes.submitButton}
 								>
-									{this.state.buttonType === 'Edit' ? 'Save' : 'Submit'}
+									{this.state.buttonType === "Edit" ? "Save" : "Submit"}
 								</Button>
 							</Toolbar>
 						</AppBar>
@@ -434,7 +461,7 @@ class farms extends Component {
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
-										<Address/>
+										<Address onChange={this.handleLocation} location={this.state.location}/>
                                     </Grid>
 									<Grid item xs={3}>
                                         <TextField
@@ -487,56 +514,65 @@ class farms extends Component {
                                         />
                                     </Grid>
                                     <Grid item xs={3}>
-                                        <FormControl variant="outlined" fullWidth>
-                                            <InputLabel id="loadingDoc-label">Loading Doc Present</InputLabel>
+										<FormControlLabel
+											control={
+											<Checkbox
+												checked={this.state.loadingDock}
+												onChange={this.handleChecked("loadingDock")}
+												value={"loadingDock"}
+												name="loadingDock"
+												color="primary"
+											/>
+											}
+											label="Loading Doc Present"
+										/>
+                                        {/* <FormControl variant="outlined" fullWidth>
+                                            <InputLabel id="loadingDock-label">Loading Doc Present</InputLabel>
                                             <Select
-                                            labelId="loadingDoc-outlined-label"
-                                            id="loadingDoc"
-                                            value={this.state.loadingDoc}
+                                            labelId="loadingDock-outlined-label"
+                                            id="loadingDock"
+											value={10}
 											onChange={this.handleChange}
-											helperText={errors.loadingDoc}
-											error={errors.loadingDoc ? true : false}
                                             label="Have Loading Doc"
                                             >
-                                            <MenuItem value={true}>Yes</MenuItem>
-                                            <MenuItem value={false}>No</MenuItem>
+                                            <MenuItem value={10}>Yes</MenuItem>
+                                            <MenuItem value={20}>No</MenuItem>
                                             </Select>
-                                        </FormControl>
+                                        </FormControl> */}
                                     </Grid>
 									<Grid item xs={3}>
-                                        <FormControl variant="outlined" fullWidth>
-                                            <InputLabel id="forklift-label">Forklift Present</InputLabel>
-                                            <Select
-                                            labelId="forklift-outlined-label"
-                                            id="forklift"
-                                            // value={age}
-                                            onChange={this.handleChange}
-                                            label="Have Forklift"
-                                            >
-                                            <MenuItem value="yes">Yes</MenuItem>
-                                            <MenuItem value="no">No</MenuItem>
-                                            </Select>
-                                        </FormControl>
+										<FormControlLabel
+											control={
+											<Checkbox
+												checked={this.state.forklift}
+												onChange={this.handleChecked("forklift")}
+												value={"forklift"}
+												name="forklift"
+												color="primary"
+											/>
+											}
+											label="Forklift Present"
+										/>
                                     </Grid>
 									<Grid item xs={3}>
-                                        <FormControl variant="outlined" fullWidth>
-                                            <InputLabel id="transportation-label">Forklift Present</InputLabel>
-                                            <Select
-                                            labelId="transportation-outlined-label"
-                                            id="transportation"
-                                            // value={age}
-                                            onChange={this.handleChange}
-                                            label="Have Transportation"
-                                            >
-                                            <MenuItem value="yes">Yes</MenuItem>
-                                            <MenuItem value="no">No</MenuItem>
-                                            </Select>
-                                        </FormControl>
+										<FormControlLabel
+											control={
+											<Checkbox
+												checked={this.state.transportation}
+												onChange={this.handleChecked("transportation")}
+												value={"transportation"}
+												name="transportation"
+												color="primary"
+											/>
+											}
+											label="Transportation Present"
+										/>
                                     </Grid>
 									<Grid item xs={6}>
 										<Autocomplete
 											multiple
 											id="farmTags"
+											onChange={this.onTagsChange}
 											options={tagExamples.map((option) => option.title)} // need to create agregated tags array
 											// defaultValue={[top100Films[].title]}
 											freeSolo
@@ -584,7 +620,7 @@ class farms extends Component {
                                             root: classes.inputRoot,
                                             input: classes.inputInput,
                                         }}
-                                        inputProps={{ 'aria-label': 'search' }}
+                                        inputProps={{ "aria-label": "search" }}
                                         />
                                     </div>
                                 </Grid>
@@ -624,18 +660,20 @@ class farms extends Component {
                                                         Logistics:
                                                     </Typography>
                                                     <Typography variant="body2" component="p">
-                                                        Have Transportation Means: {farms.transportation ? 'yes' : 'no'}
+                                                        Have Transportation Means: {farm.transportation ? "yes" : "no"}
                                                         <br />
-														Loading Dock or Forklift: {farms.loadingDoc || farms.forklift ? 'yes' : 'no'}
-                                                    </Typography>
+														Loading Dock: {farm.loadingDock ? "yes" : "no"}
+														<br />
+														Forklift: {farm.forklift ? "yes" : "no"}
+													</Typography>
                                                 </Box>
                                             </Box> 
                                             
                                         </CardContent>
                                         <CardActions>
                                             <Button size="small" color="primary" onClick={() => this.handleViewOpen({ farm })}>
-                                                {' '}
-                                                View{' '}
+                                                {" "}
+                                                View{" "}
                                             </Button>
                                             <Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ farm })}>
                                                 Edit
@@ -658,44 +696,43 @@ class farms extends Component {
 						classes={{ paperFullWidth: classes.dialogeStyle }}
 					>
 						<DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-							this.state.farmName
+                            {this.state.farmName}
 						</DialogTitle>
 						<DialogContent dividers>
-							{this.state.farmTags.map((tag) => (
-								<Chip className={classes.chip} label={tag} size="small" />
-							))}  
-                             <Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
-                                <Box p={3}>
-                                    <Typography className={classes.pos} color="textSecondary">
-                                        Details:
-                                    </Typography>
-                                    <Typography variant="body2" component="p">
-                                        Location of Farm: {this.state.location}
-                                    </Typography>
-                                </Box>
-                                <Box p={3}>
-                                    <Typography className={classes.pos} color="textSecondary">
-                                        Point of Contact:
-                                    </Typography>
-                                    <Typography variant="body2" component="p">
-                                        Name: {this.state.contactName}
-                                        <br />
-                                        Phone: {this.state.contactPhone}
-                                        <br />
-                                        Email: {this.state.contactEmail}
-                                    </Typography>
-                                </Box>
-                                <Box p={3}>
-                                    <Typography className={classes.pos} color="textSecondary">
-                                        Logistics:
-                                    </Typography>
-                                    <Typography variant="body2" component="p">
-                                        Have Transportation Means: {this.state.transportation ? 'yes' : 'no'}
-                                        <br />
-                                        Loading Dock or Forklift: {this.state.forklift || this.state.loadingDoc ? 'yes' : 'no'}
-                                    </Typography>
-                                </Box>
-                            </Box> 
+							<Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
+								<Box p={3}>
+									<Typography className={classes.pos} color="textSecondary">
+										Details:
+									</Typography>
+									<Typography variant="body2" component="p">
+										Location of Farm: {this.state.location}
+									</Typography>
+								</Box>
+								<Box p={3}>
+									<Typography className={classes.pos} color="textSecondary">
+										Point of Contact:
+									</Typography>
+									<Typography variant="body2" component="p">
+										Name: {this.state.contactName}
+										<br />
+										Phone: {this.state.contactPhone}
+										<br />
+										Email: {this.state.contactEmail}
+									</Typography>
+								</Box>
+								<Box p={3}>
+									<Typography className={classes.pos} color="textSecondary">
+										Logistics:
+									</Typography>
+									<Typography variant="body2" component="p">
+										Have Transportation Means: {this.state.transportation ? "yes" : "no"}
+										<br />
+										Loading Dock: {this.state.loadingDock ? "yes" : "no"}
+										<br />
+										Forklift: {this.state.forklift ? "yes" : "no"}
+									</Typography>
+								</Box>
+							</Box> 
 						</DialogContent>
 					</Dialog>
 				</main>
@@ -705,14 +742,14 @@ class farms extends Component {
 }
 
 const farmsExamples = [
-    { title: 'Borden Farms', id: 0 },
-    { title: 'San Cristobal Apple Orchars', id:1 },
-    { title: 'Taylor Farms', id:2 }
+    { title: "Borden Farms", id: 0 },
+    { title: "San Cristobal Apple Orchars", id:1 },
+    { title: "Taylor Farms", id:2 }
 ];
 
 const tagExamples = [
-    { title: 'Black Owned' },
-    { title: 'Great Environmental Rating' },
+    { title: "Black Owned" },
+    { title: "Great Environmental Rating" },
 ];
 
 export default (withStyles(styles)(farms));
