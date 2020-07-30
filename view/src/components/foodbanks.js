@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 
 import Address from "../extras/address";
-import CardSkeletons from "../extras/skeleton"
-
+import CardSkeletons from "../extras/skeleton";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
@@ -434,9 +433,7 @@ class foodbank extends Component {
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          {this.state.uiLoading && (
-              <CardSkeletons classes={classes}/>
-          )}
+          {this.state.uiLoading && <CardSkeletons classes={classes} />}
         </main>
       );
     } else {
@@ -564,7 +561,6 @@ class foodbank extends Component {
                         Loading Dock Present
                       </InputLabel>
                       <Select
-                        
                         value={this.state.loadingDock}
                         onChange={this.handleChange}
                         label="Loading Dock Present"
@@ -584,7 +580,6 @@ class foodbank extends Component {
                         Forklift Present
                       </InputLabel>
                       <Select
-                        
                         value={this.state.forklift}
                         onChange={this.handleChange}
                         label="Forklift Present"
@@ -604,7 +599,6 @@ class foodbank extends Component {
                         Pallet Present
                       </InputLabel>
                       <Select
-                        
                         value={this.state.pallet}
                         onChange={this.handleChange}
                         label="Pallet Present"

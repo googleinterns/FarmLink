@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 
 import Address from "../extras/address";
-import CardSkeletons from "../extras/skeleton"
-
+import CardSkeletons from "../extras/skeleton";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
@@ -30,7 +29,6 @@ import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-
 
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -423,9 +421,7 @@ class farms extends Component {
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          {this.state.uiLoading && (
-              <CardSkeletons classes={classes}/>
-          )}
+          {this.state.uiLoading && <CardSkeletons classes={classes} />}
         </main>
       );
     } else {

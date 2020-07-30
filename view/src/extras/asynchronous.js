@@ -1,7 +1,7 @@
-import React from 'react';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import React from "react";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import axios from "axios";
 import { authMiddleWare } from "../util/auth";
 
@@ -18,19 +18,19 @@ export default function Asynchronous(props) {
     }
 
     (async () => {
-        authMiddleWare(props.history);
-        const authToken = localStorage.getItem("AuthToken");
-        axios.defaults.headers.common = { Authorization: `${authToken}` };
-        axios
-            .get(props.target)
-            .then((response) => {
-                if (active) {
-                    setOptions(response.data);
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+      authMiddleWare(props.history);
+      const authToken = localStorage.getItem("AuthToken");
+      axios.defaults.headers.common = { Authorization: `${authToken}` };
+      axios
+        .get(props.target)
+        .then((response) => {
+          if (active) {
+            setOptions(response.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     })();
 
     return () => {
@@ -71,7 +71,9 @@ export default function Asynchronous(props) {
             ...params.InputProps,
             endAdornment: (
               <React.Fragment>
-                {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                {loading ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : null}
                 {params.InputProps.endAdornment}
               </React.Fragment>
             ),

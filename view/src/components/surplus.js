@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import AsyncInput from "../extras/asynchronous"
-import CardSkeletons from "../extras/skeleton"
+import AsyncInput from "../extras/asynchronous";
+import CardSkeletons from "../extras/skeleton";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
@@ -39,7 +39,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { authMiddleWare } from "../util/auth";
 
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from "@material-ui/lab/Skeleton";
 
 const styles = (theme) => ({
   content: {
@@ -114,7 +114,7 @@ const styles = (theme) => ({
     // '&:hover': {
     // backgroundColor: fade(theme.palette.primary.main, 0.25),
     // },
-    // //backgroundColor: theme.palette.primary.main,  
+    // //backgroundColor: theme.palette.primary.main,
     marginLeft: 0,
     width: "100%",
   },
@@ -342,7 +342,7 @@ class todo extends Component {
         <main className={classes.content}>
           {this.state.uiLoading && (
             // <CircularProgress size={150} className={classes.uiProgess} />
-              <CardSkeletons classes={classes}/>
+            <CardSkeletons classes={classes} />
           )}
         </main>
       );
@@ -413,22 +413,26 @@ class todo extends Component {
                         />
                       )}
                     /> */}
-                    <AsyncInput 
+                    <AsyncInput
                       history={this.props.history}
                       target="/farms"
                       label="Source Farm"
-                      optionSelected={(option, value) => option.farmName === value.farmName}
+                      optionSelected={(option, value) =>
+                        option.farmName === value.farmName
+                      }
                       optionLabel={(option) => option.farmName}
                       handleChange={this.handleCustomChange}
                       returnValue="farmId"
                     />
                   </Grid>
                   <Grid item xs={6}>
-                    <AsyncInput 
+                    <AsyncInput
                       history={this.props.history}
                       target="/produce"
                       label="Produce Types"
-                      optionSelected={(option, value) => option.name === value.name}
+                      optionSelected={(option, value) =>
+                        option.name === value.name
+                      }
                       optionLabel={(option) => option.name}
                       handleChange={this.handleCustomChange}
                       returnValue="produceId"

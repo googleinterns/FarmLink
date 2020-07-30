@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import CardSkeletons from "../extras/skeleton"
+import CardSkeletons from "../extras/skeleton";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
@@ -333,9 +333,7 @@ class produce extends Component {
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          {this.state.uiLoading && (
-              <CardSkeletons classes={classes}/>
-          )}
+          {this.state.uiLoading && <CardSkeletons classes={classes} />}
         </main>
       );
     } else {
