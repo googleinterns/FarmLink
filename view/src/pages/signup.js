@@ -267,4 +267,4 @@ class Signup extends Component {
 	}
 }
 
-export default withStyles(styles)(signup);
+export default withStyles(styles)(Signup);
