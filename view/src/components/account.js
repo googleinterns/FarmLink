@@ -61,7 +61,7 @@ const styles = (theme) => ({
 	}
 });
 
-class account extends Component {
+class Account extends Component {
 	constructor(props) {
 		super(props);
 
@@ -329,4 +329,4 @@ class account extends Component {
 	}
 }
 
-export default withStyles(styles)(account);
+export default withStyles(styles)(Account);

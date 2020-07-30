@@ -12,7 +12,7 @@ const styles = ((theme) => ({
     })
 );
 
-class todo extends Component {
+class Todo extends Component {
     render() {
         const { classes } = this.props;
         return (
@@ -26,4 +26,4 @@ class todo extends Component {
     }
 }
 
-export default (withStyles(styles)(todo));
+export default (withStyles(styles)(Todo));
