@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import AsyncInput from "../extras/asynchronous"
+import CardSkeletons from "../extras/skeleton"
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
@@ -36,6 +38,8 @@ import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { authMiddleWare } from "../util/auth";
+
+import Skeleton from '@material-ui/lab/Skeleton';
 
 const styles = (theme) => ({
   content: {
@@ -100,6 +104,9 @@ const styles = (theme) => ({
     top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
+  skeleton: {
+    padding: theme.spacing(1, 1, 1, 0),
+  },
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
@@ -107,7 +114,7 @@ const styles = (theme) => ({
     // '&:hover': {
     // backgroundColor: fade(theme.palette.primary.main, 0.25),
     // },
-    // //backgroundColor: theme.palette.primary.main,
+    // //backgroundColor: theme.palette.primary.main,  
     marginLeft: 0,
     width: "100%",
   },
@@ -147,6 +154,7 @@ class todo extends Component {
     super(props);
 
     this.state = {
+      farms: "",
       todos: "",
       title: "",
       body: "",
@@ -169,11 +177,40 @@ class todo extends Component {
     });
   };
 
+  handleCustomChange = (name, value) => {
+    console.log(value);
+    this.setState({
+      [name]: value,
+    });
+  };
+
+  getSurplus = () => {
+    return axios.get("/todos");
+  };
+
+  getFarms = () => {
+    return axios.get("/farms");
+  };
+
   componentWillMount = () => {
     authMiddleWare(this.props.history);
     const authToken = localStorage.getItem("AuthToken");
     axios.defaults.headers.common = { Authorization: `${authToken}` };
     axios
+      // .all([this.getSurplus(), this.getFarms()])
+      // .then(axios.spread((...responses) => {
+      //   this.setState({
+      //     todos: responses[0].data,
+      //     farms: responses[1].data,
+      //     uiLoading: false
+      //   });
+      //   console.log(this.state.todos);
+      //   console.log(this.state.farms);
+      // }))
+      // .catch((err) => {
+      //   console.log("OH SHIT SHIT SHIT");
+      //   console.log(err);
+      // });
       .get("/todos")
       .then((response) => {
         this.setState({
@@ -303,9 +340,9 @@ class todo extends Component {
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          <div className={classes.toolbar} />
           {this.state.uiLoading && (
-            <CircularProgress size={150} className={classes.uiProgess} />
+            // <CircularProgress size={150} className={classes.uiProgess} />
+              <CardSkeletons classes={classes}/>
           )}
         </main>
       );
@@ -357,10 +394,16 @@ class todo extends Component {
               <form className={classes.form} noValidate>
                 <Grid container spacing={4} allignItems="center">
                   <Grid item xs={6}>
-                    <Autocomplete
+                    {/* <Autocomplete
                       id="originFarm"
-                      options={farmsExamples}
-                      getOptionLabel={(option) => option.title}
+                      options={this.state.farms}
+                      getOptionLabel={(farm) => farm.farmName}
+                      onChange={(event, newValue) => {
+                        //setOptions(newValue ? [newValue, ...options] : options);
+                        //setValue(newValue);
+                        console.log(newValue.farmId);
+                        // console.log(newValue);
+                      }}
                       fullWidth
                       renderInput={(params) => (
                         <TextField
@@ -369,21 +412,26 @@ class todo extends Component {
                           variant="outlined"
                         />
                       )}
+                    /> */}
+                    <AsyncInput 
+                      history={this.props.history}
+                      target="/farms"
+                      label="Source Farm"
+                      optionSelected={(option, value) => option.farmName === value.farmName}
+                      optionLabel={(option) => option.farmName}
+                      handleChange={this.handleCustomChange}
+                      returnValue="farmId"
                     />
                   </Grid>
                   <Grid item xs={6}>
-                    <Autocomplete
-                      id="produceName"
-                      options={produceExamples}
-                      getOptionLabel={(option) => option.title}
-                      fullWidth
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Produce Types"
-                          variant="outlined"
-                        />
-                      )}
+                    <AsyncInput 
+                      history={this.props.history}
+                      target="/produce"
+                      label="Produce Types"
+                      optionSelected={(option, value) => option.name === value.name}
+                      optionLabel={(option) => option.name}
+                      handleChange={this.handleCustomChange}
+                      returnValue="produceId"
                     />
                   </Grid>
                   <Grid item xs={3}>

@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import CardSkeletons from "../extras/skeleton"
+
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
@@ -331,9 +333,8 @@ class produce extends Component {
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          <div className={classes.toolbar} />
           {this.state.uiLoading && (
-            <CircularProgress size={150} className={classes.uiProgess} />
+              <CardSkeletons classes={classes}/>
           )}
         </main>
       );

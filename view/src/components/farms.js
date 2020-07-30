@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 
 import Address from "../extras/address";
+import CardSkeletons from "../extras/skeleton"
+
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
@@ -28,6 +30,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+
 
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -356,7 +359,7 @@ class farms extends Component {
         contactName: "",
         contactEmail: "",
         contactPhone: "(1  )    -    ",
-        farmTags: "",
+        farmTags: [],
         forklift: false,
         loadingDock: false,
         location: "",
@@ -420,9 +423,8 @@ class farms extends Component {
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          <div className={classes.toolbar} />
           {this.state.uiLoading && (
-            <CircularProgress size={150} className={classes.uiProgess} />
+              <CardSkeletons classes={classes}/>
           )}
         </main>
       );
@@ -546,59 +548,61 @@ class farms extends Component {
                     />
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.loadingDock}
-                          onChange={this.handleChecked("loadingDock")}
-                          value={"loadingDock"}
-                          name="loadingDock"
-                          color="primary"
-                        />
-                      }
-                      label="Loading Doc Present"
-                    />
-                    {/* <FormControl variant="outlined" fullWidth>
-                                            <InputLabel id="loadingDock-label">Loading Doc Present</InputLabel>
-                                            <Select
-                                            labelId="loadingDock-outlined-label"
-                                            id="loadingDock"
-											value={10}
-											onChange={this.handleChange}
-                                            label="Have Loading Doc"
-                                            >
-                                            <MenuItem value={10}>Yes</MenuItem>
-                                            <MenuItem value={20}>No</MenuItem>
-                                            </Select>
-                                        </FormControl> */}
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel htmlFor="outlined-transportation">
+                        Loading Dock Present
+                      </InputLabel>
+                      <Select
+                        value={this.state.loadingDock}
+                        onChange={this.handleChange}
+                        label="Loading Dock Present"
+                        inputProps={{
+                          name: "loadingDock",
+                          id: "outlined-loadingDock",
+                        }}
+                      >
+                        <MenuItem value={true}>Yes</MenuItem>
+                        <MenuItem value={false}>No</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.forklift}
-                          onChange={this.handleChecked("forklift")}
-                          value={"forklift"}
-                          name="forklift"
-                          color="primary"
-                        />
-                      }
-                      label="Forklift Present"
-                    />
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel htmlFor="outlined-transportation">
+                        Forklift Present
+                      </InputLabel>
+                      <Select
+                        value={this.state.forklift}
+                        onChange={this.handleChange}
+                        label="Forklift Present"
+                        inputProps={{
+                          name: "forklift",
+                          id: "outlined-forklift",
+                        }}
+                      >
+                        <MenuItem value={true}>Yes</MenuItem>
+                        <MenuItem value={false}>No</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.transportation}
-                          onChange={this.handleChecked("transportation")}
-                          value={"transportation"}
-                          name="transportation"
-                          color="primary"
-                        />
-                      }
-                      label="Transportation Present"
-                    />
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel htmlFor="outlined-transportation">
+                        Transportation Present
+                      </InputLabel>
+                      <Select
+                        value={this.state.transportation}
+                        onChange={this.handleChange}
+                        label="Transportation Present"
+                        inputProps={{
+                          name: "transportation",
+                          id: "outlined-transportation",
+                        }}
+                      >
+                        <MenuItem value={true}>Yes</MenuItem>
+                        <MenuItem value={false}>No</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={6}>
                     <Autocomplete
@@ -623,21 +627,6 @@ class farms extends Component {
                         />
                       )}
                     />
-                    {/* <Autocomplete
-											fillWidth
-											multiple
-											id="farmTags"
-											options={tagExamples.map((option) => option.title)}
-											filterSelectedOptions
-											renderTags={(value, getTagProps) =>
-												value.map((option, index) => (
-												  <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-												))
-											}
-											renderInput={(params) => (
-												<TextField {...params} variant="filled" label="freeSolo" placeholder="Favorites" />
-											)}
-										/> */}
                   </Grid>
                 </Grid>
               </form>

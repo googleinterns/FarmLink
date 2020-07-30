@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 
 import Address from "../extras/address";
+import CardSkeletons from "../extras/skeleton"
+
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
@@ -233,12 +235,12 @@ class foodbank extends Component {
   onTagsChange = (event, values) => {
     this.setState(
       {
-        farmTags: values,
+        foodbankTags: values,
       },
       () => {
         // This will output an array of objects
         // given by Autocompelte options property.
-        console.log(this.state.farmTags);
+        console.log(this.state.foodbankeTags);
       }
     );
   };
@@ -432,9 +434,8 @@ class foodbank extends Component {
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          <div className={classes.toolbar} />
           {this.state.uiLoading && (
-            <CircularProgress size={150} className={classes.uiProgess} />
+              <CardSkeletons classes={classes}/>
           )}
         </main>
       );
@@ -558,46 +559,64 @@ class foodbank extends Component {
                     />
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.loadingDock}
-                          onChange={this.handleChecked("loadingDock")}
-                          value={"loadingDock"}
-                          name="loadingDock"
-                          color="primary"
-                        />
-                      }
-                      label="Loading Doc Present"
-                    />
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel htmlFor="outlined-age-native-simple">
+                        Loading Dock Present
+                      </InputLabel>
+                      <Select
+                        
+                        value={this.state.loadingDock}
+                        onChange={this.handleChange}
+                        label="Loading Dock Present"
+                        inputProps={{
+                          name: "loadingDock",
+                          id: "outlined-age-native-simple",
+                        }}
+                      >
+                        <MenuItem value={true}>Yes</MenuItem>
+                        <MenuItem value={false}>No</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.forklift}
-                          onChange={this.handleChecked("forklift")}
-                          value={"forklift"}
-                          name="forklift"
-                          color="primary"
-                        />
-                      }
-                      label="Forklift Present"
-                    />
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel htmlFor="outlined-age-native-simple">
+                        Forklift Present
+                      </InputLabel>
+                      <Select
+                        
+                        value={this.state.forklift}
+                        onChange={this.handleChange}
+                        label="Forklift Present"
+                        inputProps={{
+                          name: "forklift",
+                          id: "outlined-age-native-simple",
+                        }}
+                      >
+                        <MenuItem value={true}>Yes</MenuItem>
+                        <MenuItem value={false}>No</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.pallet}
-                          onChange={this.handleChecked("pallet")}
-                          value={"pallet"}
-                          name="pallet"
-                          color="primary"
-                        />
-                      }
-                      label="Pallet Present"
-                    />
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel htmlFor="outlined-age-native-simple">
+                        Pallet Present
+                      </InputLabel>
+                      <Select
+                        
+                        value={this.state.pallet}
+                        onChange={this.handleChange}
+                        label="Pallet Present"
+                        inputProps={{
+                          name: "pallet",
+                          id: "outlined-age-native-simple",
+                        }}
+                      >
+                        <MenuItem value={true}>Yes</MenuItem>
+                        <MenuItem value={false}>No</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={3}>
                     <TextField
@@ -648,10 +667,11 @@ class foodbank extends Component {
                   <Grid item xs={12}>
                     <Autocomplete
                       multiple
-                      id="tags-filled"
+                      id="foodbankTags"
                       onChange={this.onTagsChange}
-                      options={tagExamples.map((option) => option.title)}
-                      defaultValue={[this.state.foodbankTags]}
+                      options={tagExamples.map((option) => option.title)} // need to create agregated tags array
+                      // defaultValue={[top100Films[].title]}
+                      defaultValue={this.state.foodbankTags}
                       freeSolo
                       renderTags={(value, getTagProps) =>
                         value.map((option, index) => (
@@ -662,7 +682,7 @@ class foodbank extends Component {
                         <TextField
                           {...params}
                           variant="outlined"
-                          label="Food Bank Tags"
+                          label="Food Banks Tags"
                           placeholder="tags..."
                         />
                       )}
