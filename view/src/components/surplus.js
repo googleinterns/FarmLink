@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import AsyncInput from "../extras/asynchronous";
 import CardSkeletons from "../extras/skeleton";
 import CustomTable from "../extras/table";
+import SurplusStepper from "../extras/surplusStepper";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
@@ -407,10 +408,11 @@ class todo extends Component {
               </Toolbar>
             </AppBar>
             <Container maxWidth="lg">
-              <form className={classes.form} noValidate>
+              <SurplusStepper />
+              {/* <form className={classes.form} noValidate>
                 <Grid container spacing={4} allignItems="center">
                   <Grid item xs={6}>
-                    {/* <Autocomplete
+      comment out ->               <Autocomplete
                       id="originFarm"
                       options={this.state.farms}
                       getOptionLabel={(farm) => farm.farmName}
@@ -428,7 +430,7 @@ class todo extends Component {
                           variant="outlined"
                         />
                       )}
-                    /> */}
+                    /> 
                     <AsyncInput
                       history={this.props.history}
                       target="/farms"
@@ -530,13 +532,13 @@ class todo extends Component {
                     </FormControl>
                   </Grid>
                 </Grid>
-                <div className={classes.table}>
+      comment out ->           <div className={classes.table}>
                   <CustomTable
                     title="Operating Hours"
                     data={tableData}
                   />
-                </div>
-              </form>
+                </div> 
+              </form> */}
             </Container>
           </Dialog>
           <Container maxWidth="lg">
