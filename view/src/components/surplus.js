@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import AsyncInput from "../extras/asynchronous";
 import CardSkeletons from "../extras/skeleton";
+import CustomTable from "../extras/table";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
@@ -143,6 +144,9 @@ const styles = (theme) => ({
     // },
     // },
   },
+  table: {
+    marginTop: "50px",
+  }
 });
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -514,6 +518,11 @@ class todo extends Component {
                     </FormControl>
                   </Grid>
                 </Grid>
+                <div className={classes.table}>
+                  <CustomTable
+                    title="Operating Hours"
+                  />
+                </div>
               </form>
             </Container>
           </Dialog>
