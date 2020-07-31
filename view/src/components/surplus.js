@@ -149,6 +149,18 @@ const styles = (theme) => ({
   }
 });
 
+const tableData = {
+  columns: [
+    { title: 'Role', field: 'contactRole' },
+    { title: 'Name', field: 'contactName' },
+    { title: 'Email', field: 'contactEmail' },
+    { title: 'Phone Number', field: 'contactPhone' },
+  ],
+  data: [
+    { contactRole: 'Farm Manager', contactName: 'Jane Doe', contactEmail: "jane@doe.com", contactPhone: "(777)851-1234" },
+  ],
+}
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -521,6 +533,7 @@ class todo extends Component {
                 <div className={classes.table}>
                   <CustomTable
                     title="Operating Hours"
+                    data={tableData}
                   />
                 </div>
               </form>
