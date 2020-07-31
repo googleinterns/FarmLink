@@ -79,7 +79,7 @@ class Account extends Component {
 		};
 	}
 
-	componentWillMount = () => {
+	componentDidMount = () => {
 		authMiddleWare(this.props.history);
 		const authToken = localStorage.getItem('AuthToken');
 		axios.defaults.headers.common = { Authorization: `${authToken}` };
