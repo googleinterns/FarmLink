@@ -1,28 +1,32 @@
 import React, { useRef } from "react";
-import { makeStyles } from '@material-ui/core/styles';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import { makeStyles } from "@material-ui/core/styles";
+import Stepper from "@material-ui/core/Stepper";
+import Step from "@material-ui/core/Step";
+import StepLabel from "@material-ui/core/StepLabel";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
 import FarmForm from "../extras/farmForm";
 
-
 const tableData = {
-    columns: [
-      { title: 'Role', field: 'contactRole' },
-      { title: 'Name', field: 'contactName' },
-      { title: 'Email', field: 'contactEmail' },
-      { title: 'Phone Number', field: 'contactPhone' },
-    ],
-    data: [
-      { contactRole: 'Farm Manager', contactName: 'Jane Doe', contactEmail: "jane@doe.com", contactPhone: "(777)851-1234" },
-    ],
-  }
+  columns: [
+    { title: "Role", field: "contactRole" },
+    { title: "Name", field: "contactName" },
+    { title: "Email", field: "contactEmail" },
+    { title: "Phone Number", field: "contactPhone" },
+  ],
+  data: [
+    {
+      contactRole: "Farm Manager",
+      contactName: "Jane Doe",
+      contactEmail: "jane@doe.com",
+      contactPhone: "(777)851-1234",
+    },
+  ],
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '100%',
+    width: "100%",
   },
   button: {
     marginRight: theme.spacing(1),
@@ -34,7 +38,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function getSteps() {
-  return ['Create a Farm', 'Create a Produce Object', 'Create a Surplus Object'];
+  return [
+    "Create a Farm",
+    "Create a Produce Object",
+    "Create a Surplus Object",
+  ];
 }
 
 // function getStepContent(step) {
@@ -62,18 +70,15 @@ export default function HorizontalLinearStepper() {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return <FarmForm
-                toSubmit={farmSubmit}
-                ref={farmRef}
-                />
+        return <FarmForm toSubmit={farmSubmit} ref={farmRef} />;
       case 1:
-        return 'Create a Produce Object';
+        return "Create a Produce Object";
       case 2:
-        return 'Create a Surplus Object';
+        return "Create a Surplus Object";
       default:
-        return 'Unknown step';
+        return "Unknown step";
     }
-  }
+  };
 
   const isStepOptional = (step) => {
     return step === 1 || step === 0;
@@ -84,12 +89,12 @@ export default function HorizontalLinearStepper() {
   };
 
   const handleSubmit = (step) => {
-      if (step === 0) {
-        //   console.log("not at all in the main frame");
-        //   setFarmSubmit(true);
-        farmRef.current.toSubmit()
-      } 
-  }
+    if (step === 0) {
+      //   console.log("not at all in the main frame");
+      //   setFarmSubmit(true);
+      farmRef.current.toSubmit();
+    }
+  };
 
   const handleNext = () => {
     handleSubmit(activeStep);
@@ -109,7 +114,7 @@ export default function HorizontalLinearStepper() {
   };
 
   const handleSkip = () => {
-    if (!isStepOptional(activeStep)) {  
+    if (!isStepOptional(activeStep)) {
       // You probably want to guard against something like this,
       // it should never occur unless someone's actively trying to break something.
       throw new Error("You can't skip a step that isn't optional.");
@@ -134,7 +139,9 @@ export default function HorizontalLinearStepper() {
           const stepProps = {};
           const labelProps = {};
           if (isStepOptional(index)) {
-            labelProps.optional = <Typography variant="caption">Optional</Typography>;
+            labelProps.optional = (
+              <Typography variant="caption">Optional</Typography>
+            );
           }
           if (isStepSkipped(index)) {
             stepProps.completed = false;
@@ -158,9 +165,15 @@ export default function HorizontalLinearStepper() {
           </div>
         ) : (
           <div>
-            <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
+            <Typography className={classes.instructions}>
+              {getStepContent(activeStep)}
+            </Typography>
             <div>
-              <Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>
+              <Button
+                disabled={activeStep === 0}
+                onClick={handleBack}
+                className={classes.button}
+              >
                 Back
               </Button>
               {isStepOptional(activeStep) && (
@@ -180,7 +193,7 @@ export default function HorizontalLinearStepper() {
                 onClick={handleNext}
                 className={classes.button}
               >
-                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                {activeStep === steps.length - 1 ? "Finish" : "Next"}
               </Button>
             </div>
           </div>

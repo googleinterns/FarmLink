@@ -147,20 +147,25 @@ const styles = (theme) => ({
   },
   table: {
     marginTop: "50px",
-  }
+  },
 });
 
 const tableData = {
   columns: [
-    { title: 'Role', field: 'contactRole' },
-    { title: 'Name', field: 'contactName' },
-    { title: 'Email', field: 'contactEmail' },
-    { title: 'Phone Number', field: 'contactPhone' },
+    { title: "Role", field: "contactRole" },
+    { title: "Name", field: "contactName" },
+    { title: "Email", field: "contactEmail" },
+    { title: "Phone Number", field: "contactPhone" },
   ],
   data: [
-    { contactRole: 'Farm Manager', contactName: 'Jane Doe', contactEmail: "jane@doe.com", contactPhone: "(777)851-1234" },
+    {
+      contactRole: "Farm Manager",
+      contactName: "Jane Doe",
+      contactEmail: "jane@doe.com",
+      contactPhone: "(777)851-1234",
+    },
   ],
-}
+};
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
