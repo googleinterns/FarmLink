@@ -219,13 +219,13 @@ class FarmForm extends Component {
     });
   };
 
-  toSubmit = (this.props, ref) => {
-      forwardRef((this.props, ref) => {
-        useImperativeAHandle(ref, () => ({
-            handleSubmit();
-        }));
-    });
-    }
+  // toSubmit = (this.props, ref) => {
+  //     forwardRef((this.props, ref) => {
+  //       useImperativeAHandle(ref, () => ({
+  //           handleSubmit();
+  //       }));
+  //   });
+  //   }
 
   onTagsChange = (event, values) => {
     this.setState(
@@ -235,7 +235,7 @@ class FarmForm extends Component {
       () => {
         // This will output an array of objects
         // given by Autocompelte options property.
-        console.log(this.state.farmTags);
+        //console.log(this.state.farmTags);
       }
     );
   };
@@ -244,7 +244,7 @@ class FarmForm extends Component {
     if (newValue === null) {
       return;
     }
-    console.log(newValue);
+    //console.log(newValue);
     this.setState({
       location: newValue.description,
       locationId: newValue.place_id,
@@ -276,7 +276,7 @@ class FarmForm extends Component {
 
 
     const handleSubmit = (event) => {
-      console.log("HOLY SHIT");
+      //console.log("HOLY SHIT");
       authMiddleWare(this.props.history);
       event.preventDefault();
       const newFarm = {
@@ -291,7 +291,7 @@ class FarmForm extends Component {
         locationId: this.state.locationId,
         transportation: this.state.transportation,
       };
-      console.log(newFarm);
+      //console.log(newFarm);
       let options = {};
       if (this.state.buttonType === "Edit") {
         options = {
@@ -319,8 +319,8 @@ class FarmForm extends Component {
         });
     };
    
-    console.log("WE ARE INSIDE THE MAIN FRAME");
-    console.log(this.props.toSubmit);
+    // console.log("WE ARE INSIDE THE MAIN FRAME");
+    // console.log(this.props.toSubmit);
       return (
         <main className={classes.content}>
             <Container maxWidth="lg">
@@ -339,7 +339,7 @@ class FarmForm extends Component {
                       helperText={errors.farmName}
                       value={this.state.farmName}
                       error={errors.farmName ? true : false}
-                      onChange={this.handleChange}
+                      onChange={this.props.setFarm(this.state.farmName)}
                     />
                   </Grid>
                   <Grid item xs={6}>

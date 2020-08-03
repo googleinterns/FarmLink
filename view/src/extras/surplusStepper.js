@@ -63,6 +63,8 @@ export default function HorizontalLinearStepper() {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
   const [farmSubmit, setFarmSubmit] = React.useState(false);
+  const [farm, setFarm] = React.useState("");
+
   const steps = getSteps();
 
   const farmRef = useRef();
@@ -70,7 +72,9 @@ export default function HorizontalLinearStepper() {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return <FarmForm toSubmit={farmSubmit} ref={farmRef} />;
+        return <FarmForm 
+                setFarm={setFarm}
+                />;
       case 1:
         return "Create a Produce Object";
       case 2:
@@ -92,7 +96,8 @@ export default function HorizontalLinearStepper() {
     if (step === 0) {
       //   console.log("not at all in the main frame");
       //   setFarmSubmit(true);
-      farmRef.current.toSubmit();
+      console.log(farm);
+      //farmRef.current.toSubmit();
     }
   };
 
