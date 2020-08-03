@@ -413,7 +413,7 @@ class todo extends Component {
               </Toolbar>
             </AppBar>
             <Container maxWidth="lg">
-              <SurplusStepper />
+              <SurplusStepper buttonType={this.state.buttonType} />
               {/* <form className={classes.form} noValidate>
                 <Grid container spacing={4} allignItems="center">
                   <Grid item xs={6}>

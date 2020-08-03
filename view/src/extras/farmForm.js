@@ -212,7 +212,6 @@ class FarmForm extends Component {
       errors: [],
       open: false,
       uiLoading: true,
-      buttonType: "",
       viewOpen: false,
     };
 
@@ -259,22 +258,35 @@ class FarmForm extends Component {
 
   // will get one farm and render it into edit form
 
-  //   componentWillMount = () => {
-  //     authMiddleWare(this.props.history);
-  //     const authToken = localStorage.getItem("AuthToken");
-  //     axios.defaults.headers.common = { Authorization: `${authToken}` };
-  //     axios
-  //       .get("/farms")
-  //       .then((response) => {
-  //         this.setState({
-  //           farms: response.data,
-  //           uiLoading: false,
-  //         });
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //       });
-  //   };
+  componentWillMount = () => {
+    if (this.props.buttonType === "Edit") {
+      authMiddleWare(this.props.history);
+      const authToken = localStorage.getItem("AuthToken");
+      axios.defaults.headers.common = { Authorization: `${authToken}` };
+      axios
+        .get(`farms/${this.props.farmId}`)
+        .then((response) => {
+          this.setState({
+            // farms: response.data,
+            farmName: response.data.farmName,
+            farmId: response.data.farmId,
+            contactName: response.data.contactName,
+            contactEmail: response.data.contactEmail,
+            contactPhone: response.data.contactPhone,
+            farmTags: response.data.farmTags,
+            forklift: response.data.forklift,
+            loadingDock: response.data.loadingDock,
+            location: response.data.location,
+            locationId: response.data.locationId,
+            transportation: response.data.transportation,
+            uiLoading: false,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
 
   render() {
     const { classes } = this.props;
@@ -297,11 +309,11 @@ class FarmForm extends Component {
         locationId: this.state.locationId,
         transportation: this.state.transportation,
       };
-      //console.log(newFarm);
+      console.log(newFarm);
       let options = {};
-      if (this.state.buttonType === "Edit") {
+      if (this.props.buttonType === "Edit") {
         options = {
-          url: `/farms/${this.state.farmId}`,
+          url: `/farms/${this.props.farmId}`,
           method: "put",
           data: newFarm,
         };
@@ -327,201 +339,211 @@ class FarmForm extends Component {
 
     console.log("WE ARE INSIDE THE MAIN FRAME");
     console.log(this.props.toSubmit);
-    return (
-      <main className={classes.content}>
-        <Typography className={classes.instructions}>
-          Please press Submit to save a new farm / save edits. To continue
-          without creating / saving the farm, press Skip.
-        </Typography>
-        <Container maxWidth="lg">
-          <form className={classes.form} noValidate>
-            <Grid container spacing={4} allignItems="center">
-              <Grid item xs={6}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="farmName"
-                  label="Farm Name"
-                  name="farmName"
-                  type="text"
-                  autoComplete="farmName"
-                  helperText={errors.farmName}
-                  value={this.state.farmName}
-                  error={errors.farmName ? true : false}
-                  onChange={this.handleChange}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <Address
-                  handleLocation={this.handleLocation}
-                  location={this.state.location}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="contactName"
-                  label="Point of Contact - Name"
-                  name="contactName"
-                  type="text"
-                  autoComplete="contactName"
-                  helperText={errors.contactName}
-                  value={this.state.contactName}
-                  error={errors.contactName ? true : false}
-                  onChange={this.handleChange}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <FormControl fullWidth>
-                  <InputLabel variant="outlined" htmlFor="contactPhone">
-                    Point of Contact - Phone
-                  </InputLabel>
-                  <OutlinedInput
-                    label="Point of Contact - Phone"
+    if (this.state.uiLoading === true) {
+      return (
+        <main className={classes.content}>
+          {this.state.uiLoading && (
+            <CircularProgress size={150} className={classes.uiProgess} />
+          )}
+        </main>
+      );
+    } else {
+      return (
+        <main className={classes.content}>
+          <Typography className={classes.instructions}>
+            Please press Submit to save a new farm / save edits. To continue
+            without creating / saving the farm, press Skip.
+          </Typography>
+          <Container maxWidth="lg">
+            <form className={classes.form} noValidate>
+              <Grid container spacing={4} allignItems="center">
+                <Grid item xs={6}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="farmName"
+                    label="Farm Name"
+                    name="farmName"
+                    type="text"
+                    autoComplete="farmName"
+                    helperText={errors.farmName}
+                    value={this.state.farmName}
+                    error={errors.farmName ? true : false}
                     onChange={this.handleChange}
-                    name="contactPhone"
-                    id="contactPhone"
-                    autoComplete="contactName"
-                    helperText={errors.contactPhone}
-                    value={this.state.contactPhone}
-                    error={errors.contactPhone ? true : false}
-                    inputComponent={TextMaskCustom}
                   />
-                </FormControl>
-              </Grid>
-              <Grid item xs={3}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="contactEmail"
-                  label="Point of Contact - Email"
-                  name="contactEmail"
-                  type="email"
-                  autoComplete="contactEmail"
-                  helperText={errors.contactEmail}
-                  value={this.state.contactEmail}
-                  error={errors.contactEmail ? true : false}
-                  onChange={this.handleChange}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <FormControl variant="outlined" fullWidth>
-                  <InputLabel htmlFor="outlined-transportation">
-                    Loading Dock Present
-                  </InputLabel>
-                  <Select
-                    value={this.state.loadingDock}
+                </Grid>
+                <Grid item xs={6}>
+                  <Address
+                    handleLocation={this.handleLocation}
+                    location={this.state.location}
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="contactName"
+                    label="Point of Contact - Name"
+                    name="contactName"
+                    type="text"
+                    autoComplete="contactName"
+                    helperText={errors.contactName}
+                    value={this.state.contactName}
+                    error={errors.contactName ? true : false}
                     onChange={this.handleChange}
-                    label="Loading Dock Present"
-                    inputProps={{
-                      name: "loadingDock",
-                      id: "outlined-loadingDock",
-                    }}
-                  >
-                    <MenuItem value={true}>Yes</MenuItem>
-                    <MenuItem value={false}>No</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={3}>
-                <FormControl variant="outlined" fullWidth>
-                  <InputLabel htmlFor="outlined-transportation">
-                    Forklift Present
-                  </InputLabel>
-                  <Select
-                    value={this.state.forklift}
-                    onChange={this.handleChange}
-                    label="Forklift Present"
-                    inputProps={{
-                      name: "forklift",
-                      id: "outlined-forklift",
-                    }}
-                  >
-                    <MenuItem value={true}>Yes</MenuItem>
-                    <MenuItem value={false}>No</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={3}>
-                <FormControl variant="outlined" fullWidth>
-                  <InputLabel htmlFor="outlined-transportation">
-                    Transportation Present
-                  </InputLabel>
-                  <Select
-                    value={this.state.transportation}
-                    onChange={this.handleChange}
-                    label="Transportation Present"
-                    inputProps={{
-                      name: "transportation",
-                      id: "outlined-transportation",
-                    }}
-                  >
-                    <MenuItem value={true}>Yes</MenuItem>
-                    <MenuItem value={false}>No</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <Autocomplete
-                  multiple
-                  id="farmTags"
-                  onChange={this.onTagsChange}
-                  options={this.state.farmTags.map((option) => option.title)} // need to create agregated tags array
-                  // defaultValue={[top100Films[].title]}
-                  defaultValue={this.state.farmTags}
-                  freeSolo
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip label={option} {...getTagProps({ index })} />
-                    ))
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      label="Farm Tags"
-                      placeholder="tags..."
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <FormControl fullWidth>
+                    <InputLabel variant="outlined" htmlFor="contactPhone">
+                      Point of Contact - Phone
+                    </InputLabel>
+                    <OutlinedInput
+                      label="Point of Contact - Phone"
+                      onChange={this.handleChange}
+                      name="contactPhone"
+                      id="contactPhone"
+                      autoComplete="contactName"
+                      helperText={errors.contactPhone}
+                      value={this.state.contactPhone}
+                      error={errors.contactPhone ? true : false}
+                      inputComponent={TextMaskCustom}
                     />
-                  )}
-                />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="contactEmail"
+                    label="Point of Contact - Email"
+                    name="contactEmail"
+                    type="email"
+                    autoComplete="contactEmail"
+                    helperText={errors.contactEmail}
+                    value={this.state.contactEmail}
+                    error={errors.contactEmail ? true : false}
+                    onChange={this.handleChange}
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <FormControl variant="outlined" fullWidth>
+                    <InputLabel htmlFor="outlined-transportation">
+                      Loading Dock Present
+                    </InputLabel>
+                    <Select
+                      value={this.state.loadingDock}
+                      onChange={this.handleChange}
+                      label="Loading Dock Present"
+                      inputProps={{
+                        name: "loadingDock",
+                        id: "outlined-loadingDock",
+                      }}
+                    >
+                      <MenuItem value={true}>Yes</MenuItem>
+                      <MenuItem value={false}>No</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={3}>
+                  <FormControl variant="outlined" fullWidth>
+                    <InputLabel htmlFor="outlined-transportation">
+                      Forklift Present
+                    </InputLabel>
+                    <Select
+                      value={this.state.forklift}
+                      onChange={this.handleChange}
+                      label="Forklift Present"
+                      inputProps={{
+                        name: "forklift",
+                        id: "outlined-forklift",
+                      }}
+                    >
+                      <MenuItem value={true}>Yes</MenuItem>
+                      <MenuItem value={false}>No</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={3}>
+                  <FormControl variant="outlined" fullWidth>
+                    <InputLabel htmlFor="outlined-transportation">
+                      Transportation Present
+                    </InputLabel>
+                    <Select
+                      value={this.state.transportation}
+                      onChange={this.handleChange}
+                      label="Transportation Present"
+                      inputProps={{
+                        name: "transportation",
+                        id: "outlined-transportation",
+                      }}
+                    >
+                      <MenuItem value={true}>Yes</MenuItem>
+                      <MenuItem value={false}>No</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={6}>
+                  <Autocomplete
+                    multiple
+                    id="farmTags"
+                    onChange={this.onTagsChange}
+                    options={this.state.farmTags.map((option) => option.title)} // need to create agregated tags array
+                    // defaultValue={[top100Films[].title]}
+                    defaultValue={this.state.farmTags}
+                    freeSolo
+                    renderTags={(value, getTagProps) =>
+                      value.map((option, index) => (
+                        <Chip label={option} {...getTagProps({ index })} />
+                      ))
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="outlined"
+                        label="Farm Tags"
+                        placeholder="tags..."
+                      />
+                    )}
+                  />
+                </Grid>
               </Grid>
-            </Grid>
-          </form>
-        </Container>
-        <div className={classes.buttons}>
-          <Button
-            disabled={this.props.activeStep === 0}
-            onClick={this.props.handleBack}
-            className={(classes.button, classes.spacing)}
-          >
-            Back
-          </Button>
-          {this.props.isStepOptional(this.props.activeStep) && (
+            </form>
+          </Container>
+          <div className={classes.buttons}>
+            <Button
+              disabled={this.props.activeStep === 0}
+              onClick={this.props.handleBack}
+              className={(classes.button, classes.spacing)}
+            >
+              Back
+            </Button>
+            {this.props.isStepOptional(this.props.activeStep) && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={this.props.handleSkip}
+                className={(classes.button, classes.spacing)}
+              >
+                Skip
+              </Button>
+            )}
+
             <Button
               variant="contained"
               color="primary"
-              onClick={this.props.handleSkip}
+              onClick={handleSubmit}
               className={(classes.button, classes.spacing)}
             >
-              Skip
+              Submit
             </Button>
-          )}
-
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            className={(classes.button, classes.spacing)}
-          >
-            Submit
-          </Button>
-        </div>
-      </main>
-    );
+          </div>
+        </main>
+      );
+    }
   }
 }
 

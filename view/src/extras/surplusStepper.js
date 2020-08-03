@@ -6,6 +6,8 @@ import StepLabel from "@material-ui/core/StepLabel";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import FarmForm from "../extras/farmForm";
+import ProduceForm from "../extras/produceForm";
+import SurplusForm from "../extras/surplusForm";
 
 const tableData = {
   columns: [
@@ -58,7 +60,7 @@ function getSteps() {
 //   }
 // }
 
-export default function HorizontalLinearStepper() {
+export default function HorizontalLinearStepper(props) {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
@@ -80,12 +82,34 @@ export default function HorizontalLinearStepper() {
             handleSkip={handleSkip}
             handleNext={handleNext}
             steps={steps}
+            buttonType={props.buttonType}
+            farmId="AajvEIQCqLj6cePPTEKr"
           />
         );
       case 1:
-        return "Create a Produce Object";
+        return (
+          <ProduceForm
+            activeStep={activeStep}
+            handleBack={handleBack}
+            isStepOptional={isStepOptional}
+            handleSkip={handleSkip}
+            handleNext={handleNext}
+            steps={steps}
+            buttonType={props.buttonType}
+          />
+        );
       case 2:
-        return "Create a Surplus Object";
+        return (
+          <SurplusForm
+            activeStep={activeStep}
+            handleBack={handleBack}
+            isStepOptional={isStepOptional}
+            handleSkip={handleSkip}
+            handleNext={handleNext}
+            steps={steps}
+            buttonType={props.buttonType}
+          />
+        );
       default:
         return "Unknown step";
     }
