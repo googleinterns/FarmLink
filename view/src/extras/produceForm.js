@@ -174,22 +174,33 @@ class ProduceForm extends Component {
     });
   };
 
-  // componentWillMount = () => {
-  //   authMiddleWare(this.props.history);
-  //   const authToken = localStorage.getItem("AuthToken");
-  //   axios.defaults.headers.common = { Authorization: `${authToken}` };
-  //   axios
-  //     .get("/produce")
-  //     .then((response) => {
-  //       this.setState({
-  //         produceObjects: response.data,
-  //         uiLoading: false,
-  //       });
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
+  componentWillMount = () => {
+    if (this.props.buttonType === "Edit") {
+      authMiddleWare(this.props.history);
+      const authToken = localStorage.getItem("AuthToken");
+      axios.defaults.headers.common = { Authorization: `${authToken}` };
+      axios
+        .get(`produce/${this.props.produceId}`)
+        .then((response) => {
+          this.setState({
+            name: response.data.name,
+            produceId: response.data.produceId,
+            shippingPresetTemperature: response.data.shippingPresetTemperature,
+            shippingMaintenanceTemperatureLow:
+              response.data.shippingMaintenanceTemperatureLow,
+            shippingMaintenanceTemperatureHigh:
+              response.data.shippingMaintenanceTemperatureHigh,
+            price: response.data.price,
+            pricePaid: response.data.pricePaid,
+            amountMoved: response.data.amountMoved,
+            uiLoading: false,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
 
   handleEditClickOpen(data) {
     this.setState({
@@ -250,7 +261,7 @@ class ProduceForm extends Component {
       let options = {};
       if (this.state.buttonType === "Edit") {
         options = {
-          url: `/produce/${this.state.produceId}`,
+          url: `/produce/${this.props.produceId}`,
           method: "put",
           data: newProduce,
         };
@@ -274,189 +285,198 @@ class ProduceForm extends Component {
           console.log(newProduce);
         });
     };
+    if (this.state.uiLoading === true) {
+      return (
+        <main className={classes.content}>
+          {this.state.uiLoading && (
+            <CircularProgress size={150} className={classes.uiProgess} />
+          )}
+        </main>
+      );
+    } else {
+      return (
+        <main className={classes.content}>
+          <Typography className={classes.instructions}>
+            Please press Submit to save a new produce object / save edits. To
+            continue without creating / saving the produce object, press Skip.
+          </Typography>
+          <Container maxWidth="lg">
+            <form className={classes.form} noValidate>
+              <Grid container spacing={4} allignItems="center">
+                <Grid item xs={3}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="produceName"
+                    label="Produce Name"
+                    name="name"
+                    autoComplete="produceName"
+                    helperText={errors.name}
+                    value={this.state.name}
+                    error={errors.name ? true : false}
+                    onChange={this.handleChange}
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="amountMoved"
+                    label="Amount Moved"
+                    name="amountMoved"
+                    autoComplete="amountMoved"
+                    defaultValue="0"
+                    helperText={errors.amountMoved}
+                    value={this.state.amountMoved}
+                    error={errors.amountMoved ? true : false}
+                    onChange={this.handleChange}
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="price"
+                    label="USDA Price"
+                    name="price"
+                    type="number"
+                    autoComplete="price"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      ),
+                    }}
+                    helperText={errors.price}
+                    value={this.state.price}
+                    error={errors.price ? true : false}
+                    onChange={this.handleChange}
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="pricePaid"
+                    label="Average Price Paid"
+                    name="pricePaid"
+                    type="number"
+                    autoComplete="pricePaid"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      ),
+                    }}
+                    helperText={errors.pricePaid}
+                    value={this.state.pricePaid}
+                    error={errors.pricePaid ? true : false}
+                    onChange={this.handleChange}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="shippingMaintenanceTemperatureLow"
+                    label="Shipping Maintenance Temperature Low"
+                    name="shippingMaintenanceTemperatureLow"
+                    type="number"
+                    autoComplete="shippingMaintenanceTemperatureLow"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">°F</InputAdornment>
+                      ),
+                    }}
+                    helperText={errors.shippingMaintenanceTemperatureLow}
+                    value={this.state.shippingMaintenanceTemperatureLow}
+                    error={
+                      errors.shippingMaintenanceTemperatureLow ? true : false
+                    }
+                    onChange={this.handleChange}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="shippingMaintenanceTemperatureHigh"
+                    label="Shipping Maintenance Temperature High"
+                    name="shippingMaintenanceTemperatureHigh"
+                    type="number"
+                    autoComplete="shippingMaintenanceTemperatureHigh"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">°F</InputAdornment>
+                      ),
+                    }}
+                    helperText={errors.shippingMaintenanceTemperatureHigh}
+                    value={this.state.shippingMaintenanceTemperatureHigh}
+                    error={
+                      errors.shippingMaintenanceTemperatureHigh ? true : false
+                    }
+                    onChange={this.handleChange}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="shippingPresetTemperature"
+                    label="Shipping Preset Temperature"
+                    name="shippingPresetTemperature"
+                    type="number"
+                    autoComplete="shippingPresetTemperature"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">°F</InputAdornment>
+                      ),
+                    }}
+                    helperText={errors.shippingPresetTemperature}
+                    value={this.state.shippingPresetTemperature}
+                    error={errors.shippingPresetTemperature ? true : false}
+                    onChange={this.handleChange}
+                  />
+                </Grid>
+              </Grid>
+            </form>
+          </Container>
+          <div className={classes.buttons}>
+            <Button
+              disabled={this.props.activeStep === 0}
+              onClick={this.props.handleBack}
+              className={(classes.button, classes.spacing)}
+            >
+              Back
+            </Button>
+            {this.props.isStepOptional(this.props.activeStep) && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={this.props.handleSkip}
+                className={(classes.button, classes.spacing)}
+              >
+                Skip
+              </Button>
+            )}
 
-    return (
-      <main className={classes.content}>
-        <Typography className={classes.instructions}>
-          Please press Submit to save a new produce object / save edits. To
-          continue without creating / saving the produce object, press Skip.
-        </Typography>
-        <Container maxWidth="lg">
-          <form className={classes.form} noValidate>
-            <Grid container spacing={4} allignItems="center">
-              <Grid item xs={3}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="produceName"
-                  label="Produce Name"
-                  name="name"
-                  autoComplete="produceName"
-                  helperText={errors.name}
-                  value={this.state.name}
-                  error={errors.name ? true : false}
-                  onChange={this.handleChange}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="amountMoved"
-                  label="Amount Moved"
-                  name="amountMoved"
-                  autoComplete="amountMoved"
-                  defaultValue="0"
-                  helperText={errors.amountMoved}
-                  value={this.state.amountMoved}
-                  error={errors.amountMoved ? true : false}
-                  onChange={this.handleChange}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="price"
-                  label="USDA Price"
-                  name="price"
-                  type="number"
-                  autoComplete="price"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    ),
-                  }}
-                  helperText={errors.price}
-                  value={this.state.price}
-                  error={errors.price ? true : false}
-                  onChange={this.handleChange}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="pricePaid"
-                  label="Average Price Paid"
-                  name="pricePaid"
-                  type="number"
-                  autoComplete="pricePaid"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    ),
-                  }}
-                  helperText={errors.pricePaid}
-                  value={this.state.pricePaid}
-                  error={errors.pricePaid ? true : false}
-                  onChange={this.handleChange}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="shippingMaintenanceTemperatureLow"
-                  label="Shipping Maintenance Temperature Low"
-                  name="shippingMaintenanceTemperatureLow"
-                  type="number"
-                  autoComplete="shippingMaintenanceTemperatureLow"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">°F</InputAdornment>
-                    ),
-                  }}
-                  helperText={errors.shippingMaintenanceTemperatureLow}
-                  value={this.state.shippingMaintenanceTemperatureLow}
-                  error={
-                    errors.shippingMaintenanceTemperatureLow ? true : false
-                  }
-                  onChange={this.handleChange}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="shippingMaintenanceTemperatureHigh"
-                  label="Shipping Maintenance Temperature High"
-                  name="shippingMaintenanceTemperatureHigh"
-                  type="number"
-                  autoComplete="shippingMaintenanceTemperatureHigh"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">°F</InputAdornment>
-                    ),
-                  }}
-                  helperText={errors.shippingMaintenanceTemperatureHigh}
-                  value={this.state.shippingMaintenanceTemperatureHigh}
-                  error={
-                    errors.shippingMaintenanceTemperatureHigh ? true : false
-                  }
-                  onChange={this.handleChange}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="shippingPresetTemperature"
-                  label="Shipping Preset Temperature"
-                  name="shippingPresetTemperature"
-                  type="number"
-                  autoComplete="shippingPresetTemperature"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">°F</InputAdornment>
-                    ),
-                  }}
-                  helperText={errors.shippingPresetTemperature}
-                  value={this.state.shippingPresetTemperature}
-                  error={errors.shippingPresetTemperature ? true : false}
-                  onChange={this.handleChange}
-                />
-              </Grid>
-            </Grid>
-          </form>
-        </Container>
-        <div className={classes.buttons}>
-          <Button
-            disabled={this.props.activeStep === 0}
-            onClick={this.props.handleBack}
-            className={(classes.button, classes.spacing)}
-          >
-            Back
-          </Button>
-          {this.props.isStepOptional(this.props.activeStep) && (
             <Button
               variant="contained"
               color="primary"
-              onClick={this.props.handleSkip}
+              onClick={handleSubmit}
               className={(classes.button, classes.spacing)}
             >
-              Skip
+              Submit
             </Button>
-          )}
-
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            className={(classes.button, classes.spacing)}
-          >
-            Submit
-          </Button>
-        </div>
-      </main>
-    );
+          </div>
+        </main>
+      );
+    }
   }
 }
 
