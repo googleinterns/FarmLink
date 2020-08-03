@@ -63,7 +63,7 @@ export default function HorizontalLinearStepper() {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
   const [farmSubmit, setFarmSubmit] = React.useState(false);
-  const [farm, setFarm] = React.useState("");
+  //const [farm, setFarm] = React.useState("");
 
   const steps = getSteps();
 
@@ -72,9 +72,16 @@ export default function HorizontalLinearStepper() {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return <FarmForm 
-                setFarm={setFarm}
-                />;
+        return (
+          <FarmForm
+            activeStep={activeStep}
+            handleBack={handleBack}
+            isStepOptional={isStepOptional}
+            handleSkip={handleSkip}
+            handleNext={handleNext}
+            steps={steps}
+          />
+        );
       case 1:
         return "Create a Produce Object";
       case 2:
@@ -94,9 +101,11 @@ export default function HorizontalLinearStepper() {
 
   const handleSubmit = (step) => {
     if (step === 0) {
+      // farmRef.current.handleSubmit();
       //   console.log("not at all in the main frame");
-      //   setFarmSubmit(true);
-      console.log(farm);
+      // setFarmSubmit(true);
+      // for(let i = 0; i < 100000; i++) {}
+      // console.log(farmSubmit);
       //farmRef.current.toSubmit();
     }
   };
@@ -173,7 +182,7 @@ export default function HorizontalLinearStepper() {
             <Typography className={classes.instructions}>
               {getStepContent(activeStep)}
             </Typography>
-            <div>
+            {/* <div>
               <Button
                 disabled={activeStep === 0}
                 onClick={handleBack}
@@ -200,7 +209,7 @@ export default function HorizontalLinearStepper() {
               >
                 {activeStep === steps.length - 1 ? "Finish" : "Next"}
               </Button>
-            </div>
+            </div> */}
           </div>
         )}
       </div>
