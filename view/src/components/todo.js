@@ -23,6 +23,8 @@ import InputBase from "@material-ui/core/InputBase";
 import { fade } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import CardSkeletons from "../extras/skeleton";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
 
 import axios from "axios";
 import dayjs from "dayjs";
@@ -51,8 +53,8 @@ const styles = (theme) => ({
   },
   floatingButton: {
     position: "fixed",
-    bottom: 0,
-    right: 0,
+    bottom: 16,
+    right: 16,
   },
   form: {
     width: "98%",
@@ -306,14 +308,14 @@ class todo extends Component {
         <main className={classes.content}>
           <div className={classes.toolbar} />
 
-          <IconButton
-            className={classes.floatingButton}
+          <Fab
             color="primary"
-            aria-label="Add Todo"
+            className={classes.floatingButton}
+            aria-label="Add Produce"
             onClick={handleClickOpen}
           >
-            <AddCircleIcon style={{ fontSize: 60 }} />
-          </IconButton>
+            <AddIcon />
+          </Fab>
           <Dialog
             fullScreen
             open={open}

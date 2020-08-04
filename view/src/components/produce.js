@@ -26,6 +26,9 @@ import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
+import SpeedDialIcon from "@material-ui/lab/SpeedDialIcon";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
 
 import axios from "axios";
 import dayjs from "dayjs";
@@ -54,8 +57,8 @@ const styles = (theme) => ({
   },
   floatingButton: {
     position: "fixed",
-    bottom: 0,
-    right: 0,
+    bottom: 16,
+    right: 16,
   },
   form: {
     width: "98%",
@@ -340,15 +343,22 @@ class produce extends Component {
       return (
         <main className={classes.content}>
           <div className={classes.toolbar} />
-
-          <IconButton
+          <Fab
+            color="primary"
+            className={classes.floatingButton}
+            aria-label="Add Produce"
+            onClick={handleClickOpen}
+          >
+            <AddIcon />
+          </Fab>
+          {/* <IconButton
             className={classes.floatingButton}
             color="primary"
             aria-label="Add Produce"
             onClick={handleClickOpen}
           >
-            <AddCircleIcon style={{ fontSize: 60 }} />
-          </IconButton>
+            <SpeedDialIcon />
+          </IconButton> */}
           <Dialog
             fullScreen
             open={open}

@@ -37,6 +37,8 @@ import Select from "@material-ui/core/Select";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
 
 import PropTypes from "prop-types";
 import MaskedInput from "react-text-mask";
@@ -69,8 +71,8 @@ const styles = (theme) => ({
   },
   floatingButton: {
     position: "fixed",
-    bottom: 0,
-    right: 0,
+    bottom: 16,
+    right: 16,
   },
   form: {
     width: "98%",
@@ -429,14 +431,14 @@ class farms extends Component {
         <main className={classes.content}>
           <div className={classes.toolbar} />
 
-          <IconButton
-            className={classes.floatingButton}
+          <Fab
             color="primary"
-            aria-label="Add Farm"
+            className={classes.floatingButton}
+            aria-label="Add Produce"
             onClick={handleClickOpen}
           >
-            <AddCircleIcon style={{ fontSize: 60 }} />
-          </IconButton>
+            <AddIcon />
+          </Fab>
           <Dialog
             fullScreen
             open={open}

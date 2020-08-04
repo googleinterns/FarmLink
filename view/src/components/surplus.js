@@ -29,6 +29,9 @@ import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import SurplusIcon from "@material-ui/icons/ShowChart";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
 
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -65,8 +68,8 @@ const styles = (theme) => ({
   },
   floatingButton: {
     position: "fixed",
-    bottom: 0,
-    right: 0,
+    bottom: 16,
+    right: 16,
   },
   form: {
     width: "98%",
@@ -308,6 +311,7 @@ class todo extends Component {
     const { open, errors, viewOpen } = this.state;
 
     const handleClickOpen = () => {
+      console.log("yeeet yeet");
       this.setState({
         todoId: "",
         title: "",
@@ -372,15 +376,27 @@ class todo extends Component {
       return (
         <main className={classes.content}>
           <div className={classes.toolbar} />
-
-          <IconButton
+          <Fab
+            color="primary"
+            className={classes.floatingButton}
+            aria-label="Add Produce"
+            onClick={handleClickOpen}
+          >
+            <AddIcon />
+          </Fab>
+          {/* <SpeedDial 
+            className={classes.floatingButton}
+            actions={actions}
+            click={handleClickOpen}
+          /> */}
+          {/* <IconButton
             className={classes.floatingButton}
             color="primary"
             aria-label="Add Todo"
             onClick={handleClickOpen}
           >
             <AddCircleIcon style={{ fontSize: 60 }} />
-          </IconButton>
+          </IconButton> */}
           <Dialog
             fullScreen
             open={open}

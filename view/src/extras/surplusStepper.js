@@ -32,6 +32,8 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     marginRight: theme.spacing(1),
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.primary.dark,
   },
   instructions: {
     marginTop: theme.spacing(1),
@@ -120,6 +122,10 @@ export default function HorizontalLinearStepper(props) {
     return step === 1 || step === 0;
   };
 
+  const isLastStep = (step) => {
+    return step === 2;
+  };
+
   const isStepSkipped = (step) => {
     return skipped.has(step);
   };
@@ -167,6 +173,10 @@ export default function HorizontalLinearStepper(props) {
     });
   };
 
+  const jumpToSurplus = () => {
+    setActiveStep(steps.length - 1);
+  };
+
   const handleReset = () => {
     setActiveStep(0);
   };
@@ -207,6 +217,17 @@ export default function HorizontalLinearStepper(props) {
             <Typography className={classes.instructions}>
               {getStepContent(activeStep)}
             </Typography>
+            <div>
+              {!isLastStep(activeStep) && (
+                <Button
+                  variant="contained"
+                  onClick={jumpToSurplus}
+                  className={classes.button}
+                >
+                  Jump to Surplus
+                </Button>
+              )}
+            </div>
             {/* <div>
               <Button
                 disabled={activeStep === 0}
