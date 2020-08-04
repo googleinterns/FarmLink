@@ -22,6 +22,7 @@ import MuiDialogContent from "@material-ui/core/DialogContent";
 import InputBase from "@material-ui/core/InputBase";
 import { fade } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
+import CardSkeletons from "../extras/skeleton";
 
 import axios from "axios";
 import dayjs from "dayjs";
@@ -294,9 +295,9 @@ class todo extends Component {
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          <div className={classes.toolbar} />
           {this.state.uiLoading && (
-            <CircularProgress size={150} className={classes.uiProgess} />
+            // <CircularProgress size={150} className={classes.uiProgess} />
+            <CardSkeletons classes={classes} />
           )}
         </main>
       );

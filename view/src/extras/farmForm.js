@@ -339,7 +339,7 @@ class FarmForm extends Component {
 
     console.log("WE ARE INSIDE THE MAIN FRAME");
     console.log(this.props.toSubmit);
-    if (this.state.uiLoading === true) {
+    if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>
           {this.state.uiLoading && (

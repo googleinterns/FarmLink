@@ -285,7 +285,7 @@ class ProduceForm extends Component {
           console.log(newProduce);
         });
     };
-    if (this.state.uiLoading === true) {
+    if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>
           {this.state.uiLoading && (
