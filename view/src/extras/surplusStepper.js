@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import FarmForm from "../extras/farmForm";
 import ProduceForm from "../extras/produceForm";
 import SurplusForm from "../extras/surplusForm";
+import Alert from "../extras/alert";
 
 const tableData = {
   columns: [
@@ -66,7 +67,7 @@ export default function HorizontalLinearStepper(props) {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
-  const [farmSubmit, setFarmSubmit] = React.useState(false);
+  const [alert, setAlert] = React.useState(false);
   //const [farm, setFarm] = React.useState("");
 
   const steps = getSteps();
@@ -83,6 +84,9 @@ export default function HorizontalLinearStepper(props) {
             isStepOptional={isStepOptional}
             handleSkip={handleSkip}
             handleNext={handleNext}
+            openAlert={openAlert}
+            closeAlert={closeAlert}
+            alert={alert}
             steps={steps}
             buttonType={props.buttonType}
             farmId="AajvEIQCqLj6cePPTEKr"
@@ -116,6 +120,16 @@ export default function HorizontalLinearStepper(props) {
       default:
         return "Unknown step";
     }
+  };
+
+  const openAlert = () => {
+    console.log("Open");
+    setAlert(true);
+  };
+
+  const closeAlert = () => {
+    console.log("Close");
+    setAlert(false);
   };
 
   const isStepOptional = (step) => {
@@ -155,7 +169,6 @@ export default function HorizontalLinearStepper(props) {
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    setFarmSubmit(false);
   };
 
   const handleSkip = () => {
@@ -203,6 +216,7 @@ export default function HorizontalLinearStepper(props) {
         })}
       </Stepper>
       <div>
+        <Alert open={alert} handleOpen={openAlert} handleClose={closeAlert} />
         {activeStep === steps.length ? (
           <div>
             <Typography className={classes.instructions}>

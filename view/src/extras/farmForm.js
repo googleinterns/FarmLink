@@ -29,6 +29,8 @@ import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import Alert from "../extras/alert";
+import { useAlert } from "react-alert";
 
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -157,6 +159,11 @@ const styles = (theme) => ({
   },
 });
 
+const AlertTest = () => {
+  const alert = useAlert();
+  alert.show("Oh look, an alert!");
+};
+
 function TextMaskCustom(props) {
   const { inputRef, ...other } = props;
 
@@ -211,6 +218,7 @@ class FarmForm extends Component {
       transportation: false,
       errors: [],
       open: false,
+      alert: false,
       uiLoading: true,
       viewOpen: false,
     };
@@ -293,7 +301,6 @@ class FarmForm extends Component {
     const { open, errors, viewOpen } = this.state;
 
     const handleSubmit = (event) => {
-      console.log("we are here");
       this.props.handleNext();
       authMiddleWare(this.props.history);
       event.preventDefault();
@@ -328,7 +335,9 @@ class FarmForm extends Component {
       axios.defaults.headers.common = { Authorization: `${authToken}` };
       axios(options)
         .then(() => {
-          this.setState({ open: false });
+          //this.setState({ open: false });
+          console.log("woop woop");
+          this.props.openAlert();
           //window.location.reload();
         })
         .catch((error) => {
@@ -350,6 +359,11 @@ class FarmForm extends Component {
     } else {
       return (
         <main className={classes.content}>
+          <Alert
+            open={this.state.alert}
+            handleOpen={this.openAlert}
+            handleClose={this.closeAlert}
+          />
           <Typography className={classes.instructions}>
             Please press Submit to save a new farm / save edits. To continue
             without creating / saving the farm, press Skip.

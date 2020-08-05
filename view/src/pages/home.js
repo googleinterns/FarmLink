@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import axios from "axios";
 
 import Account from "../components/account";
-import Todo from "../components/todo";
+import Todo from "../components/deal";
 import Produce from "../components/produce";
 import Surplus from "../components/surplus";
 import Farms from "../components/farms";
