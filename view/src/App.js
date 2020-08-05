@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import React from "react";
-import { useAlert } from "react-alert";
 
 import login from "./pages/login";
 import signup from "./pages/signup";
@@ -20,8 +19,6 @@ const theme = createMuiTheme({
 });
 
 function App() {
-  const alert = useAlert();
-
   return (
     <MuiThemeProvider theme={theme}>
       <Router>
