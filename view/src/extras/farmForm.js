@@ -158,11 +158,6 @@ const styles = (theme) => ({
   },
 });
 
-const AlertTest = () => {
-  const alert = useAlert();
-  alert.show("Oh look, an alert!");
-};
-
 function TextMaskCustom(props) {
   const { inputRef, ...other } = props;
 
