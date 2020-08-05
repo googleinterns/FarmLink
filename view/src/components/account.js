@@ -132,12 +132,12 @@ class Account extends Component {
     });
     authMiddleWare(this.props.history);
     const authToken = localStorage.getItem("AuthToken");
-    let form_data = new FormData();
-    form_data.append("image", this.state.image);
-    form_data.append("content", this.state.content);
+    const formData = new FormData();
+    formData.append("image", this.state.image);
+    formData.append("content", this.state.content);
     axios.defaults.headers.common = { Authorization: `${authToken}` };
     axios
-      .post("/user/image", form_data, {
+      .post("/user/image", formData, {
         headers: {
           "content-type": "multipart/form-data",
         },

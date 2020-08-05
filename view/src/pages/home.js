@@ -51,16 +51,20 @@ const styles = (theme) => ({
     flexShrink: 0,
     flexGrow: 0,
     marginTop: 20,
+    display: "inline-block",
   },
   uiProgess: {
     position: "fixed",
     zIndex: "1000",
-    height: "31px",
-    width: "31px",
+    height: "32px",
+    width: "32px",
     left: "50%",
     top: "35%",
   },
   toolbar: theme.mixins.toolbar,
+  center: {
+    textAlign: "center",
+  },
 });
 
 class Home extends Component {
@@ -151,38 +155,34 @@ class Home extends Component {
           >
             <div className={classes.toolbar} />
             <Divider />
-            <center>
+            <div className={classes.center}>
               <Avatar
                 src={this.state.profilePicture}
                 className={classes.avatar}
               />
               <p>
-                {" "}
                 {this.state.firstName} {this.state.lastName}
               </p>
-            </center>
+            </div>
             <Divider />
             <List>
               <ListItem button key="Todo" onClick={this.loadTodoPage}>
                 <ListItemIcon>
-                  {" "}
-                  <NotesIcon />{" "}
+                  <NotesIcon />
                 </ListItemIcon>
                 <ListItemText primary="Todo" />
               </ListItem>
 
               <ListItem button key="Account" onClick={this.loadAccountPage}>
                 <ListItemIcon>
-                  {" "}
-                  <AccountBoxIcon />{" "}
+                  <AccountBoxIcon />
                 </ListItemIcon>
                 <ListItemText primary="Account" />
               </ListItem>
 
               <ListItem button key="Logout" onClick={this.logoutHandler}>
                 <ListItemIcon>
-                  {" "}
-                  <ExitToAppIcon />{" "}
+                  <ExitToAppIcon />
                 </ListItemIcon>
                 <ListItemText primary="Logout" />
               </ListItem>
