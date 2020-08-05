@@ -19,20 +19,16 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CustomizedSnackbars(props) {
   const classes = useStyles();
-  //   const [open, setOpen] = React.useState(props.open);
 
   return (
     <div className={classes.root}>
-      {/* <Button variant="outlined" onClick={handleClick}>
-        Open success snackbar
-      </Button> */}
       <Snackbar
         open={props.open}
         autoHideDuration={6000}
         onClose={props.handleClose}
       >
-        <Alert onClose={props.handleClose} severity="success">
-          This is a success message!
+        <Alert onClose={props.handleClose} severity={props.severity}>
+          {props.message}
         </Alert>
       </Snackbar>
       {/* <Alert severity="error">This is an error message!</Alert>

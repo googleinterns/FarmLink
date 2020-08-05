@@ -29,7 +29,6 @@ import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import Alert from "../extras/alert";
 
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -212,7 +211,6 @@ class FarmForm extends Component {
       transportation: false,
       errors: [],
       open: false,
-      alert: false,
       uiLoading: true,
       viewOpen: false,
     };
@@ -331,7 +329,9 @@ class FarmForm extends Component {
         .then(() => {
           //this.setState({ open: false });
           console.log("woop woop");
-          this.props.openAlert();
+          const message =
+            this.props.buttonType === "Edit" ? " edited!" : " submitted!";
+          this.props.alert("success", "Farm has successfully been" + message);
           //window.location.reload();
         })
         .catch((error) => {
@@ -353,11 +353,6 @@ class FarmForm extends Component {
     } else {
       return (
         <main className={classes.content}>
-          <Alert
-            open={this.state.alert}
-            handleOpen={this.openAlert}
-            handleClose={this.closeAlert}
-          />
           <Typography className={classes.instructions}>
             Please press Submit to save a new farm / save edits. To continue
             without creating / saving the farm, press Skip.

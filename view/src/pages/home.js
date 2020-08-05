@@ -9,6 +9,7 @@ import Produce from "../components/produce";
 import Surplus from "../components/surplus";
 import Farms from "../components/farms";
 import FoodBanks from "../components/foodbanks";
+import Alert from "../extras/alert";
 
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
@@ -77,6 +78,26 @@ const styles = (theme) => ({
 class home extends Component {
   state = {
     render: "todos",
+    showAlert: false,
+    severity: "",
+    message: "",
+  };
+
+  openAlert = () => {
+    this.setState({ showAlert: true });
+  };
+
+  closeAlert = () => {
+    this.setState({ showAlert: false });
+  };
+
+  alert = (severity, message) => {
+    console.log("ALERTING!");
+    this.setState({
+      severity: severity,
+      message: message,
+    });
+    this.openAlert();
   };
 
   loadAccountPage = (event) => {
@@ -253,18 +274,25 @@ class home extends Component {
           </Drawer>
 
           <div className={classes.contentContainer}>
+            <Alert
+              open={this.state.showAlert}
+              handleOpen={this.openAlert}
+              handleClose={this.closeAlert}
+              severirty={this.state.severity}
+              message={this.state.message}
+            />
             {this.state.render === "todos" ? (
-              <Todo />
+              <Todo alert={this.alert} />
             ) : this.state.render === "account" ? (
-              <Account />
+              <Account alert={this.alert} />
             ) : this.state.render === "produce" ? (
-              <Produce />
+              <Produce alert={this.alert} />
             ) : this.state.render === "surplus" ? (
-              <Surplus />
+              <Surplus alert={this.alert} />
             ) : this.state.render === "farms" ? (
-              <Farms />
+              <Farms alert={this.alert} />
             ) : (
-              <FoodBanks />
+              <FoodBanks alert={this.alert} />
             )}
           </div>
         </div>
