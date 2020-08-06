@@ -198,9 +198,14 @@ class produce extends Component {
       .delete(`produce/${produceId}`)
       .then(() => {
         window.location.reload();
+        this.props.alert("success", "Produce successfully delete!");
       })
       .catch((err) => {
         console.log(err);
+        this.props.alert(
+          "error",
+          "An error occurred when attempting to delete!"
+        );
       });
   }
 
@@ -317,9 +322,23 @@ class produce extends Component {
       axios(options)
         .then(() => {
           this.setState({ open: false });
+          const message =
+            this.props.buttonType === "Edit" ? " edited!" : " submitted!";
+          this.props.alert(
+            "success",
+            "Produce has successfully been" + message
+          );
           window.location.reload();
         })
         .catch((error) => {
+          const message =
+            this.props.buttonType === "Edit" ? " edit" : " submit";
+          this.props.alert(
+            "error",
+            "An error has occured when attempting to " +
+              message +
+              " the produce!"
+          );
           this.setState({ open: true, errors: error.response.data });
           console.log(newProduce);
         });

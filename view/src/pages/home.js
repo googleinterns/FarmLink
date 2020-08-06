@@ -76,12 +76,12 @@ const styles = (theme) => ({
 });
 
 class home extends Component {
-  state = {
-    render: "todos",
-    showAlert: false,
-    severity: "",
-    message: "",
-  };
+  // state = {
+  //   render: "todos",
+  //   showAlert: false,
+  //   severity: "",
+  //   message: "",
+  // };
 
   openAlert = () => {
     this.setState({ showAlert: true });
@@ -133,6 +133,10 @@ class home extends Component {
     super(props);
 
     this.state = {
+      render: "todos",
+      showAlert: false,
+      severity: "",
+      message: "",
       firstName: "",
       lastName: "",
       profilePicture: "",

@@ -173,6 +173,7 @@ class account extends Component {
       .post("/user", formRequest)
       .then(() => {
         this.setState({ buttonLoading: false });
+        this.props.alert("success", "Account updated succesfully!");
       })
       .catch((error) => {
         if (error.response.status === 403) {
