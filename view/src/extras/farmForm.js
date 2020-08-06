@@ -327,21 +327,22 @@ class FarmForm extends Component {
       axios.defaults.headers.common = { Authorization: `${authToken}` };
       axios(options)
         .then(() => {
-          //this.setState({ open: false });
-          console.log("woop woop");
           const message =
             this.props.buttonType === "Edit" ? " edited!" : " submitted!";
           this.props.alert("success", "Farm has successfully been" + message);
-          //window.location.reload();
         })
         .catch((error) => {
+          const message =
+            this.props.buttonType === "Edit" ? " edit" : " submit";
+          this.props.alert(
+            "error",
+            "An error has occured when attempting to " + message + " the farm!"
+          );
           this.setState({ open: true, errors: error.response.data });
           console.log(error);
         });
     };
 
-    console.log("WE ARE INSIDE THE MAIN FRAME");
-    console.log(this.props.toSubmit);
     if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>

@@ -96,6 +96,7 @@ export default function HorizontalLinearStepper(props) {
             isStepOptional={isStepOptional}
             handleSkip={handleSkip}
             handleNext={handleNext}
+            alert={props.alert}
             steps={steps}
             buttonType={props.buttonType}
             produceId="xBaiGcvhb8tOrKgFtuIW"
@@ -109,6 +110,7 @@ export default function HorizontalLinearStepper(props) {
             isStepOptional={isStepOptional}
             handleSkip={handleSkip}
             handleNext={handleNext}
+            alert={props.alert}
             steps={steps}
             buttonType={props.buttonType}
           />

@@ -91,12 +91,12 @@ class home extends Component {
     this.setState({ showAlert: false });
   };
 
-  alert = (severity, message) => {
-    console.log("ALERTING!");
+  alert = (newSeverity, newMessage) => {
     this.setState({
-      severity: severity,
-      message: message,
+      severity: newSeverity,
+      message: newMessage,
     });
+    //console.log(newSeverity);
     this.openAlert();
   };
 
@@ -278,7 +278,7 @@ class home extends Component {
               open={this.state.showAlert}
               handleOpen={this.openAlert}
               handleClose={this.closeAlert}
-              severirty={this.state.severity}
+              severity={this.state.severity}
               message={this.state.message}
             />
             {this.state.render === "todos" ? (

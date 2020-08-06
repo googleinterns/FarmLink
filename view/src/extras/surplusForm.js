@@ -265,10 +265,22 @@ class ProduceForm extends Component {
       axios(options)
         .then(() => {
           this.setState({ open: false });
+          const message =
+            this.props.buttonType === "Edit" ? " edited!" : " submitted!";
+          this.props.alert(
+            "success",
+            "Surplus has successfully been" + message
+          );
           //this.setState({ alert: true })
           //window.location.reload();
         })
         .catch((error) => {
+          const message =
+            this.props.buttonType === "Edit" ? " edit" : " submit";
+          this.props.alert(
+            "error",
+            "An error has occured when attempting to " + message + " the farm!"
+          );
           this.setState({ open: true, errors: error.response.data });
           //   console.log(newProduce);
         });
