@@ -77,21 +77,25 @@ const styles = (theme) => ({
 
 class home extends Component {
   // state = {
-  //   render: "todos",
+  //   toRender: "todos",
   //   showAlert: false,
   //   severity: "",
   //   message: "",
   // };
 
   openAlert = () => {
+    localStorage.setItem("showAlert", true);
     this.setState({ showAlert: true });
   };
 
   closeAlert = () => {
+    localStorage.setItem("showAlert", false);
     this.setState({ showAlert: false });
   };
 
   alert = (newSeverity, newMessage) => {
+    localStorage.setItem("severity", newSeverity);
+    localStorage.setItem("message", newMessage);
     this.setState({
       severity: newSeverity,
       message: newMessage,
@@ -100,28 +104,55 @@ class home extends Component {
     this.openAlert();
   };
 
+  getStorage = (name, standardVal) => {
+    console.log("to storage 3.0");
+    const storedContent = localStorage.getItem(name) || standardVal;
+    console.log(storedContent);
+
+    //console.log(JSON.parse({"test":"test"}));
+
+    return {
+      storedContent,
+    };
+  };
+
+  saveStateToLocalStorage = () => {
+    console.log("to storage");
+    // for every item in React state
+    for (let key in this.state) {
+      // save to localStorage
+      localStorage.setItem(key, JSON.stringify(this.state[key]));
+    }
+  };
+
   loadAccountPage = (event) => {
-    this.setState({ render: "account" });
+    localStorage.setItem("toRender", "account");
+    this.setState({ toRender: "account" });
   };
 
   loadTodoPage = (event) => {
-    this.setState({ render: "todos" });
+    localStorage.setItem("toRender", "todos");
+    this.setState({ toRender: "todos" });
   };
 
   loadProducePage = (event) => {
-    this.setState({ render: "produce" });
+    localStorage.setItem("toRender", "produce");
+    this.setState({ toRender: "produce" });
   };
 
   loadSurplusPage = (event) => {
-    this.setState({ render: "surplus" });
+    localStorage.setItem("toRender", "surplus");
+    this.setState({ toRender: "surplus" });
   };
 
   loadFarmsPage = (event) => {
-    this.setState({ render: "farms" });
+    localStorage.setItem("toRender", "farms");
+    this.setState({ toRender: "farms" });
   };
 
   loadFoodBanksPage = (event) => {
-    this.setState({ render: "foodbanks" });
+    localStorage.setItem("toRender", "foodbanks");
+    this.setState({ toRender: "foodbanks" });
   };
 
   logoutHandler = (event) => {
@@ -133,10 +164,14 @@ class home extends Component {
     super(props);
 
     this.state = {
-      render: "todos",
-      showAlert: false,
-      severity: "",
-      message: "",
+      toRender: this.getStorage("toRender", "todos")["storedContent"],
+      showAlert: this.getStorage("showAlert", false)["storedContent"],
+      // toRender: JSON.parse(localStorage).getItem("toRender") || "todos",
+      // showAlert: JSON.parse(localStorage).getItem("showAlert") || false,
+      // toRender: "todos",
+      // showAlert: false,
+      severity: this.getStorage("severity", "")["storedContent"],
+      message: this.getStorage("message", "")["storedContent"],
       firstName: "",
       lastName: "",
       profilePicture: "",
@@ -152,7 +187,7 @@ class home extends Component {
     axios
       .get("/user")
       .then((response) => {
-        console.log(response.data);
+        console.log(this.state);
         this.setState({
           firstName: response.data.userCredentials.firstName,
           lastName: response.data.userCredentials.lastName,
@@ -285,15 +320,15 @@ class home extends Component {
               severity={this.state.severity}
               message={this.state.message}
             />
-            {this.state.render === "todos" ? (
+            {this.state.toRender === "todos" ? (
               <Todo alert={this.alert} />
-            ) : this.state.render === "account" ? (
+            ) : this.state.toRender === "account" ? (
               <Account alert={this.alert} />
-            ) : this.state.render === "produce" ? (
+            ) : this.state.toRender === "produce" ? (
               <Produce alert={this.alert} />
-            ) : this.state.render === "surplus" ? (
+            ) : this.state.toRender === "surplus" ? (
               <Surplus alert={this.alert} />
-            ) : this.state.render === "farms" ? (
+            ) : this.state.toRender === "farms" ? (
               <Farms alert={this.alert} />
             ) : (
               <FoodBanks alert={this.alert} />

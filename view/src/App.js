@@ -19,6 +19,24 @@ const theme = createMuiTheme({
 });
 
 function App() {
+  const [showAlert, setShowAlert] = React.useState(false);
+  const [severity, setSeverity] = React.useState("");
+  const [message, setMessage] = React.useState("");
+
+  const openAlert = () => {
+    setShowAlert(true);
+  };
+
+  const closeAlert = () => {
+    setShowAlert(false);
+  };
+
+  const alert = (severity, message) => {
+    setSeverity(severity);
+    setMessage(message);
+    openAlert();
+  };
+
   return (
     <MuiThemeProvider theme={theme}>
       <Router>

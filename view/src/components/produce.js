@@ -198,13 +198,13 @@ class produce extends Component {
       .delete(`produce/${produceId}`)
       .then(() => {
         window.location.reload();
-        this.props.alert("success", "Produce successfully delete!");
+        this.props.alert("success", "Produce successfully deleted!");
       })
       .catch((err) => {
         console.log(err);
         this.props.alert(
           "error",
-          "An error occurred when attempting to delete!"
+          "An error occurred when attempting to delete the Produce!"
         );
       });
   }
