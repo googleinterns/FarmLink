@@ -84,12 +84,12 @@ class home extends Component {
   // };
 
   openAlert = () => {
-    localStorage.setItem("showAlert", true);
+    localStorage.setItem("showAlert", "true");
     this.setState({ showAlert: true });
   };
 
   closeAlert = () => {
-    localStorage.setItem("showAlert", false);
+    localStorage.setItem("showAlert", "false");
     this.setState({ showAlert: false });
   };
 
@@ -165,7 +165,8 @@ class home extends Component {
 
     this.state = {
       toRender: this.getStorage("toRender", "todos")["storedContent"],
-      showAlert: this.getStorage("showAlert", false)["storedContent"],
+      showAlert:
+        this.getStorage("showAlert", "false")["storedContent"] === "true",
       // toRender: JSON.parse(localStorage).getItem("toRender") || "todos",
       // showAlert: JSON.parse(localStorage).getItem("showAlert") || false,
       // toRender: "todos",

@@ -323,16 +323,16 @@ class produce extends Component {
         .then(() => {
           this.setState({ open: false });
           const message =
-            this.props.buttonType === "Edit" ? " edited!" : " submitted!";
+            this.state.buttonType === "Edit" ? " edited!" : " submitted!";
           this.props.alert(
             "success",
-            "Produce has successfully been" + message
+            "Produce has been successfully" + message
           );
           window.location.reload();
         })
         .catch((error) => {
           const message =
-            this.props.buttonType === "Edit" ? " edit" : " submit";
+            this.state.buttonType === "Edit" ? " edit" : " submit";
           this.props.alert(
             "error",
             "An error has occured when attempting to " +

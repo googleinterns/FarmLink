@@ -281,7 +281,7 @@ class ProduceForm extends Component {
             this.props.buttonType === "Edit" ? " edited!" : " submitted!";
           this.props.alert(
             "success",
-            "Produce has successfully been" + message
+            "Produce has been successfully" + message
           );
         })
         .catch((error) => {

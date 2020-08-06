@@ -282,9 +282,14 @@ class foodbank extends Component {
       .delete(`foodbanks/${foodbankId}`)
       .then(() => {
         window.location.reload();
+        this.props.alert("success", "Food Bank successfully deleted!");
       })
       .catch((err) => {
         console.log(err);
+        this.props.alert(
+          "error",
+          "An error occurred when attempting to delete the Food Bank!"
+        );
       });
   }
 
@@ -416,9 +421,23 @@ class foodbank extends Component {
       axios(options)
         .then(() => {
           this.setState({ open: false });
+          const message =
+            this.state.buttonType === "Edit" ? " edited!" : " submitted!";
+          this.props.alert(
+            "success",
+            "Food Bank has been successfully" + message
+          );
           window.location.reload();
         })
         .catch((error) => {
+          const message =
+            this.state.buttonType === "Edit" ? " edit" : " submit";
+          this.props.alert(
+            "error",
+            "An error has occured when attempting to " +
+              message +
+              " the Food Bank!"
+          );
           this.setState({ open: true, errors: error.response.data });
           console.log(error);
         });

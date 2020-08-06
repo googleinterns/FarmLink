@@ -329,7 +329,7 @@ class FarmForm extends Component {
         .then(() => {
           const message =
             this.props.buttonType === "Edit" ? " edited!" : " submitted!";
-          this.props.alert("success", "Farm has successfully been" + message);
+          this.props.alert("success", "Farm has been successfully" + message);
         })
         .catch((error) => {
           const message =

@@ -144,6 +144,7 @@ class account extends Component {
         },
       })
       .then(() => {
+        this.props.alert("success", "Profile picture updated successfully!");
         window.location.reload();
       })
       .catch((error) => {
@@ -155,6 +156,10 @@ class account extends Component {
           uiLoading: false,
           imageError: "Error in posting the data",
         });
+        this.props.alert(
+          "error",
+          "An error occurred when attempting to update the profile picture!"
+        );
       });
   };
 
