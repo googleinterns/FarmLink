@@ -5,17 +5,69 @@ exports.getAllSurplus = (request, response) => {
     .then((data) => {
         let surplus = [];
         data.forEach((doc) => {
-            surplus.push({
-                surplusId: doc.id,
-                produceName: doc.data().produceName,
-                originFarm: doc.data().originFarm,
-                available: doc.data().available,
-                cost: doc.data().cost,
-                totalQuantityAvailable: doc.data().totalQuantityAvailable,
-                packagingType: doc.data().packagingType,
-            });
+            surplus.push(doc);
         });
-        return response.json(surplus);
+
+        function queryProduce(produceId) {
+            return new Promise(function(resolve, reject) {
+                db.doc(`/produce/${produceId}`).get()
+                .then((doc) => {
+                    resolve(doc.data());
+                })
+                .catch((err) => {
+                    return reject(err);
+                });
+            });
+        }
+
+        function queryFarms(originFarmId) {
+            return new Promise(function(resolve, reject) {
+                db.doc(`/farms/${originFarmId}`).get()
+                .then((doc) => {
+                    resolve(doc.data());
+                })
+                .catch((err) => {
+                    return reject(err);
+                });
+            });
+        }
+
+        function queryProduceAndFarms(doc) {
+            return new Promise(function(resolve, reject) {
+                Promise.all([
+                    queryProduce(doc.data().produceId),
+                    queryFarms(doc.data().originFarmId)
+                ])
+                .then(results => {
+                    resolve({
+                        surplusId: doc.id,
+                        produceId: doc.data().produceId,
+                        produceName: results[0].name,
+                        originFarmId: doc.data().originFarmId,
+                        originFarmName: results[1].farmName,
+                        originFarmLocation: results[1].location,
+                        originFarmContactName: results[1].contactName,
+                        originFarmContactPhone: results[1].contactPhone,
+                        originFarmContactEmail: results[1].contactEmail,
+                        available: doc.data().available,
+                        cost: doc.data().cost,
+                        totalQuantityAvailable: doc.data().totalQuantityAvailable,
+                        packagingType: doc.data().packagingType,
+                    });
+                })
+                .catch((err) => {
+                    return reject(err);
+                });
+            });
+        }
+        
+        Promise.all(surplus.map(queryProduceAndFarms))
+        .then((results) => {
+            return response.json(results);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
     })
     .catch((err) => {
         console.log(err);
@@ -36,8 +88,8 @@ exports.getOneSurplus = (request, response) => {
 
 exports.postOneSurplus = (request, response) => {
     const newSurplusItem = {
-        produceName: request.body.produceName,
-        originFarm: request.body.originFarm,
+        produceId: request.body.produceId,
+        originFarmId: request.body.originFarmId,
         available: request.body.available === 'true',
         cost: parseFloat(request.body.cost),
         totalQuantityAvailable: parseFloat(request.body.totalQuantityAvailable),
