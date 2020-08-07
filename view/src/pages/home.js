@@ -77,9 +77,13 @@ const styles = (theme) => ({
     color: theme.palette.primary.white,
     backgroundColor: theme.palette.primary.main,
     "&:hover": {
-      backgroundColor: theme.palette.primary.main,
-      color: theme.palette.primary.dark,
+      backgroundColor: theme.palette.primary.dark,
+      // color: theme.palette.primary.dark,
     },
+  },
+  selectedIcon: {
+    color: theme.palette.primary.white,
+    transparent: true,
   },
 });
 
@@ -272,7 +276,7 @@ class home extends Component {
                 <ListItemIcon>
                   {" "}
                   <NatureIcon
-                    className={this.isSelected("farms") && classes.selected}
+                    className={this.isSelected("farms") && classes.selectedIcon}
                   />{" "}
                 </ListItemIcon>
                 <ListItemText primary="Farms" />
@@ -287,7 +291,9 @@ class home extends Component {
                 <ListItemIcon>
                   {" "}
                   <BankIcon
-                    className={this.isSelected("foodbanks") && classes.selected}
+                    className={
+                      this.isSelected("foodbanks") && classes.selectedIcon
+                    }
                   />{" "}
                 </ListItemIcon>
                 <ListItemText primary="Food Banks" />
@@ -302,7 +308,7 @@ class home extends Component {
                 <ListItemIcon>
                   {" "}
                   <DealIcon
-                    className={this.isSelected("deals") && classes.selected}
+                    className={this.isSelected("deals") && classes.selectedIcon}
                   />{" "}
                 </ListItemIcon>
                 <ListItemText primary="Deals" />
@@ -317,7 +323,9 @@ class home extends Component {
                 <ListItemIcon>
                   {" "}
                   <ChartIcon
-                    className={this.isSelected("surplus") && classes.selected}
+                    className={
+                      this.isSelected("surplus") && classes.selectedIcon
+                    }
                   />{" "}
                 </ListItemIcon>
                 <ListItemText primary="Surplus" />
@@ -332,7 +340,9 @@ class home extends Component {
                 <ListItemIcon>
                   {" "}
                   <EcoIcon
-                    className={this.isSelected("produce") && classes.selected}
+                    className={
+                      this.isSelected("produce") && classes.selectedIcon
+                    }
                   />{" "}
                 </ListItemIcon>
                 <ListItemText primary="Produce" />
@@ -347,7 +357,9 @@ class home extends Component {
                 <ListItemIcon>
                   {" "}
                   <AccountBoxIcon
-                    className={this.isSelected("account") && classes.selected}
+                    className={
+                      this.isSelected("account") && classes.selectedIcon
+                    }
                   />{" "}
                 </ListItemIcon>
                 <ListItemText primary="Account" />
