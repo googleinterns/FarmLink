@@ -38,7 +38,7 @@ const styles = (theme) => ({
     flexGrow: 0,
   },
   locationText: {
-    paddingLeft: "15px",
+    paddingLeft: "16px",
   },
   buttonProperty: {
     position: "absolute",
@@ -47,8 +47,8 @@ const styles = (theme) => ({
   uiProgess: {
     position: "fixed",
     zIndex: "1000",
-    height: "31px",
-    width: "31px",
+    height: "32px",
+    width: "32px",
     left: "50%",
     top: "35%",
   },
@@ -56,20 +56,20 @@ const styles = (theme) => ({
     position: "absolute",
   },
   uploadButton: {
-    marginLeft: "8px",
+    marginLeft: "12px",
     margin: theme.spacing(1),
   },
   customError: {
     color: "red",
     fontSize: "0.8rem",
-    marginTop: 10,
+    marginTop: 112,
   },
   submitButton: {
-    marginTop: "10px",
+    marginTop: "12px",
   },
 });
 
-class account extends Component {
+class Account extends Component {
   constructor(props) {
     super(props);
 
@@ -87,14 +87,13 @@ class account extends Component {
     };
   }
 
-  componentWillMount = () => {
+  componentDidMount = () => {
     authMiddleWare(this.props.history);
     const authToken = localStorage.getItem("AuthToken");
     axios.defaults.headers.common = { Authorization: `${authToken}` };
     axios
       .get("/user")
       .then((response) => {
-        console.log(response.data);
         this.setState({
           firstName: response.data.userCredentials.firstName,
           lastName: response.data.userCredentials.lastName,
@@ -109,7 +108,7 @@ class account extends Component {
         if (error.response.status === 403) {
           this.props.history.push("/login");
         }
-        console.log(error);
+        console.error(error);
         this.setState({ errorMsg: "Error in retrieving the data" });
       });
   };
@@ -133,12 +132,12 @@ class account extends Component {
     });
     authMiddleWare(this.props.history);
     const authToken = localStorage.getItem("AuthToken");
-    let form_data = new FormData();
-    form_data.append("image", this.state.image);
-    form_data.append("content", this.state.content);
+    const formData = new FormData();
+    formData.append("image", this.state.image);
+    formData.append("content", this.state.content);
     axios.defaults.headers.common = { Authorization: `${authToken}` };
     axios
-      .post("/user/image", form_data, {
+      .post("/user/image", formData, {
         headers: {
           "content-type": "multipart/form-data",
         },
@@ -150,7 +149,7 @@ class account extends Component {
         if (error.response.status === 403) {
           this.props.history.push("/login");
         }
-        console.log(error);
+        console.error(error);
         this.setState({
           uiLoading: false,
           imageError: "Error in posting the data",
@@ -178,7 +177,7 @@ class account extends Component {
         if (error.response.status === 403) {
           this.props.history.push("/login");
         }
-        console.log(error);
+        console.error(error);
         this.setState({
           buttonLoading: false,
         });
@@ -345,4 +344,4 @@ class account extends Component {
   }
 }
 
-export default withStyles(styles)(account);
+export default withStyles(styles)(Account);

@@ -133,7 +133,7 @@ class todo extends Component {
         });
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   };
 
@@ -148,7 +148,7 @@ class todo extends Component {
         window.location.reload();
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   }
 
@@ -239,7 +239,7 @@ class todo extends Component {
         })
         .catch((error) => {
           this.setState({ open: true, errors: error.response.data });
-          console.log(error);
+          console.error(error);
         });
     };
 

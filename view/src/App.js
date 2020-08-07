@@ -22,13 +22,11 @@ function App() {
   return (
     <MuiThemeProvider theme={theme}>
       <Router>
-        <div>
           <Switch>
             <Route exact path="/login" component={login} />
             <Route exact path="/signup" component={signup} />
             <Route exact path="/" component={home} />
           </Switch>
-        </div>
       </Router>
     </MuiThemeProvider>
   );
