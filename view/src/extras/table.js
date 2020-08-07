@@ -43,7 +43,7 @@ const tableIcons = {
 };
 
 export default function CustomTable(props) {
-  const [state, setState] = React.useState(props.data);
+  const [state, setState] = React.useState(props.tableState);
 
   //     {
   //     columns: [

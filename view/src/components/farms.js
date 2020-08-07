@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 import Address from "../extras/address";
 import CardSkeletons from "../extras/skeleton";
+import CustomTable from "../extras/table";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
@@ -151,7 +152,41 @@ const styles = (theme) => ({
   chip: {
     margin: "4px",
   },
+  table: {
+    marginTop: "48px",
+  },
 });
+
+const tableState = {
+  columns: [
+    { title: "Role", field: "contactRole" },
+    { title: "Name", field: "contactName" },
+    { title: "Email", field: "contactEmail" },
+    { title: "Phone Number", field: "contactPhone" },
+  ],
+  data: [
+    {
+      contactRole: "Farm Manager",
+      contactName: "Jane Doe",
+      contactEmail: "jane@doe.com",
+      contactPhone: "(777)851-1234",
+    },
+  ],
+};
+
+// const tableFormat = [
+//   { title: "Role", field: "contactRole" },
+//   { title: "Name", field: "contactName" },
+//   { title: "Email", field: "contactEmail" },
+//   { title: "Phone Number", field: "contactPhone" },
+// ]
+
+// const tableData = [{
+//   contactRole: "Farm Manager",
+//   contactName: "Jane Doe",
+//   contactEmail: "jane@doe.com",
+//   contactPhone: "(777)851-1234",
+// },]
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -643,6 +678,9 @@ class farms extends Component {
                     />
                   </Grid>
                 </Grid>
+                <div className={classes.table}>
+                  <CustomTable title="Farms Contacts" tableState={tableState} />
+                </div>
               </form>
             </Container>
           </Dialog>

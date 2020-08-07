@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import axios from "axios";
 
 import Account from "../components/account";
-import Todo from "../components/deal";
+import Deal from "../components/deal";
 import Produce from "../components/produce";
 import Surplus from "../components/surplus";
 import Farms from "../components/farms";
@@ -73,11 +73,19 @@ const styles = (theme) => ({
     top: "35%",
   },
   toolbar: theme.mixins.toolbar,
+  selected: {
+    color: theme.palette.primary.white,
+    backgroundColor: theme.palette.primary.main,
+    "&:hover": {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.primary.dark,
+    },
+  },
 });
 
 class home extends Component {
   // state = {
-  //   toRender: "todos",
+  //   toRender: "deals",
   //   showAlert: false,
   //   severity: "",
   //   message: "",
@@ -131,8 +139,8 @@ class home extends Component {
   };
 
   loadTodoPage = (event) => {
-    localStorage.setItem("toRender", "todos");
-    this.setState({ toRender: "todos" });
+    localStorage.setItem("toRender", "deals");
+    this.setState({ toRender: "deals" });
   };
 
   loadProducePage = (event) => {
@@ -160,16 +168,20 @@ class home extends Component {
     this.props.history.push("/login");
   };
 
+  isSelected = (name) => {
+    return this.state.toRender === name;
+  };
+
   constructor(props) {
     super(props);
 
     this.state = {
-      toRender: this.getStorage("toRender", "todos")["storedContent"],
+      toRender: this.getStorage("toRender", "deals")["storedContent"],
       showAlert:
         this.getStorage("showAlert", "false")["storedContent"] === "true",
-      // toRender: JSON.parse(localStorage).getItem("toRender") || "todos",
+      // toRender: JSON.parse(localStorage).getItem("toRender") || "deals",
       // showAlert: JSON.parse(localStorage).getItem("showAlert") || false,
-      // toRender: "todos",
+      // toRender: "deals",
       // showAlert: false,
       severity: this.getStorage("severity", "")["storedContent"],
       message: this.getStorage("message", "")["storedContent"],
@@ -251,54 +263,92 @@ class home extends Component {
             </center>
             <Divider />
             <List>
-              <ListItem button key="Farms" onClick={this.loadFarmsPage}>
+              <ListItem
+                button
+                className={this.isSelected("farms") && classes.selected}
+                key="Farms"
+                onClick={this.loadFarmsPage}
+              >
                 <ListItemIcon>
                   {" "}
-                  <NatureIcon />{" "}
+                  <NatureIcon
+                    className={this.isSelected("farms") && classes.selected}
+                  />{" "}
                 </ListItemIcon>
                 <ListItemText primary="Farms" />
               </ListItem>
 
               <ListItem
+                className={this.isSelected("foodbanks") && classes.selected}
                 button
                 key="Food Banks"
                 onClick={this.loadFoodBanksPage}
               >
                 <ListItemIcon>
                   {" "}
-                  <BankIcon />{" "}
+                  <BankIcon
+                    className={this.isSelected("foodbanks") && classes.selected}
+                  />{" "}
                 </ListItemIcon>
                 <ListItemText primary="Food Banks" />
               </ListItem>
 
-              <ListItem button key="Deals" onClick={this.loadTodoPage}>
+              <ListItem
+                button
+                className={this.isSelected("deals") && classes.selected}
+                key="Deals"
+                onClick={this.loadTodoPage}
+              >
                 <ListItemIcon>
                   {" "}
-                  <DealIcon />{" "}
+                  <DealIcon
+                    className={this.isSelected("deals") && classes.selected}
+                  />{" "}
                 </ListItemIcon>
                 <ListItemText primary="Deals" />
               </ListItem>
 
-              <ListItem button key="Surplus" onClick={this.loadSurplusPage}>
+              <ListItem
+                button
+                className={this.isSelected("surplus") && classes.selected}
+                key="Surplus"
+                onClick={this.loadSurplusPage}
+              >
                 <ListItemIcon>
                   {" "}
-                  <ChartIcon />{" "}
+                  <ChartIcon
+                    className={this.isSelected("surplus") && classes.selected}
+                  />{" "}
                 </ListItemIcon>
                 <ListItemText primary="Surplus" />
               </ListItem>
 
-              <ListItem button key="Produce" onClick={this.loadProducePage}>
+              <ListItem
+                button
+                className={this.isSelected("produce") && classes.selected}
+                key="Produce"
+                onClick={this.loadProducePage}
+              >
                 <ListItemIcon>
                   {" "}
-                  <EcoIcon />{" "}
+                  <EcoIcon
+                    className={this.isSelected("produce") && classes.selected}
+                  />{" "}
                 </ListItemIcon>
                 <ListItemText primary="Produce" />
               </ListItem>
 
-              <ListItem button key="Account" onClick={this.loadAccountPage}>
+              <ListItem
+                button
+                className={this.isSelected("account") && classes.selected}
+                key="Account"
+                onClick={this.loadAccountPage}
+              >
                 <ListItemIcon>
                   {" "}
-                  <AccountBoxIcon />{" "}
+                  <AccountBoxIcon
+                    className={this.isSelected("account") && classes.selected}
+                  />{" "}
                 </ListItemIcon>
                 <ListItemText primary="Account" />
               </ListItem>
@@ -321,8 +371,8 @@ class home extends Component {
               severity={this.state.severity}
               message={this.state.message}
             />
-            {this.state.toRender === "todos" ? (
-              <Todo alert={this.alert} />
+            {this.state.toRender === "deals" ? (
+              <Deal alert={this.alert} />
             ) : this.state.toRender === "account" ? (
               <Account alert={this.alert} />
             ) : this.state.toRender === "produce" ? (
