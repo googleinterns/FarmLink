@@ -266,9 +266,14 @@ class todo extends Component {
       .delete(`surplus/${surplusId}`)
       .then(() => {
         window.location.reload();
+        this.props.alert("success", "Surplus successfully deleted!");
       })
       .catch((err) => {
         console.log(err);
+        this.props.alert(
+          "error",
+          "An error occurred when attempting to delete the Surplus!"
+        );
       });
   }
 
@@ -357,43 +362,43 @@ class todo extends Component {
       });
     };
 
-    const handleSubmit = (event) => {
-      authMiddleWare(this.props.history);
-      event.preventDefault();
-      const newSurplus = {
-        produceId: this.state.produceId,
-        originFarmId: this.state.originFarmId,
-        available: this.state.available,
-        cost: this.state.cost,
-        totalQuantityAvailable: this.state.totalQuantityAvailable,
-        packagingType: this.state.packagingType,
-      };
-      let options = {};
-      if (this.state.buttonType === "Edit") {
-        options = {
-          url: `/surplus/${this.state.surplusId}`,
-          method: "put",
-          data: newSurplus,
-        };
-      } else {
-        options = {
-          url: "/surplus",
-          method: "post",
-          data: newSurplus,
-        };
-      }
-      const authToken = localStorage.getItem("AuthToken");
-      axios.defaults.headers.common = { Authorization: `${authToken}` };
-      axios(options)
-        .then(() => {
-          this.setState({ open: false });
-          window.location.reload();
-        })
-        .catch((error) => {
-          this.setState({ open: true, errors: error.response.data });
-          console.log(error);
-        });
-    };
+    // const handleSubmit = (event) => {
+    //   authMiddleWare(this.props.history);
+    //   event.preventDefault();
+    //   const newSurplus = {
+    //     produceId: this.state.produceId,
+    //     originFarmId: this.state.originFarmId,
+    //     available: this.state.available,
+    //     cost: this.state.cost,
+    //     totalQuantityAvailable: this.state.totalQuantityAvailable,
+    //     packagingType: this.state.packagingType,
+    //   };
+    //   let options = {};
+    //   if (this.state.buttonType === "Edit") {
+    //     options = {
+    //       url: `/surplus/${this.state.surplusId}`,
+    //       method: "put",
+    //       data: newSurplus,
+    //     };
+    //   } else {
+    //     options = {
+    //       url: "/surplus",
+    //       method: "post",
+    //       data: newSurplus,
+    //     };
+    //   }
+    //   const authToken = localStorage.getItem("AuthToken");
+    //   axios.defaults.headers.common = { Authorization: `${authToken}` };
+    //   axios(options)
+    //     .then(() => {
+    //       this.setState({ open: false });
+    //       window.location.reload();
+    //     })
+    //     .catch((error) => {
+    //       this.setState({ open: true, errors: error.response.data });
+    //       console.log(error);
+    //     });
+    // };
 
     const handleViewClose = () => {
       this.setState({ viewOpen: false });
@@ -458,14 +463,6 @@ class todo extends Component {
                     ? "Edit Surplus"
                     : "Create a new Surplus"}
                 </Typography>
-                <Button
-                  autoFocus
-                  color="inherit"
-                  onClick={handleSubmit}
-                  className={classes.submitButton}
-                >
-                  {this.state.buttonType === "Edit" ? "Save" : "Submit"}
-                </Button>
               </Toolbar>
             </AppBar>
             <Container maxWidth="lg">

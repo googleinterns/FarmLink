@@ -266,7 +266,7 @@ class ProduceForm extends Component {
         packagingType: this.state.packagingType,
       };
       let options = {};
-      if (this.state.buttonType === "Edit") {
+      if (this.props.buttonType === "Edit") {
         options = {
           url: `/surplus/${this.props.surplusId}`,
           method: "put",
