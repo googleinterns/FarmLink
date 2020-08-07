@@ -182,6 +182,7 @@ class ProduceForm extends Component {
       axios
         .get(`produce/${this.props.produceId}`)
         .then((response) => {
+          this.props.setProduce(response.data);
           this.setState({
             name: response.data.name,
             produceId: response.data.produceId,
@@ -259,7 +260,7 @@ class ProduceForm extends Component {
         amountMoved: parseFloat(this.state.amountMoved),
       };
       let options = {};
-      if (this.state.buttonType === "Edit") {
+      if (this.props.buttonType === "Edit") {
         options = {
           url: `/produce/${this.props.produceId}`,
           method: "put",

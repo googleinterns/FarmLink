@@ -67,6 +67,8 @@ export default function HorizontalLinearStepper(props) {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
+  const [currentFarm, setCurrentFarm] = React.useState("");
+  const [currentProduce, setCurrentProduce] = React.useState("");
 
   const steps = getSteps();
 
@@ -82,10 +84,11 @@ export default function HorizontalLinearStepper(props) {
             isStepOptional={isStepOptional}
             handleSkip={handleSkip}
             handleNext={handleNext}
+            setFarm={setCurrentFarm}
             alert={props.alert}
             steps={steps}
             buttonType={props.buttonType}
-            farmId="AajvEIQCqLj6cePPTEKr"
+            farmId={props.farmId}
           />
         );
       case 1:
@@ -96,10 +99,11 @@ export default function HorizontalLinearStepper(props) {
             isStepOptional={isStepOptional}
             handleSkip={handleSkip}
             handleNext={handleNext}
+            setProduce={setCurrentProduce}
             alert={props.alert}
             steps={steps}
             buttonType={props.buttonType}
-            produceId="xBaiGcvhb8tOrKgFtuIW"
+            produceId={props.produceId}
           />
         );
       case 2:
@@ -110,6 +114,9 @@ export default function HorizontalLinearStepper(props) {
             isStepOptional={isStepOptional}
             handleSkip={handleSkip}
             handleNext={handleNext}
+            surplusId={props.surplusId}
+            currentFarm={currentFarm}
+            currentProduce={currentProduce}
             alert={props.alert}
             steps={steps}
             buttonType={props.buttonType}

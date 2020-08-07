@@ -155,12 +155,12 @@ class ProduceForm extends Component {
     super(props);
 
     this.state = {
-      available: "",
-      cost: "",
-      originFarm: "",
-      packagingType: "",
+      originFarmId: "",
       produceId: "",
+      available: false,
+      cost: "",
       totalQuantityAvailable: "",
+      packagingType: "",
       errors: [],
       open: false,
       uiLoading: true,
@@ -183,22 +183,27 @@ class ProduceForm extends Component {
     });
   };
 
-  // componentWillMount = () => {
-  //   authMiddleWare(this.props.history);
-  //   const authToken = localStorage.getItem("AuthToken");
-  //   axios.defaults.headers.common = { Authorization: `${authToken}` };
-  //   axios
-  //     .get("/produce")
-  //     .then((response) => {
-  //       this.setState({
-  //         produceObjects: response.data,
-  //         uiLoading: false,
-  //       });
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
+  componentWillMount = () => {
+    authMiddleWare(this.props.history);
+    const authToken = localStorage.getItem("AuthToken");
+    axios.defaults.headers.common = { Authorization: `${authToken}` };
+    axios
+      .get(`surplus/${this.props.surplusId}`)
+      .then((response) => {
+        this.setState({
+          originFarmId: response.data.originFarmId,
+          produceId: response.data.produceId,
+          available: response.data.available,
+          cost: response.data.cost,
+          totalQuantityAvailable: response.data.totalQuantityAvailable,
+          packagingType: response.data.packagingType,
+          uiLoading: false,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   //   handleEditClickOpen(data) {
   //     this.setState({
@@ -222,14 +227,28 @@ class ProduceForm extends Component {
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
 
+    const farmValue = {
+      contactEmail: "george@sjfarms.com",
+      contactName: "George James",
+      contactPhone: "(123) 456-7890",
+      farmName: "San Jose Farms",
+      farmTags: [],
+      forklift: false,
+      loadingDock: false,
+      location: "San Jose, CA, USA",
+      locationId: "ChIJ9T_5iuTKj4ARe3GfygqMnbk",
+      transporation: false,
+    };
+
     const handleClickOpen = () => {
       this.setState({
-        available: "",
-        cost: "",
-        originFarm: "",
-        packagingType: "",
+        surplusId: "",
+        originFarmId: "",
         produceId: "",
+        available: false,
+        cost: "",
         totalQuantityAvailable: "",
+        packagingType: "",
         open: true,
       });
     };
@@ -239,17 +258,17 @@ class ProduceForm extends Component {
       authMiddleWare(this.props.history);
       event.preventDefault();
       const newSurplus = {
+        originFarmId: this.state.originFarmId,
+        produceId: this.state.produceId,
         available: this.state.available,
         cost: this.state.cost,
-        originFarm: this.state.originFarm,
-        packagingType: this.state.packagingType,
-        produceId: this.state.produceId,
         totalQuantityAvailable: this.state.totalQuantityAvailable,
+        packagingType: this.state.packagingType,
       };
       let options = {};
       if (this.state.buttonType === "Edit") {
         options = {
-          url: `/surplus/${this.state.surplusId}`,
+          url: `/surplus/${this.props.surplusId}`,
           method: "put",
           data: newSurplus,
         };
@@ -272,182 +291,184 @@ class ProduceForm extends Component {
             "Surplus has successfully been" + message
           );
           //this.setState({ alert: true })
-          //window.location.reload();
+          window.location.reload();
         })
         .catch((error) => {
           const message =
             this.props.buttonType === "Edit" ? " edit" : " submit";
           this.props.alert(
             "error",
-            "An error has occured when attempting to " + message + " the farm!"
+            "An error has occured when attempting to " +
+              message +
+              " the Surplus!"
           );
           this.setState({ open: true, errors: error.response.data });
           //   console.log(newProduce);
         });
     };
-
-    return (
-      <main className={classes.content}>
-        <Container maxWidth="lg">
-          <form className={classes.form} noValidate>
-            <Grid container spacing={4} allignItems="center">
-              <Grid item xs={6}>
-                {/* comment out ->               <Autocomplete
-                      id="originFarm"
-                      options={this.state.farms}
-                      getOptionLabel={(farm) => farm.farmName}
-                      onChange={(event, newValue) => {
-                        //setOptions(newValue ? [newValue, ...options] : options);
-                        //setValue(newValue);
-                        console.log(newValue.farmId);
-                        // console.log(newValue);
-                      }}
-                      fullWidth
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Origin Farm"
-                          variant="outlined"
-                        />
-                      )}
-                    />  */}
-                <AsyncInput
-                  history={this.props.history}
-                  target="/farms"
-                  label="Source Farm"
-                  optionSelected={(option, value) =>
-                    option.farmName === value.farmName
-                  }
-                  optionLabel={(option) => option.farmName}
-                  handleChange={this.handleAsyncChange}
-                  returnValue="farmId"
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <AsyncInput
-                  history={this.props.history}
-                  target="/produce"
-                  label="Produce Types"
-                  optionSelected={(option, value) => option.name === value.name}
-                  optionLabel={(option) => option.name}
-                  handleChange={this.handleAsyncChange}
-                  returnValue="produceId"
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <FormControl variant="outlined" fullWidth>
-                  <InputLabel id="available-label">Status</InputLabel>
-                  <Select
-                    labelId="available-outlined-label"
-                    id="available"
-                    // value={age}
-                    onChange={this.handleChange}
-                    label="Status"
-                  >
-                    <MenuItem value={true}>Available</MenuItem>
-                    <MenuItem value={false}>Not Available</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={3}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="cost"
-                  label="Cost (per lb)"
-                  name="cost"
-                  type="number"
-                  autoComplete="cost"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    ),
-                  }}
-                  // helperText={errors.title}
-                  // value={this.state.title}
-                  // error={errors.title ? true : false}
-                  // onChange={this.handleChange}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="totalQuantityAvailable"
-                  label="Total Quantity Available"
-                  name="totalQuantityAvailable"
-                  type="number"
-                  autoComplete="totalQuantityAvailable"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">lbs</InputAdornment>
-                    ),
-                  }}
-                  // helperText={errors.title}
-                  // value={this.state.title}
-                  // error={errors.title ? true : false}
-                  // onChange={this.handleChange}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <FormControl variant="outlined" fullWidth>
-                  <InputLabel id="packagingType-label">
-                    Packaging Type
-                  </InputLabel>
-                  <Select
-                    labelId="packagingType-outlined-label"
-                    id="packagingType"
-                    // value={age}
-                    onChange={this.handleChange}
-                    label="Packaging Type"
-                  >
-                    <MenuItem value="Open Crates">Open Crates</MenuItem>
-                    <MenuItem value="Closed Crates">Closed Crates</MenuItem>
-                    <MenuItem value="Sacks">Sacks</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-            </Grid>
-            {/* comment out ->           <div className={classes.table}>
-                  <CustomTable
-                    title="Operating Hours"
-                    data={tableData}
+    if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
+      return (
+        <main className={classes.content}>
+          {this.state.uiLoading && (
+            <CircularProgress size={150} className={classes.uiProgess} />
+          )}
+        </main>
+      );
+    } else {
+      return (
+        <main className={classes.content}>
+          <Container maxWidth="lg">
+            <form className={classes.form} noValidate>
+              <Grid container spacing={4} allignItems="center">
+                <Grid item xs={6}>
+                  <AsyncInput
+                    history={this.props.history}
+                    value={this.props.currentFarm}
+                    target="/farms"
+                    label="Source Farm"
+                    optionSelected={(option, value) =>
+                      option.farmName === value.farmName
+                    }
+                    optionLabel={(option) => option.farmName}
+                    handleChange={this.handleAsyncChange}
+                    returnValue="originFarmId"
+                    paramName="farmId"
                   />
-                </div>  */}
-          </form>
-        </Container>
-        <div className={classes.buttons}>
-          <Button
-            disabled={this.props.activeStep === 0}
-            onClick={this.props.handleBack}
-            className={(classes.button, classes.spacing)}
-          >
-            Back
-          </Button>
-          {this.props.isStepOptional(this.props.activeStep) && (
+                </Grid>
+                <Grid item xs={6}>
+                  <AsyncInput
+                    history={this.props.history}
+                    value={this.props.currentProduce}
+                    target="/produce"
+                    label="Produce Types"
+                    optionSelected={(option, value) =>
+                      option.name === value.name
+                    }
+                    optionLabel={(option) => option.name}
+                    handleChange={this.handleAsyncChange}
+                    returnValue="produceId"
+                    paramName="produceId"
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <FormControl variant="outlined" fullWidth>
+                    <InputLabel id="available-label">Status</InputLabel>
+                    <Select
+                      value={this.state.available}
+                      onChange={this.handleChange}
+                      label="Status"
+                      inputProps={{
+                        name: "available",
+                        id: "outlined-available",
+                      }}
+                    >
+                      <MenuItem value={true}>Available</MenuItem>
+                      <MenuItem value={false}>Not Available</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="cost"
+                    label="Cost (per lb)"
+                    name="cost"
+                    type="number"
+                    autoComplete="cost"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      ),
+                    }}
+                    helperText={errors.cost}
+                    value={this.state.cost}
+                    error={errors.cost ? true : false}
+                    onChange={this.handleChange}
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="totalQuantityAvailable"
+                    label="Total Quantity Available"
+                    name="totalQuantityAvailable"
+                    type="number"
+                    autoComplete="totalQuantityAvailable"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">lbs</InputAdornment>
+                      ),
+                    }}
+                    helperText={errors.totalQuantityAvailable}
+                    value={this.state.totalQuantityAvailable}
+                    error={errors.totalQuantityAvailable ? true : false}
+                    onChange={this.handleChange}
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <FormControl variant="outlined" fullWidth>
+                    <InputLabel id="packagingType-label">
+                      Packaging Type
+                    </InputLabel>
+                    <Select
+                      value={this.state.packagingType}
+                      onChange={this.handleChange}
+                      label="Packaging Type"
+                      inputProps={{
+                        name: "packagingType",
+                        id: "outlined-packagingType",
+                      }}
+                    >
+                      <MenuItem value="Open Crates">Open Crates</MenuItem>
+                      <MenuItem value="Closed Crates">Closed Crates</MenuItem>
+                      <MenuItem value="Sacks">Sacks</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
+              {/* comment out ->           <div className={classes.table}>
+                    <CustomTable
+                      title="Operating Hours"
+                      data={tableData}
+                    />
+                  </div>  */}
+            </form>
+          </Container>
+          <div className={classes.buttons}>
+            <Button
+              disabled={this.props.activeStep === 0}
+              onClick={this.props.handleBack}
+              className={(classes.button, classes.spacing)}
+            >
+              Back
+            </Button>
+            {this.props.isStepOptional(this.props.activeStep) && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={this.props.handleSkip}
+                className={(classes.button, classes.spacing)}
+              >
+                Skip
+              </Button>
+            )}
+
             <Button
               variant="contained"
               color="primary"
-              onClick={this.props.handleSkip}
+              onClick={handleSubmit}
               className={(classes.button, classes.spacing)}
             >
-              Skip
+              Finish
             </Button>
-          )}
-
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            className={(classes.button, classes.spacing)}
-          >
-            Finish
-          </Button>
-        </div>
-      </main>
-    );
+          </div>
+        </main>
+      );
+    }
   }
 }
 

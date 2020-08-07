@@ -179,11 +179,19 @@ class todo extends Component {
     super(props);
 
     this.state = {
-      farms: "",
-      todos: "",
-      title: "",
-      body: "",
-      todoId: "",
+      surplusObjects: "",
+      surplusId: "",
+      produceId: "",
+      produceName: "",
+      originFarmId: "",
+      originFarmName: "",
+      originFarmLocation: "",
+      originFarmContactName: "",
+      originFarmContactPhone: "",
+      available: false,
+      cost: "",
+      totalQuantityAvailable: "",
+      packagingType: "",
       errors: [],
       open: false,
       uiLoading: true,
@@ -202,7 +210,8 @@ class todo extends Component {
     });
   };
 
-  handleCustomChange = (name, value) => {
+  handleAsyncChange = (name, value) => {
+    console.log(name);
     console.log(value);
     this.setState({
       [name]: value,
@@ -236,10 +245,10 @@ class todo extends Component {
       //   console.log("OH SHIT SHIT SHIT");
       //   console.log(err);
       // });
-      .get("/todos")
+      .get("/surplus")
       .then((response) => {
         this.setState({
-          todos: response.data,
+          surplusObjects: response.data,
           uiLoading: false,
         });
       })
@@ -252,9 +261,9 @@ class todo extends Component {
     authMiddleWare(this.props.history);
     const authToken = localStorage.getItem("AuthToken");
     axios.defaults.headers.common = { Authorization: `${authToken}` };
-    let todoId = data.todo.todoId;
+    let surplusId = data.surplus.surplusId;
     axios
-      .delete(`todo/${todoId}`)
+      .delete(`surplus/${surplusId}`)
       .then(() => {
         window.location.reload();
       })
@@ -265,9 +274,18 @@ class todo extends Component {
 
   handleEditClickOpen(data) {
     this.setState({
-      title: data.todo.title,
-      body: data.todo.body,
-      todoId: data.todo.todoId,
+      surplusId: data.surplus.surplusId,
+      produceId: data.surplus.produceId,
+      produceName: data.surplus.produceName,
+      originFarmId: data.surplus.originFarmId,
+      originFarmName: data.surplus.originFarmContactName,
+      originaFarmLocation: data.surplus.originFarmLocation,
+      originFarmContactName: data.surplus.originFarmContactName,
+      originFarmContactPhone: data.surplus.originFarmContactPhone,
+      available: data.surplus.available,
+      cost: data.surplus.cost,
+      totalQuantityAvailable: data.surplus.totalQuantityAvailable,
+      packagingType: data.surplus.packagingType,
       buttonType: "Edit",
       open: true,
     });
@@ -275,8 +293,18 @@ class todo extends Component {
 
   handleViewOpen(data) {
     this.setState({
-      title: data.todo.title,
-      body: data.todo.body,
+      surplusId: data.surplus.surplusId,
+      produceId: data.surplus.produceId,
+      produceName: data.surplus.produceName,
+      originFarmId: data.surplus.originFarmId,
+      originFarmName: data.surplus.originFarmContactName,
+      originaFarmLocation: data.surplus.originFarmLocation,
+      originFarmContactName: data.surplus.originFarmContactName,
+      originFarmContactPhone: data.surplus.originFarmContactPhone,
+      available: data.surplus.available,
+      cost: data.surplus.cost,
+      totalQuantityAvailable: data.surplus.totalQuantityAvailable,
+      packagingType: data.surplus.packagingType,
       viewOpen: true,
     });
   }
@@ -311,11 +339,19 @@ class todo extends Component {
     const { open, errors, viewOpen } = this.state;
 
     const handleClickOpen = () => {
-      console.log("yeeet yeet");
       this.setState({
-        todoId: "",
-        title: "",
-        body: "",
+        surplusId: "",
+        produceId: "",
+        produceName: "",
+        originFarmId: "",
+        originFarmName: "",
+        originFarmLocation: "",
+        originFarmContactName: "",
+        originFarmContactPhone: "",
+        available: false,
+        cost: "",
+        totalQuantityAvailable: "",
+        packagingType: "",
         buttonType: "",
         open: true,
       });
@@ -324,22 +360,26 @@ class todo extends Component {
     const handleSubmit = (event) => {
       authMiddleWare(this.props.history);
       event.preventDefault();
-      const userTodo = {
-        title: this.state.title,
-        body: this.state.body,
+      const newSurplus = {
+        produceId: this.state.produceId,
+        originFarmId: this.state.originFarmId,
+        available: this.state.available,
+        cost: this.state.cost,
+        totalQuantityAvailable: this.state.totalQuantityAvailable,
+        packagingType: this.state.packagingType,
       };
       let options = {};
       if (this.state.buttonType === "Edit") {
         options = {
-          url: `/todo/${this.state.todoId}`,
+          url: `/surplus/${this.state.surplusId}`,
           method: "put",
-          data: userTodo,
+          data: newSurplus,
         };
       } else {
         options = {
-          url: "/todo",
+          url: "/surplus",
           method: "post",
-          data: userTodo,
+          data: newSurplus,
         };
       }
       const authToken = localStorage.getItem("AuthToken");
@@ -415,8 +455,8 @@ class todo extends Component {
                 </IconButton>
                 <Typography variant="h6" className={classes.title}>
                   {this.state.buttonType === "Edit"
-                    ? "Edit Todo"
-                    : "Create a new Todo"}
+                    ? "Edit Surplus"
+                    : "Create a new Surplus"}
                 </Typography>
                 <Button
                   autoFocus
@@ -432,6 +472,11 @@ class todo extends Component {
               <SurplusStepper
                 buttonType={this.state.buttonType}
                 alert={this.props.alert}
+                farmId={this.state.originFarmId}
+                produceId={this.state.produceId}
+                surplusId={this.state.surplusId}
+                handleChange={this.handleChange}
+                handleAsyncChange={this.handleAsyncChange}
               />
               {/* <form className={classes.form} noValidate>
                 <Grid container spacing={4} allignItems="center">
@@ -583,12 +628,13 @@ class todo extends Component {
                   />
                 </div>
               </Grid>
-              {this.state.todos.map((todo) => (
+              {this.state.surplusObjects.map((surplus) => (
                 <Grid item xs={12}>
                   <Card className={classes.root} variant="outlined">
                     <CardContent>
                       <Typography variant="h5" component="h2">
-                        50k lbs of Apples from Taylor Farms
+                        {surplus.totalQuantityAvailable} lbs of{" "}
+                        {surplus.produceName} from {surplus.originFarmName}
                         {/* {todo.title} */}
                       </Typography>
                       <Box
@@ -606,11 +652,12 @@ class todo extends Component {
                             Logistics:
                           </Typography>
                           <Typography variant="body2" component="p">
-                            Origin: Taylor Farms (link with card + info)
+                            Origin: {surplus.originFarmName} (link with card +
+                            info)
                             <br />
-                            Packing Type: Crates
+                            Packing Type: {surplus.packagingType}
                             <br />
-                            Available: yes
+                            Available: {surplus.available ? "yes" : "no"}
                           </Typography>
                         </Box>
                         <Box p={3}>
@@ -621,11 +668,12 @@ class todo extends Component {
                             Details:
                           </Typography>
                           <Typography variant="body2" component="p">
-                            Type of Produce: Apples
+                            Type of Produce: {surplus.produceName}
                             <br />
-                            Total Quantity Available (lbs): 50,000
+                            Total Quantity Available (lbs):{" "}
+                            {surplus.totalQuantityAvailable}
                             <br />
-                            Cost (USD / lb): $0.62
+                            Cost (USD / lb): {surplus.cost}
                           </Typography>
                         </Box>
                       </Box>
@@ -634,7 +682,7 @@ class todo extends Component {
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.handleViewOpen({ todo })}
+                        onClick={() => this.handleViewOpen({ surplus })}
                       >
                         {" "}
                         View{" "}
@@ -642,14 +690,14 @@ class todo extends Component {
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.handleEditClickOpen({ todo })}
+                        onClick={() => this.handleEditClickOpen({ surplus })}
                       >
                         Edit
                       </Button>
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.deleteTodoHandler({ todo })}
+                        onClick={() => this.deleteTodoHandler({ surplus })}
                       >
                         Delete
                       </Button>

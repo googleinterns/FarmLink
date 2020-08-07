@@ -46,7 +46,7 @@ export default function Asynchronous(props) {
 
   return (
     <Autocomplete
-      id="asynchronous"
+      id={props.returnValue}
       fullWidth
       open={open}
       onOpen={() => {
@@ -56,10 +56,11 @@ export default function Asynchronous(props) {
         setOpen(false);
       }}
       onChange={(event, newValue) => {
-        props.handleChange(props.returnValue, newValue[props.returnValue]);
+        props.handleChange(props.returnValue, newValue[props.paramName]);
       }}
       getOptionSelected={props.optionSelected}
       getOptionLabel={props.optionLabel}
+      defaultValue={props.value}
       options={options}
       loading={loading}
       renderInput={(params) => (

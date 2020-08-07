@@ -266,6 +266,7 @@ class FarmForm extends Component {
       axios
         .get(`farms/${this.props.farmId}`)
         .then((response) => {
+          this.props.setFarm(response.data);
           this.setState({
             // farms: response.data,
             farmName: response.data.farmName,

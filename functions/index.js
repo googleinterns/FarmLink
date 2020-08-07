@@ -80,3 +80,18 @@ app.get("/foodbanks/:foodbankId", auth, getOneFoodBank);
 app.post("/foodbanks", auth, postOneFoodBank);
 app.delete("/foodbanks/:foodbankId", auth, deleteFoodBank);
 app.put("/foodbanks/:foodbankId", auth, editFoodBank);
+
+// Surplus
+const {
+  getAllSurplus,
+  postOneSurplus,
+  getOneSurplus,
+  deleteSurplus,
+  editSurplus,
+} = require("./APIs/surplus");
+
+app.get("/surplus", auth, getAllSurplus);
+app.get("/surplus/:surplusId", auth, getOneSurplus);
+app.post("/surplus", auth, postOneSurplus);
+app.delete("/surplus/:surplusId", auth, deleteSurplus);
+app.put("/surplus/:surplusId", auth, editSurplus);
