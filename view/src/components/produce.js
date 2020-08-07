@@ -152,6 +152,8 @@ class produce extends Component {
 			errors: [],
 			open: false,
 			uiLoading: true,
+			isFiltering: false,
+			filter: '',
 			buttonType: '',
 			viewOpen: false
 		};
@@ -263,7 +265,8 @@ class produce extends Component {
 				pricePaid: '',
 				amountMoved: '',
 				buttonType: '',
-				open: true
+				open: true,
+				render: true
 			});
 		};
 
@@ -312,6 +315,10 @@ class produce extends Component {
 
 		const handleClose = (event) => {
 			this.setState({ open: false });
+		};
+
+		const filterChanged = (event) => {
+			this.setState({ isFiltering: true, filter: event.target.value });
 		};
 
 		if (this.state.uiLoading === true) {
@@ -503,7 +510,8 @@ class produce extends Component {
                                             root: classes.inputRoot,
                                             input: classes.inputInput,
                                         }}
-                                        inputProps={{ 'aria-label': 'search' }}
+										inputProps={{ 'aria-label': 'search' }}
+										onChange={this.filterChanged} value={this.state.filter}
                                         />
                                     </div>
                                 </Grid>
@@ -564,7 +572,7 @@ class produce extends Component {
                         </Grid>
                     </Container>
 
-					<Dialog
+					<Dialog 
 						onClose={handleViewClose}
 						aria-labelledby="customized-dialog-title"
 						open={viewOpen}
