@@ -24,6 +24,7 @@ import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Box from '@material-ui/core/Box';
+import SearchResults from 'react-filter-search';
 
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -140,7 +141,7 @@ class produce extends Component {
 		super(props);
 
 		this.state = {
-			produceObjects: '',
+			produceObjects: [],
 			name: '',
 			produceId: '',
 			shippingPresetTemperature: '',
@@ -153,7 +154,7 @@ class produce extends Component {
 			open: false,
 			uiLoading: true,
 			isFiltering: false,
-			filter: '',
+			filterQuery: '',
 			buttonType: '',
 			viewOpen: false
 		};
@@ -229,6 +230,10 @@ class produce extends Component {
 		});
 	}
 
+	handleSearch = event => {
+		const { filterQuery } = event.target;
+		this.setState({ filterQuery });
+	  };
 	render() {
 		const DialogTitle = withStyles(styles)((props) => {
 			const { children, classes, onClose, ...other } = props;
@@ -253,6 +258,7 @@ class produce extends Component {
 		dayjs.extend(relativeTime);
 		const { classes } = this.props;
 		const { open, errors, viewOpen } = this.state;
+		const { produceObjects, filterQuery } = this.state;
 
 		const handleClickOpen = () => {
 			this.setState({
@@ -511,65 +517,74 @@ class produce extends Component {
                                             input: classes.inputInput,
                                         }}
 										inputProps={{ 'aria-label': 'search' }}
-										onChange={this.filterChanged} value={this.state.filter}
+										onChange={this.handleSearch} 
+										filterQuery={filterQuery}
                                         />
                                     </div>
                                 </Grid>
-                            {this.state.produceObjects.map((produce) => (
-                                <Grid item xs={12}>
-                                    <Card className={classes.root} variant="outlined">
-                                        <CardContent>
-                                            <Typography variant="h5" component="h2">
-                                                {produce.name}
-                                            </Typography>
-                                            <Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
-                                                <Box p={3}>
-                                                    <Typography className={classes.pos} color="textSecondary">
-                                                        Shipping Temperatures in Reefer (°F): 
-                                                    </Typography>
-                                                    <Typography variant="body2" component="p">
-                                                        Maintenance Temperature: {produce.shippingMaintenanceTemperatureLow} - {produce.shippingMaintenanceTemperatureHigh}
-                                                        <br />
-                                                        Preset Temperature: {produce.shippingPresetTemperature}
-                                                    </Typography>
-                                                </Box>
-                                                <Box p={3}>
-                                                    <Typography className={classes.pos} color="textSecondary">
-                                                        Pricing (in USD / lb):
-                                                    </Typography>
-                                                    <Typography variant="body2" component="p">
-                                                        USDA Price: ${produce.price}
-                                                        <br />
-                                                        Average Price Paid by Farmlink: ${produce.pricePaid}
-                                                    </Typography>
-                                                </Box>
-                                                <Box p={3}>
-                                                    <Typography className={classes.pos} color="textSecondary">
-                                                        Internal Statistics:
-                                                    </Typography>
-                                                    <Typography variant="body2" component="p">
-                                                        Amount Moved by FarmLink (lbs): {produce.amountMoved}
-                                                    </Typography>
-                                                </Box>
-                                            </Box> 
-                                            
-                                        </CardContent>
-                                        <CardActions>
-                                            <Button size="small" color="primary" onClick={() => this.handleViewOpen({ produce })}>
-                                                {' '}
-                                                View{' '}
-                                            </Button>
-                                            <Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ produce })}>
-                                                Edit
-                                            </Button>
-                                            <Button size="small" color="primary" onClick={() => this.deleteTodoHandler({ produce })}>
-                                                Delete
-                                            </Button>
-                                        </CardActions>
-                                    </Card>
-                                </Grid>
-                            ))}
-                        </Grid>
+								<SearchResults
+									filterQuery={filterQuery}
+									produceObjects={produceObjects}
+									renderResults={results => (
+										<div>
+                            				{results.map((produce) => (
+												<Grid item xs={12}>
+													<Card className={classes.root} variant="outlined">
+														<CardContent>
+															<Typography variant="h5" component="h2">
+																{produce.name}
+															</Typography>
+															<Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
+																<Box p={3}>
+																	<Typography className={classes.pos} color="textSecondary">
+																		Shipping Temperatures in Reefer (°F): 
+																	</Typography>
+																	<Typography variant="body2" component="p">
+																		Maintenance Temperature: {produce.shippingMaintenanceTemperatureLow} - {produce.shippingMaintenanceTemperatureHigh}
+																		<br />
+																		Preset Temperature: {produce.shippingPresetTemperature}
+																	</Typography>
+																</Box>
+																<Box p={3}>
+																	<Typography className={classes.pos} color="textSecondary">
+																		Pricing (in USD / lb):
+																	</Typography>
+																	<Typography variant="body2" component="p">
+																		USDA Price: ${produce.price}
+																		<br />
+																		Average Price Paid by Farmlink: ${produce.pricePaid}
+																	</Typography>
+																</Box>
+																<Box p={3}>
+																	<Typography className={classes.pos} color="textSecondary">
+																		Internal Statistics:
+																	</Typography>
+																	<Typography variant="body2" component="p">
+																		Amount Moved by FarmLink (lbs): {produce.amountMoved}
+																	</Typography>
+																</Box>
+															</Box> 
+															
+														</CardContent>
+														<CardActions>
+															<Button size="small" color="primary" onClick={() => this.handleViewOpen({ produce })}>
+																{' '}
+																View{' '}
+															</Button>
+															<Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ produce })}>
+																Edit
+															</Button>
+															<Button size="small" color="primary" onClick={() => this.deleteTodoHandler({ produce })}>
+																Delete
+															</Button>
+														</CardActions>
+													</Card>
+												</Grid>
+                            				))}
+										</div>
+									)}
+								/>
+							</Grid>		
                     </Container>
 
 					<Dialog 
