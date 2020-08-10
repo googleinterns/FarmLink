@@ -74,7 +74,7 @@ const styles = (theme) => ({
     left: "50%",
     top: "35%",
   },
-  dialogeStyle: {
+  dialogStyle: {
     maxWidth: "50%",
   },
   viewRoot: {
@@ -93,7 +93,13 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-class todo extends Component {
+
+/**
+ * This class represents a Todo components, which is a sub-page of the 
+ * home page where todo objects are visualized, created, updated, edited,
+ * and deleted.
+ */
+class Todo extends Component {
   constructor(props) {
     super(props);
 
@@ -109,21 +115,14 @@ class todo extends Component {
       viewOpen: false,
     };
 
-    this.deleteTodoHandler = this.deleteTodoHandler.bind(this);
-    this.handleEditClickOpen = this.handleEditClickOpen.bind(this);
+    this.handleDeleteTodo = this.handleDeleteTodo.bind(this);
+    this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
   }
 
-  handleChange = (event) => {
-    this.setState({
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  componentWillMount = () => {
-    authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
+  /** Load in all of the current todos when the component has mounted */
+  componentDidMount = () => {
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
       .get("/todos")
       .then((response) => {
@@ -137,10 +136,30 @@ class todo extends Component {
       });
   };
 
-  deleteTodoHandler(data) {
+  /**
+   * Given an event, this function updates a state (the target of the event)
+   * with a new value
+   * @param {Event} event The event that is attempting to update a state
+   */
+  handleChange = (event) => {
+    this.setState({
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  /** Returns the authentication token stored in local storage */
+  getAuth = () => {
     authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
+    return localStorage.getItem("AuthToken");
+  }
+
+  /**
+   * Takes a todo object as an input and deletes the given todo
+   * object from the database
+   * @param {todo object} data 
+   */
+  handleDeleteTodo(data) {
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     let todoId = data.todo.todoId;
     axios
       .delete(`todo/${todoId}`)
@@ -152,7 +171,12 @@ class todo extends Component {
       });
   }
 
-  handleEditClickOpen(data) {
+  /**
+   * Takes a todo object as an input and opens a dialog page to 
+   * allow the user to update the attributes of the todo object
+   * @param {todo object} data 
+   */
+  handleEditClick(data) {
     this.setState({
       title: data.todo.title,
       body: data.todo.body,
@@ -162,6 +186,12 @@ class todo extends Component {
     });
   }
 
+  /**
+   * Takes a todo object as an input and opens a popup with all the
+   * information about the todo (currently not being used -> will be
+   * updated to show augmented information)
+   * @param {todo object} data 
+   */
   handleViewOpen(data) {
     this.setState({
       title: data.todo.title,
@@ -199,6 +229,7 @@ class todo extends Component {
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
 
+    /** Set all states to generic value when opening a dialog page */
     const handleClickOpen = () => {
       this.setState({
         todoId: "",
@@ -209,6 +240,10 @@ class todo extends Component {
       });
     };
 
+    /**
+     * Either updates or submits a new todo object to the data base
+     * @param {Event} event The event being handled
+     */
     const handleSubmit = (event) => {
       authMiddleWare(this.props.history);
       event.preventDefault();
@@ -346,7 +381,7 @@ class todo extends Component {
 
           <Grid container spacing={2}>
             {this.state.todos.map((todo) => (
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} key={todo.todoId}>
                 <Card className={classes.root} variant="outlined">
                   <CardContent>
                     <Typography variant="h5" component="h2">
@@ -365,20 +400,19 @@ class todo extends Component {
                       color="primary"
                       onClick={() => this.handleViewOpen({ todo })}
                     >
-                      {" "}
-                      View{" "}
+                      View
                     </Button>
                     <Button
                       size="small"
                       color="primary"
-                      onClick={() => this.handleEditClickOpen({ todo })}
+                      onClick={() => this.handleEditClick({ todo })}
                     >
                       Edit
                     </Button>
                     <Button
                       size="small"
                       color="primary"
-                      onClick={() => this.deleteTodoHandler({ todo })}
+                      onClick={() => this.handleDeleteTodo({ todo })}
                     >
                       Delete
                     </Button>
@@ -393,7 +427,7 @@ class todo extends Component {
             aria-labelledby="customized-dialog-title"
             open={viewOpen}
             fullWidth
-            classes={{ paperFullWidth: classes.dialogeStyle }}
+            classes={{ paperFullWidth: classes.dialogStyle }}
           >
             <DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
               {this.state.title}
@@ -420,4 +454,4 @@ class todo extends Component {
   }
 }
 
-export default withStyles(styles)(todo);
+export default withStyles(styles)(Todo);
