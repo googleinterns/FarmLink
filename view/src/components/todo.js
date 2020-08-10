@@ -121,7 +121,7 @@ class Todo extends Component {
   }
 
   /** Load in all of the current todos when the component has mounted */
-  componentDidMount = () => {
+  componentDidMount() {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
       .get("/todos")
