@@ -24,6 +24,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Box from '@material-ui/core/Box';
 import SearchResults from 'react-filter-search';
+import Chip from '@material-ui/core/Chip';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -322,12 +324,6 @@ class produce extends Component {
 			this.setState({ open: false });
 		};
 
-		const filterChanged = (event) => {
-			this.setState({ isFiltering: true, filter: event.target.value });
-		};
-
-		console.log("help po is", data)
-
 		if (this.state.uiLoading === true) {
 			return (
 				<main className={classes.content}>
@@ -506,13 +502,62 @@ class produce extends Component {
                         <Grid container spacing={2}
                               alignItem="center">
                                 <Grid item xs={12}>
+										<Autocomplete
+											id="combo-box-demo"
+											options={data.map((produce) => produce.title)}
+
+											style={{ width: 300 }}
+											
+											renderInput={(params) => 
+												<TextField {...params} 
+													label="Combo box" 
+													variant="outlined" 
+													
+												/>}
+											/>
+
+									<Autocomplete
+									
+										multiple
+										id="tags-filled"
+										options={data}
+										getOptionLabel={(option) => option.name}
+										onInputChange={this.handleSearch}
+										freeSolo={true}
+										renderTags={(value, getTagProps) =>
+										value.map((option, index) => (
+											<Chip variant="standard" label={option} {...getTagProps({ index })} />
+										))
+										}
+										renderInput={(params) => (
+										<TextField {...params} variant="standard" label="search" placeholder="Search..." />
+										)}
+									/>									
                                     <div>
 										<input type="text" value={this.state.value} onChange={this.handleSearch} />	
                                     </div>
+									
+									<div className={classes.search}>
+									<div className={classes.searchIcon}>
+									<SearchIcon />
+									</div>
+									<InputBase
+										fullWidth={true}
+										placeholder="Search…"
+										classes={{
+											root: classes.inputRoot,
+											input: classes.inputInput,
+										}}
+										inputProps={{ 'aria-label': 'search' }}
+										value={this.state.value}
+										onChange={this.handleSearch} 
+										
+									/>
+									</div>
+
                                 </Grid>
 								<SearchResults
 									value={value}
-									
 									data={data}
 									renderResults={results => (
 										<div>
