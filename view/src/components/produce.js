@@ -20,7 +20,6 @@ import CardContent from '@material-ui/core/CardContent';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import InputBase from '@material-ui/core/InputBase';
-// import { fade } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Box from '@material-ui/core/Box';
@@ -141,7 +140,7 @@ class produce extends Component {
 		super(props);
 
 		this.state = {
-			produceObjects: [],
+			data: '',
 			name: '',
 			produceId: '',
 			shippingPresetTemperature: '',
@@ -154,7 +153,7 @@ class produce extends Component {
 			open: false,
 			uiLoading: true,
 			isFiltering: false,
-			filterQuery: '',
+			value: '',
 			buttonType: '',
 			viewOpen: false
 		};
@@ -178,7 +177,7 @@ class produce extends Component {
 			.get('/produce')
 			.then((response) => {
 				this.setState({
-					produceObjects: response.data,
+					data: response.data,
 					uiLoading: false
 				});
 			})
@@ -231,9 +230,10 @@ class produce extends Component {
 	}
 
 	handleSearch = event => {
-		const { filterQuery } = event.target;
-		this.setState({ filterQuery });
+		const { value } = event.target;
+		this.setState({ value });
 	  };
+
 	render() {
 		const DialogTitle = withStyles(styles)((props) => {
 			const { children, classes, onClose, ...other } = props;
@@ -258,7 +258,7 @@ class produce extends Component {
 		dayjs.extend(relativeTime);
 		const { classes } = this.props;
 		const { open, errors, viewOpen } = this.state;
-		const { produceObjects, filterQuery } = this.state;
+		const { data, value } = this.state;
 
 		const handleClickOpen = () => {
 			this.setState({
@@ -326,6 +326,8 @@ class produce extends Component {
 		const filterChanged = (event) => {
 			this.setState({ isFiltering: true, filter: event.target.value });
 		};
+
+		console.log("help po is", data)
 
 		if (this.state.uiLoading === true) {
 			return (
@@ -505,26 +507,14 @@ class produce extends Component {
                         <Grid container spacing={2}
                               alignItem="center">
                                 <Grid item xs={12}>
-                                    <div className={classes.search}>
-                                        <div className={classes.searchIcon}>
-                                        <SearchIcon />
-                                        </div>
-                                        <InputBase
-                                        fullWidth={true}
-                                        placeholder="Search…"
-                                        classes={{
-                                            root: classes.inputRoot,
-                                            input: classes.inputInput,
-                                        }}
-										inputProps={{ 'aria-label': 'search' }}
-										onChange={this.handleSearch} 
-										filterQuery={filterQuery}
-                                        />
+                                    <div>
+										<input type="text" value={this.state.value} onChange={this.handleSearch} />	
                                     </div>
                                 </Grid>
 								<SearchResults
-									filterQuery={filterQuery}
-									produceObjects={produceObjects}
+									value={value}
+									
+									data={data}
 									renderResults={results => (
 										<div>
                             				{results.map((produce) => (
