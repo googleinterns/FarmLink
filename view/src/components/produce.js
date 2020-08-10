@@ -24,7 +24,6 @@ import SearchIcon from '@material-ui/icons/Search';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Box from '@material-ui/core/Box';
 import SearchResults from 'react-filter-search';
-
 import axios from 'axios';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
