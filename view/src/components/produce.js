@@ -165,8 +165,8 @@ class Produce extends Component {
 
   /** Returns the authentication token stored in local storage */
   getAuth = () => {
-	authMiddleWare(this.props.history);
-	return localStorage.getItem("AuthToken");
+    authMiddleWare(this.props.history);
+    return localStorage.getItem("AuthToken");
   };
 
   /** Load in all of the current todos when the component has mounted */
@@ -183,7 +183,7 @@ class Produce extends Component {
       .catch((err) => {
         console.error(err);
       });
-  };
+  }
 
   /**
    * Takes a produce object as an input and deletes the given produce
@@ -275,7 +275,7 @@ class Produce extends Component {
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
 
-	/** Set all states to generic value when opening a dialog page */
+    /** Set all states to generic value when opening a dialog page */
     const handleClickOpen = () => {
       this.setState({
         name: "",
@@ -291,9 +291,9 @@ class Produce extends Component {
       });
     };
 
-	/**	
-     * Either updates or submits a new produce object to the data base	
-     * @param event The event being handled	
+    /**
+     * Either updates or submits a new produce object to the data base
+     * @param event The event being handled
      */
     const handleSubmit = (event) => {
       authMiddleWare(this.props.history);

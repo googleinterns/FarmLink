@@ -61,8 +61,8 @@ const styles = (theme) => ({
     width: 64,
     flexShrink: 0,
     flexGrow: 0,
-	marginTop: 20,
-	display: "inline-block"
+    marginTop: 20,
+    display: "inline-block",
   },
   uiProgess: {
     position: "fixed",
@@ -73,8 +73,8 @@ const styles = (theme) => ({
     top: "35%",
   },
   toolbar: theme.mixins.toolbar,
-  center: {	
-    textAlign: "center",	
+  center: {
+    textAlign: "center",
   },
 });
 
@@ -150,7 +150,7 @@ class Home extends Component {
         console.log(error);
         this.setState({ errorMsg: "Error in retrieving the data" });
       });
-  };
+  }
 
   render() {
     const { classes } = this.props;

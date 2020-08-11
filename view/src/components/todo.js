@@ -266,9 +266,9 @@ class Todo extends Component {
       });
     };
 
-    /**	
-     * Either updates or submits a new todo object to the data base	
-     * @param event The event being handled	
+    /**
+     * Either updates or submits a new todo object to the data base
+     * @param event The event being handled
      */
     const handleSubmit = (event) => {
       authMiddleWare(this.props.history);
