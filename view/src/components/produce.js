@@ -79,7 +79,7 @@ const styles = (theme) => ({
     left: "50%",
     top: "35%",
   },
-  dialogeStyle: {
+  dialogStyle: {
     maxWidth: "50%",
   },
   viewRoot: {
@@ -181,7 +181,7 @@ class Produce extends Component {
         });
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   };
 
@@ -199,7 +199,7 @@ class Produce extends Component {
         window.location.reload();
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   }
 
@@ -275,6 +275,7 @@ class Produce extends Component {
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
 
+	/** Set all states to generic value when opening a dialog page */
     const handleClickOpen = () => {
       this.setState({
         name: "",
@@ -290,6 +291,10 @@ class Produce extends Component {
       });
     };
 
+	/**	
+     * Either updates or submits a new produce object to the data base	
+     * @param event The event being handled	
+     */
     const handleSubmit = (event) => {
       authMiddleWare(this.props.history);
       event.preventDefault();
@@ -331,7 +336,6 @@ class Produce extends Component {
         })
         .catch((error) => {
           this.setState({ open: true, errors: error.response.data });
-          console.log(newProduce);
         });
     };
 
@@ -653,7 +657,7 @@ class Produce extends Component {
             aria-labelledby="customized-dialog-title"
             open={viewOpen}
             fullWidth
-            classes={{ paperFullWidth: classes.dialogeStyle }}
+            classes={{ paperFullWidth: classes.dialogStyle }}
           >
             <DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
               Stone Fruits

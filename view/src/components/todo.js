@@ -78,7 +78,7 @@ const styles = (theme) => ({
     left: "50%",
     top: "35%",
   },
-  dialogeStyle: {
+  dialogStyle: {
     maxWidth: "50%",
   },
   viewRoot: {
@@ -255,6 +255,7 @@ class Todo extends Component {
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
 
+    /** Set all states to generic value when opening a dialog page */
     const handleClickOpen = () => {
       this.setState({
         todoId: "",
@@ -265,6 +266,10 @@ class Todo extends Component {
       });
     };
 
+    /**	
+     * Either updates or submits a new todo object to the data base	
+     * @param event The event being handled	
+     */
     const handleSubmit = (event) => {
       authMiddleWare(this.props.history);
       event.preventDefault();
@@ -295,7 +300,7 @@ class Todo extends Component {
         })
         .catch((error) => {
           this.setState({ open: true, errors: error.response.data });
-          console.log(error);
+          console.error(error);
         });
     };
 
@@ -467,7 +472,7 @@ class Todo extends Component {
             aria-labelledby="customized-dialog-title"
             open={viewOpen}
             fullWidth
-            classes={{ paperFullWidth: classes.dialogeStyle }}
+            classes={{ paperFullWidth: classes.dialogStyle }}
           >
             <DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
               {this.state.title}
@@ -494,4 +499,4 @@ class Todo extends Component {
   }
 }
 
-export default withStyles(styles)(todo);
+export default withStyles(styles)(Todo);

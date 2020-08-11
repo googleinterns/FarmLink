@@ -61,20 +61,24 @@ const styles = (theme) => ({
     width: 64,
     flexShrink: 0,
     flexGrow: 0,
-    marginTop: 20,
+	marginTop: 20,
+	display: "inline-block"
   },
   uiProgess: {
     position: "fixed",
     zIndex: "1000",
-    height: "31px",
-    width: "31px",
+    height: "32px",
+    width: "32px",
     left: "50%",
     top: "35%",
   },
   toolbar: theme.mixins.toolbar,
+  center: {	
+    textAlign: "center",	
+  },
 });
 
-class home extends Component {
+class Home extends Component {
   state = {
     render: "todos",
   };
@@ -120,7 +124,7 @@ class home extends Component {
     };
   }
 
-  componentWillMount = () => {
+  componentDidMount() {
     authMiddleWare(this.props.history);
     const authToken = localStorage.getItem("AuthToken");
     axios.defaults.headers.common = { Authorization: `${authToken}` };
@@ -178,7 +182,7 @@ class home extends Component {
           >
             <div className={classes.toolbar} />
             <Divider />
-            <center>
+            <div className={classes.center}>
               <Avatar
                 src={this.state.profilePicture}
                 className={classes.avatar}
@@ -186,7 +190,7 @@ class home extends Component {
               <p>
                 {this.state.firstName} {this.state.lastName}
               </p>
-            </center>
+            </div>
             <Divider />
             <List>
               <ListItem button key="Farms" onClick={this.loadFarmsPage}>
