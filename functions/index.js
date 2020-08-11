@@ -32,6 +32,13 @@ const {
     deleteSurplus,
     editSurplus,
 } = require('./APIs/surplus')
+const {
+    getAllDeals,
+    postOneDeal,
+    getOneDeal,
+    deleteDeal,
+    editDeal,
+} = require('./APIs/deals')
 
 exports.api = functions.https.onRequest(app);
 app.get('/produce', auth, getAllProduce);
@@ -54,6 +61,11 @@ app.get('/surplus/:surplusId', auth, getOneSurplus);
 app.post('/surplus', auth, postOneSurplus);
 app.delete('/surplus/:surplusId', auth, deleteSurplus);
 app.put('/surplus/:surplusId', auth, editSurplus);
+app.get('/deals', auth, getAllDeals);
+app.get('/deals/:dealId', auth, getOneDeal);
+app.post('/deals', auth, postOneDeal);
+app.delete('/deals/:dealId', auth, deleteDeal);
+app.put('/deals/:dealId', auth, editDeal);
 
 const {
     loginUser,
