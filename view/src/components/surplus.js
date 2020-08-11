@@ -149,7 +149,10 @@ const styles = (theme) => ({
     // },
   },
   table: {
-    marginTop: "50px",
+    marginTop: "48px",
+  },
+  formText: {
+    marginBottom: "16px"
   },
 });
 
@@ -235,34 +238,6 @@ class todo extends Component {
       open: false,
     });
     this.reFetchSurplus();
-    // authMiddleWare(this.props.history);
-    // const authToken = localStorage.getItem("AuthToken");
-    // axios.defaults.headers.common = { Authorization: `${authToken}` };
-    // axios
-    //   // .all([this.getSurplus(), this.getFarms()])
-    //   // .then(axios.spread((...responses) => {
-    //   //   this.setState({
-    //   //     todos: responses[0].data,
-    //   //     farms: responses[1].data,
-    //   //     uiLoading: false
-    //   //   });
-    //   //   console.log(this.state.todos);
-    //   //   console.log(this.state.farms);
-    //   // }))
-    //   // .catch((err) => {
-    //   //   console.log("OH SHIT SHIT SHIT");
-    //   //   console.log(err);
-    //   // });
-    //   .get("/surplus")
-    //   .then((response) => {
-    //     this.setState({
-    //       surplusObjects: response.data,
-    //       uiLoading: false,
-    //     });
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
   };
 
   reFetchSurplus = () => {
@@ -322,7 +297,8 @@ class todo extends Component {
     axios
       .delete(`surplus/${surplusId}`)
       .then(() => {
-        window.location.reload();
+        //window.location.reload();
+        this.reFetch();
         this.props.alert("success", "Surplus successfully deleted!");
       })
       .catch((err) => {
@@ -482,6 +458,13 @@ class todo extends Component {
     } else {
       return (
         <main className={classes.content}>
+          {!this.props.main &&
+          <Typography className={classes.instructions, classes.formText}>
+            Please select a Surplus Object that you would like to pair with a 
+            Food Bank. If you would like to create a new Surplus Object, press the
+            icon in the bottom right.
+          </Typography>
+          }
           <div className={this.props.main ? classes.toolbar : undefined} />
           <Fab
             color="primary"

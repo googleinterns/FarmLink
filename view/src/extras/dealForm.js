@@ -31,7 +31,9 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
-
+import OutlinedInput from "@material-ui/core/OutlinedInput";
+import PropTypes from "prop-types";
+import MaskedInput from "react-text-mask";
 import AsyncInput from "../extras/asynchronous";
 
 import axios from "axios";
@@ -146,6 +148,42 @@ const styles = (theme) => ({
   },
 });
 
+
+function TextMaskCustom(props) {
+const { inputRef, ...other } = props;
+
+return (
+    <MaskedInput
+    {...other}
+    ref={(ref) => {
+        inputRef(ref ? ref.inputElement : null);
+    }}
+    mask={[
+        "(",
+        /[1-9]/,
+        /\d/,
+        /\d/,
+        ")",
+        " ",
+        /\d/,
+        /\d/,
+        /\d/,
+        "-",
+        /\d/,
+        /\d/,
+        /\d/,
+        /\d/,
+    ]}
+    placeholderChar={"\u2000"}
+    showMask
+    />
+);
+}
+
+TextMaskCustom.propTypes = {
+    inputRef: PropTypes.func.isRequired,
+};
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -161,6 +199,7 @@ class ProduceForm extends Component {
       cost: "",
       totalQuantityAvailable: "",
       packagingType: "",
+      contactPhone: "(1  )    -    ",
       errors: [],
       open: false,
       uiLoading: true,
@@ -326,11 +365,12 @@ class ProduceForm extends Component {
             <form className={classes.form} noValidate>
               <Grid container spacing={4} allignItems="center">
                 <Grid item xs={6}>
+                {/* need to have async contact loader for farm and food bank */}
                   <AsyncInput
                     history={this.props.history}
                     value={this.props.currentFarm}
                     target="/farms"
-                    label="Source Farm"
+                    label="Farm Primary Contact"
                     optionSelected={(option, value) =>
                       option.farmName === value.farmName
                     }
@@ -345,7 +385,7 @@ class ProduceForm extends Component {
                     history={this.props.history}
                     value={this.props.currentProduce}
                     target="/produce"
-                    label="Produce Types"
+                    label="Food Bank Primary Contact"
                     optionSelected={(option, value) =>
                       option.name === value.name
                     }
@@ -355,85 +395,55 @@ class ProduceForm extends Component {
                     paramName="produceId"
                   />
                 </Grid>
-                <Grid item xs={3}>
-                  <FormControl variant="outlined" fullWidth>
-                    <InputLabel id="available-label">Status</InputLabel>
-                    <Select
-                      value={this.state.available}
-                      onChange={this.handleChange}
-                      label="Status"
-                      inputProps={{
-                        name: "available",
-                        id: "outlined-available",
-                      }}
-                    >
-                      <MenuItem value={true}>Available</MenuItem>
-                      <MenuItem value={false}>Not Available</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="cost"
-                    label="Cost (per lb)"
-                    name="cost"
-                    type="number"
-                    autoComplete="cost"
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">$</InputAdornment>
-                      ),
-                    }}
-                    helperText={errors.cost}
-                    value={this.state.cost}
-                    error={errors.cost ? true : false}
-                    onChange={this.handleChange}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="totalQuantityAvailable"
-                    label="Total Quantity Available"
-                    name="totalQuantityAvailable"
-                    type="number"
-                    autoComplete="totalQuantityAvailable"
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">lbs</InputAdornment>
-                      ),
-                    }}
-                    helperText={errors.totalQuantityAvailable}
-                    value={this.state.totalQuantityAvailable}
-                    error={errors.totalQuantityAvailable ? true : false}
-                    onChange={this.handleChange}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <FormControl variant="outlined" fullWidth>
-                    <InputLabel id="packagingType-label">
-                      Packaging Type
-                    </InputLabel>
-                    <Select
-                      value={this.state.packagingType}
-                      onChange={this.handleChange}
-                      label="Packaging Type"
-                      inputProps={{
-                        name: "packagingType",
-                        id: "outlined-packagingType",
-                      }}
-                    >
-                      <MenuItem value="Open Crates">Open Crates</MenuItem>
-                      <MenuItem value="Closed Crates">Closed Crates</MenuItem>
-                      <MenuItem value="Sacks">Sacks</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
+                <Grid item xs={4}>
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="contactName"
+                      label="FarmLink Primary Contact Name"
+                      name="contactName"
+                      type="text"
+                      autoComplete="contactName"
+                    //   helperText={errors.contactName}
+                    //   value={this.state.contactName}
+                    //   error={errors.contactName ? true : false}
+                    //   onChange={this.handleChange}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <FormControl fullWidth>
+                      <InputLabel variant="outlined" htmlFor="contactPhone">
+                        FarmLink Primary Contact Phone
+                      </InputLabel>
+                      <OutlinedInput
+                        label="FarmLink Primary Contact Phone"
+                        value={this.state.contactPhone}
+                        onChange={this.handleChange}
+                        helperText={errors.contactPhone}
+                        // error={errors.contactPhone ? true : false}
+                        // name="contactPhone"
+                        // id="contactPhone"
+                        // inputComponent={TextMaskCustom}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="contactEmail"
+                      label="Farmlink Primary Contact Email"
+                      name="contactEmail"
+                      type="email"
+                      autoComplete="contactEmail"
+                    //   helperText={errors.contactEmail}
+                    //   value={this.state.contactEmail}
+                    //   error={errors.contactEmail ? true : false}
+                    //   onChange={this.handleChange}
+                    />
+                  </Grid>
               </Grid>
               {/* comment out ->           <div className={classes.table}>
                     <CustomTable
@@ -443,7 +453,7 @@ class ProduceForm extends Component {
                   </div>  */}
             </form>
           </Container>
-          <div className={classes.buttons}>
+          {/* <div className={classes.buttons}>
             <Button
               disabled={this.props.activeStep === 0}
               onClick={this.props.handleBack}
@@ -470,7 +480,7 @@ class ProduceForm extends Component {
             >
               Finish
             </Button>
-          </div>
+          </div> */}
         </main>
       );
     }

@@ -216,6 +216,8 @@ class foodbank extends Component {
       uiLoading: true,
       buttonType: "",
       viewOpen: false,
+      reloadCards: false,
+      selectedCard: "",
     };
 
     this.deleteTodoHandler = this.deleteTodoHandler.bind(this);
@@ -256,6 +258,33 @@ class foodbank extends Component {
     });
   };
 
+  reFetch = () => {
+    this.setState({
+      uiLoading: true,
+      reLoadCards: true,
+      open: false,
+    });
+    this.reFetchSurplus();
+  };
+
+  reFetchSurplus = () => {
+    authMiddleWare(this.props.history);
+    const authToken = localStorage.getItem("AuthToken");
+    axios.defaults.headers.common = { Authorization: `${authToken}` };
+    axios
+      .get("/foodbanks")
+      .then((response) => {
+        this.setState({
+          foodbanks: response.data,
+          uiLoading: false,
+          reloadCards: false,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   componentWillMount = () => {
     authMiddleWare(this.props.history);
     const authToken = localStorage.getItem("AuthToken");
@@ -281,7 +310,8 @@ class foodbank extends Component {
     axios
       .delete(`foodbanks/${foodbankId}`)
       .then(() => {
-        window.location.reload();
+        this.reFetch();
+        //window.location.reload();
         this.props.alert("success", "Food Bank successfully deleted!");
       })
       .catch((err) => {
@@ -291,6 +321,11 @@ class foodbank extends Component {
           "An error occurred when attempting to delete the Food Bank!"
         );
       });
+  }
+
+  handleSelect(data) {
+    this.setState({ selectedCard: data.foodbank.foodbankId });
+    // pass some function down from the stepper to save in form
   }
 
   handleEditClickOpen(data) {
@@ -427,7 +462,8 @@ class foodbank extends Component {
             "success",
             "Food Bank has been successfully" + message
           );
-          window.location.reload();
+          this.reFetch();
+          //window.location.reload();
         })
         .catch((error) => {
           const message =
@@ -454,13 +490,19 @@ class foodbank extends Component {
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          {this.state.uiLoading && <CardSkeletons classes={classes} />}
+          {this.state.uiLoading && <CardSkeletons classes={classes} noPadding={!this.props.main}/>}
         </main>
       );
     } else {
       return (
         <main className={classes.content}>
-          <div className={classes.toolbar} />
+          {!this.props.main &&
+          <Typography className={classes.instructions, classes.formText}>
+            Please select a Food Bank to send the Surplus to. If you would like 
+            to create a new Food Bank, press the icon in the bottom right.
+          </Typography>
+          }
+          <div className={this.props.main ? classes.toolbar : undefined} />
 
           <Fab
             color="primary"
@@ -727,7 +769,15 @@ class foodbank extends Component {
               </Grid>
               {this.state.foodbanks.map((foodbank) => (
                 <Grid item xs={12}>
-                  <Card className={classes.root} variant="outlined">
+                  <Card 
+                    className={classes.root} 
+                    raised={foodbank.foodbankId === this.state.selectedCard}
+                    variant={
+                      foodbank.foodbankId === this.state.selectedCard
+                        ? "elevation"
+                        : "outlined"
+                    }
+                  >
                     <CardContent>
                       <Typography variant="h5" component="h2">
                         {/* Los Angeles Regional Food Bank */}
@@ -816,28 +866,43 @@ class foodbank extends Component {
                       </Box>
                     </CardContent>
                     <CardActions>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleViewOpen({ foodbank })}
-                      >
-                        {" "}
-                        View{" "}
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleEditClickOpen({ foodbank })}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.deleteTodoHandler({ foodbank })}
-                      >
-                        Delete
-                      </Button>
+                      {this.props.main && (
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() => this.handleViewOpen({ foodbank })}
+                        >
+                          {" "}
+                          View{" "}
+                        </Button>
+                      )}
+                      {this.props.main && (
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() => this.handleEditClickOpen({ foodbank })}
+                        >
+                          Edit
+                        </Button>
+                      )}
+                      {this.props.main && (
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() => this.deleteTodoHandler({ foodbank })}
+                        >
+                          Delete
+                        </Button>
+                      )}
+                      {!this.props.main && (
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() => this.handleSelect({ foodbank })}
+                        >
+                          Select
+                        </Button>
+                      )}
                     </CardActions>
                   </Card>
                 </Grid>

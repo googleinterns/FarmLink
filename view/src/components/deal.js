@@ -347,7 +347,7 @@ class Deal extends Component {
                 </Button>
               </Toolbar>
             </AppBar>
-            <Container maxWidth="md">
+            <Container maxWidth="lg">
               <DealStepper alert={this.props.alert} />
               {/* <form className={classes.form} noValidate>
                 <Grid container spacing={2}>

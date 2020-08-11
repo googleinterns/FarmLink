@@ -10,6 +10,9 @@ import ProduceForm from "../extras/produceForm";
 import SurplusForm from "../extras/surplusForm";
 import Alert from "../extras/alert";
 import Surplus from "../components/surplus";
+import FoodBanks from "../components/foodbanks";
+import DealForm from "../extras/dealForm";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,8 +20,8 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     marginRight: theme.spacing(1),
-    color: theme.palette.primary.contrastText,
-    backgroundColor: theme.palette.primary.dark,
+    // color: theme.palette.primary.contrastText,
+    // backgroundColor: theme.palette.primary.dark,
   },
   instructions: {
     marginTop: theme.spacing(1),
@@ -30,7 +33,7 @@ function getSteps() {
   return [
     "Select a Surplus Object",
     "Match with a Food Bank",
-    "Create a Surplus Object",
+    "Fill out Deal Logistics",
   ];
 }
 
@@ -64,33 +67,12 @@ export default function HorizontalLinearStepper(props) {
         return <Surplus main={false} alert={props.alert} />;
       case 1:
         return (
-          <ProduceForm
-            activeStep={activeStep}
-            handleBack={handleBack}
-            isStepOptional={isStepOptional}
-            handleSkip={handleSkip}
-            handleNext={handleNext}
-            setProduce={setCurrentProduce}
-            alert={props.alert}
-            steps={steps}
-            buttonType={props.buttonType}
-            produceId={props.produceId}
-          />
+          <FoodBanks main={false} alert={props.alert}/>
         );
       case 2:
         return (
-          <SurplusForm
-            activeStep={activeStep}
-            handleBack={handleBack}
-            isStepOptional={isStepOptional}
-            handleSkip={handleSkip}
-            handleNext={handleNext}
-            surplusId={props.surplusId}
-            currentFarm={currentFarm}
-            currentProduce={currentProduce}
+          <DealForm
             alert={props.alert}
-            steps={steps}
-            buttonType={props.buttonType}
           />
         );
       default:
@@ -99,7 +81,7 @@ export default function HorizontalLinearStepper(props) {
   };
 
   const isStepOptional = (step) => {
-    return step === 1 || step === 0;
+    return false;
   };
 
   const isLastStep = (step) => {
@@ -122,11 +104,17 @@ export default function HorizontalLinearStepper(props) {
   };
 
   const handleNext = () => {
-    handleSubmit(activeStep);
+    //handleSubmit(activeStep);
     let newSkipped = skipped;
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values());
       newSkipped.delete(activeStep);
+    }
+
+    // confirm that selected (update later)
+    if (false) {
+      props.alert("warning", "Please select a Surplus Object to continue.");
+      return;
     }
 
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -181,6 +169,25 @@ export default function HorizontalLinearStepper(props) {
           );
         })}
       </Stepper>
+      <div>
+        <Button
+          disabled={activeStep === 0}
+          onClick={handleBack}
+          className={classes.button}
+        >
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          align="right"
+          onClick={handleNext}
+          className={classes.button}
+        >
+
+          {activeStep === steps.length - 1 ? "Finish" : "Next"}
+        </Button>
+      </div>
       <div>
         {activeStep === steps.length ? (
           <div>

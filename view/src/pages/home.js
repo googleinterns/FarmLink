@@ -394,7 +394,7 @@ class home extends Component {
             ) : this.state.toRender === "farms" ? (
               <Farms alert={this.alert} />
             ) : (
-              <FoodBanks alert={this.alert} />
+              <FoodBanks alert={this.alert} main={true}/>
             )}
           </div>
         </div>
