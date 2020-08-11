@@ -153,7 +153,6 @@ class produce extends Component {
 			errors: [],
 			open: false,
 			uiLoading: true,
-			isFiltering: false,
 			value: '',
 			buttonType: '',
 			viewOpen: false
@@ -233,7 +232,19 @@ class produce extends Component {
 	handleSearch = event => {
 		const { value } = event.target;
 		this.setState({ value });
+		console.log("VAL IN non ac HS IS", value)
 	  };
+
+	handleACSearch = event => {
+		const { value } = event.target;
+		this.setState({ value });
+		console.log("VAL IN ACHS IS", this.state.value)
+	};
+
+	showValue = () => {
+		console.log(this.state.value)
+		return this.state.value; 
+	}
 
 	render() {
 		const DialogTitle = withStyles(styles)((props) => {
@@ -502,57 +513,28 @@ class produce extends Component {
                         <Grid container spacing={2}
                               alignItem="center">
                                 <Grid item xs={12}>
-										<Autocomplete
-											id="combo-box-demo"
-											options={data.map((produce) => produce.title)}
-
-											style={{ width: 300 }}
-											
-											renderInput={(params) => 
-												<TextField {...params} 
-													label="Combo box" 
-													variant="outlined" 
-													
-												/>}
-											/>
-
-									<Autocomplete
-									
-										multiple
-										id="tags-filled"
-										options={data}
-										getOptionLabel={(option) => option.name}
-										onInputChange={this.handleSearch}
-										freeSolo={true}
-										renderTags={(value, getTagProps) =>
-										value.map((option, index) => (
-											<Chip variant="standard" label={option} {...getTagProps({ index })} />
-										))
-										}
-										renderInput={(params) => (
-										<TextField {...params} variant="standard" label="search" placeholder="Search..." />
-										)}
-									/>									
                                     <div>
-										<input type="text" value={this.state.value} onChange={this.handleSearch} />	
+										<input type="text" value={value}
+										onChange={this.handleSearch} 
+										/>	
                                     </div>
 									
 									<div className={classes.search}>
 									<div className={classes.searchIcon}>
 									<SearchIcon />
 									</div>
-									<InputBase
-										fullWidth={true}
-										placeholder="Search…"
-										classes={{
-											root: classes.inputRoot,
-											input: classes.inputInput,
-										}}
-										inputProps={{ 'aria-label': 'search' }}
-										value={this.state.value}
-										onChange={this.handleSearch} 
-										
-									/>
+										<InputBase
+											fullWidth={true}
+											placeholder="Search…"
+											classes={{
+												root: classes.inputRoot,
+												input: classes.inputInput,
+											}}
+											inputProps={{ 'aria-label': 'search' }}
+											value={this.state.value}
+											onChange={this.handleSearch} 
+											
+										/>
 									</div>
 
                                 </Grid>
@@ -562,7 +544,7 @@ class produce extends Component {
 									renderResults={results => (
 										<div>
                             				{results.map((produce) => (
-												<Grid item xs={12}>
+												<Grid item xs={12}key={produce.produceId}>
 													<Card className={classes.root} variant="outlined">
 														<CardContent>
 															<Typography variant="h5" component="h2">
