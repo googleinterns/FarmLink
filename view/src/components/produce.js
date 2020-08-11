@@ -20,7 +20,6 @@ import CardContent from "@material-ui/core/CardContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import InputBase from "@material-ui/core/InputBase";
-// import { fade } from '@material-ui/core/styles';
 import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
@@ -96,11 +95,6 @@ const styles = (theme) => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    // backgroundColor: fade(theme.palette.primary.main, 0.15),
-    // '&:hover': {
-    // backgroundColor: fade(theme.palette.primary.main, 0.25),
-    // },
-    // //backgroundColor: theme.palette.primary.main,
     marginLeft: 0,
     width: "100%",
   },
@@ -118,16 +112,8 @@ const styles = (theme) => ({
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    //transition: theme.transitions.create('width'),
     width: "100%",
-    // [theme.breakpoints.up('sm')]: {
-    // width: '100ch',
-    // '&:focus': {
-    //     width: '100ch',
-    // },
-    // },
   },
 });
 
@@ -135,7 +121,12 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-class produce extends Component {
+/**
+ * This class represents a Produce components, which is a sub-page of the
+ * home page where produce objects are visualized, created, updated, edited,
+ * and deleted.
+ */
+class Produce extends Component {
   constructor(props) {
     super(props);
 
@@ -161,16 +152,26 @@ class produce extends Component {
     this.handleViewOpen = this.handleViewOpen.bind(this);
   }
 
+  /**
+   * Given an event, this function updates a state (the target of the event)
+   * with a new value
+   * @param event The event that is attempting to update a state
+   */
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
     });
   };
 
-  componentWillMount = () => {
-    authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
+  /** Returns the authentication token stored in local storage */
+  getAuth = () => {
+	authMiddleWare(this.props.history);
+	return localStorage.getItem("AuthToken");
+  };
+
+  /** Load in all of the current todos when the component has mounted */
+  componentDidMount() {
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
       .get("/produce")
       .then((response) => {
@@ -184,10 +185,13 @@ class produce extends Component {
       });
   };
 
+  /**
+   * Takes a produce object as an input and deletes the given produce
+   * object from the database
+   * @param data A produce object
+   */
   deleteTodoHandler(data) {
-    authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     let produceId = data.produce.produceId;
     axios
       .delete(`produce/${produceId}`)
@@ -199,6 +203,11 @@ class produce extends Component {
       });
   }
 
+  /**
+   * Takes a produce object as an input and opens a dialog page to
+   * allow the user to update the attributes of the produce object
+   * @param data A produce object
+   */
   handleEditClickOpen(data) {
     this.setState({
       name: data.produce.name,
@@ -216,6 +225,12 @@ class produce extends Component {
     });
   }
 
+  /**
+   * Takes a produce object as an input and opens a popup with all the
+   * information about the produce (currently not being used -> will be
+   * updated to show augmented information)
+   * @param data A produce object
+   */
   handleViewOpen(data) {
     this.setState({
       name: data.produce.name,
