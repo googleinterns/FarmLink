@@ -46,8 +46,8 @@ const styles = (theme) => ({
     padding: theme.spacing(3),
   },
   avatar: {
-    height: 110,
-    width: 100,
+    height: 64,
+    width: 64,
     flexShrink: 0,
     flexGrow: 0,
     marginTop: 20,
@@ -139,10 +139,10 @@ class Home extends Component {
       return (
         <div className={classes.root}>
           <CssBaseline />
-          <AppBar position="fixed" className={classes.appBar}>
+          <AppBar position="fixed" className={classes.appBar} color="white">
             <Toolbar>
               <Typography variant="h6" noWrap>
-                TodoApp
+                The FarmLink Project
               </Typography>
             </Toolbar>
           </AppBar>
