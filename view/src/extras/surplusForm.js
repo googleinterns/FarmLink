@@ -183,26 +183,29 @@ class ProduceForm extends Component {
     });
   };
 
-  componentWillMount = () => {
+  componentDidMount = () => {
     authMiddleWare(this.props.history);
     const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
-    axios
-      .get(`surplus/${this.props.surplusId}`)
-      .then((response) => {
-        this.setState({
-          originFarmId: response.data.originFarmId,
-          produceId: response.data.produceId,
-          available: response.data.available,
-          cost: response.data.cost,
-          totalQuantityAvailable: response.data.totalQuantityAvailable,
-          packagingType: response.data.packagingType,
-          uiLoading: false,
+    console.log(this.props.buttonType);
+    if (this.props.buttonType !== "Edit") {
+      axios.defaults.headers.common = { Authorization: `${authToken}` };
+      axios
+        .get(`surplus/${this.props.surplusId}`)
+        .then((response) => {
+          this.setState({
+            originFarmId: response.data.originFarmId,
+            produceId: response.data.produceId,
+            available: response.data.available,
+            cost: response.data.cost,
+            totalQuantityAvailable: response.data.totalQuantityAvailable,
+            packagingType: response.data.packagingType,
+            uiLoading: false,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
         });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    }
   };
 
   //   handleEditClickOpen(data) {
@@ -283,15 +286,17 @@ class ProduceForm extends Component {
       axios.defaults.headers.common = { Authorization: `${authToken}` };
       axios(options)
         .then(() => {
-          this.setState({ open: false });
+          //this.setState({ open: false });
           const message =
             this.props.buttonType === "Edit" ? " edited!" : " submitted!";
           this.props.alert(
             "success",
             "Surplus has successfully been" + message
           );
+          console.log("reloadin!!!!!");
+          this.props.reFetch();
           //this.setState({ alert: true })
-          window.location.reload();
+          //window.location.reload();
         })
         .catch((error) => {
           const message =

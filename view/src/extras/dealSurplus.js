@@ -197,8 +197,6 @@ class todo extends Component {
       uiLoading: true,
       buttonType: "",
       viewOpen: false,
-      selectedCard: "",
-      reloadCards: false,
     };
 
     this.deleteTodoHandler = this.deleteTodoHandler.bind(this);
@@ -226,61 +224,6 @@ class todo extends Component {
 
   getFarms = () => {
     return axios.get("/farms");
-  };
-
-  reFetch = () => {
-    this.setState({
-      uiLoading: true,
-      reLoadCards: true,
-      open: false,
-    });
-    this.reFetchSurplus();
-    // authMiddleWare(this.props.history);
-    // const authToken = localStorage.getItem("AuthToken");
-    // axios.defaults.headers.common = { Authorization: `${authToken}` };
-    // axios
-    //   // .all([this.getSurplus(), this.getFarms()])
-    //   // .then(axios.spread((...responses) => {
-    //   //   this.setState({
-    //   //     todos: responses[0].data,
-    //   //     farms: responses[1].data,
-    //   //     uiLoading: false
-    //   //   });
-    //   //   console.log(this.state.todos);
-    //   //   console.log(this.state.farms);
-    //   // }))
-    //   // .catch((err) => {
-    //   //   console.log("OH SHIT SHIT SHIT");
-    //   //   console.log(err);
-    //   // });
-    //   .get("/surplus")
-    //   .then((response) => {
-    //     this.setState({
-    //       surplusObjects: response.data,
-    //       uiLoading: false,
-    //     });
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-  };
-
-  reFetchSurplus = () => {
-    authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
-    axios
-      .get("/surplus")
-      .then((response) => {
-        this.setState({
-          surplusObjects: response.data,
-          uiLoading: false,
-          reloadCards: false,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   componentWillMount = () => {
@@ -332,11 +275,6 @@ class todo extends Component {
           "An error occurred when attempting to delete the Surplus!"
         );
       });
-  }
-
-  handleSelect(data) {
-    this.setState({ selectedCard: data.surplus.surplusId });
-    // pass some function down from the stepper to save in form
   }
 
   handleEditClickOpen(data) {
@@ -475,14 +413,14 @@ class todo extends Component {
         <main className={classes.content}>
           {this.state.uiLoading && (
             // <CircularProgress size={150} className={classes.uiProgess} />
-            <CardSkeletons classes={classes} noPadding={!this.props.main} />
+            <CardSkeletons classes={classes} />
           )}
         </main>
       );
     } else {
       return (
         <main className={classes.content}>
-          <div className={this.props.main ? classes.toolbar : undefined} />
+          <div className={classes.toolbar} />
           <Fab
             color="primary"
             className={classes.floatingButton}
@@ -534,7 +472,6 @@ class todo extends Component {
                 farmId={this.state.originFarmId}
                 produceId={this.state.produceId}
                 surplusId={this.state.surplusId}
-                reFetch={this.reFetch}
                 // handleChange={this.handleChange}
                 // handleAsyncChange={this.handleAsyncChange}
               />
@@ -690,15 +627,7 @@ class todo extends Component {
               </Grid>
               {this.state.surplusObjects.map((surplus) => (
                 <Grid item xs={12}>
-                  <Card
-                    className={classes.root}
-                    raised={surplus.surplusId === this.state.selectedCard}
-                    variant={
-                      surplus.surplusId === this.state.selectedCard
-                        ? "elevation"
-                        : "outlined"
-                    }
-                  >
+                  <Card className={classes.root} variant="outlined">
                     <CardContent>
                       <Typography variant="h5" component="h2">
                         {surplus.totalQuantityAvailable} lbs of{" "}
@@ -747,42 +676,28 @@ class todo extends Component {
                       </Box>
                     </CardContent>
                     <CardActions>
-                      {this.props.main && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => this.handleViewOpen({ surplus })}
-                        >
-                          View
-                        </Button>
-                      )}
-                      {this.props.main && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => this.handleEditClickOpen({ surplus })}
-                        >
-                          Edit
-                        </Button>
-                      )}
-                      {this.props.main && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => this.deleteTodoHandler({ surplus })}
-                        >
-                          Delete
-                        </Button>
-                      )}
-                      {!this.props.main && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => this.handleSelect({ surplus })}
-                        >
-                          Select
-                        </Button>
-                      )}
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => this.handleViewOpen({ surplus })}
+                      >
+                        {" "}
+                        View{" "}
+                      </Button>
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => this.handleEditClickOpen({ surplus })}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => this.deleteTodoHandler({ surplus })}
+                      >
+                        Delete
+                      </Button>
                     </CardActions>
                   </Card>
                 </Grid>

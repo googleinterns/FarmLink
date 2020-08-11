@@ -24,6 +24,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import CardSkeletons from "../extras/skeleton";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
+import DealStepper from "../extras/dealStepper";
 
 import axios from "axios";
 import dayjs from "dayjs";
@@ -135,7 +136,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-class deal extends Component {
+class Deal extends Component {
   constructor(props) {
     super(props);
 
@@ -333,8 +334,8 @@ class deal extends Component {
                 </IconButton>
                 <Typography variant="h6" className={classes.title}>
                   {this.state.buttonType === "Edit"
-                    ? "Edit Todo"
-                    : "Create a new Todo"}
+                    ? "Edit Deal"
+                    : "Create a new Deal"}
                 </Typography>
                 <Button
                   autoFocus
@@ -347,7 +348,8 @@ class deal extends Component {
               </Toolbar>
             </AppBar>
             <Container maxWidth="md">
-              <form className={classes.form} noValidate>
+              <DealStepper alert={this.props.alert} />
+              {/* <form className={classes.form} noValidate>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <TextField
@@ -383,7 +385,7 @@ class deal extends Component {
                     />
                   </Grid>
                 </Grid>
-              </form>
+              </form> */}
             </Container>
           </Dialog>
           <Container maxWidth="lg">
@@ -480,4 +482,4 @@ class deal extends Component {
   }
 }
 
-export default withStyles(styles)(deal);
+export default withStyles(styles)(Deal);

@@ -175,6 +175,7 @@ class ProduceForm extends Component {
   };
 
   componentWillMount = () => {
+    let mounted = true;
     if (this.props.buttonType === "Edit") {
       authMiddleWare(this.props.history);
       const authToken = localStorage.getItem("AuthToken");
@@ -183,24 +184,29 @@ class ProduceForm extends Component {
         .get(`produce/${this.props.produceId}`)
         .then((response) => {
           this.props.setProduce(response.data);
-          this.setState({
-            name: response.data.name,
-            produceId: response.data.produceId,
-            shippingPresetTemperature: response.data.shippingPresetTemperature,
-            shippingMaintenanceTemperatureLow:
-              response.data.shippingMaintenanceTemperatureLow,
-            shippingMaintenanceTemperatureHigh:
-              response.data.shippingMaintenanceTemperatureHigh,
-            price: response.data.price,
-            pricePaid: response.data.pricePaid,
-            amountMoved: response.data.amountMoved,
-            uiLoading: false,
-          });
+          if (mounted) {
+            this.setState({
+              name: response.data.name,
+              produceId: response.data.produceId,
+              shippingPresetTemperature:
+                response.data.shippingPresetTemperature,
+              shippingMaintenanceTemperatureLow:
+                response.data.shippingMaintenanceTemperatureLow,
+              shippingMaintenanceTemperatureHigh:
+                response.data.shippingMaintenanceTemperatureHigh,
+              price: response.data.price,
+              pricePaid: response.data.pricePaid,
+              amountMoved: response.data.amountMoved,
+              uiLoading: false,
+            });
+          }
         })
         .catch((err) => {
           console.log(err);
         });
     }
+
+    return () => (mounted = false);
   };
 
   handleEditClickOpen(data) {

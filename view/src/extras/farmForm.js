@@ -259,6 +259,7 @@ class FarmForm extends Component {
   // will get one farm and render it into edit form
 
   componentWillMount = () => {
+    let mounted = true;
     if (this.props.buttonType === "Edit") {
       authMiddleWare(this.props.history);
       const authToken = localStorage.getItem("AuthToken");
@@ -267,26 +268,29 @@ class FarmForm extends Component {
         .get(`farms/${this.props.farmId}`)
         .then((response) => {
           this.props.setFarm(response.data);
-          this.setState({
-            // farms: response.data,
-            farmName: response.data.farmName,
-            farmId: response.data.farmId,
-            contactName: response.data.contactName,
-            contactEmail: response.data.contactEmail,
-            contactPhone: response.data.contactPhone,
-            farmTags: response.data.farmTags,
-            forklift: response.data.forklift,
-            loadingDock: response.data.loadingDock,
-            location: response.data.location,
-            locationId: response.data.locationId,
-            transportation: response.data.transportation,
-            uiLoading: false,
-          });
+          if (mounted) {
+            this.setState({
+              // farms: response.data,
+              farmName: response.data.farmName,
+              farmId: response.data.farmId,
+              contactName: response.data.contactName,
+              contactEmail: response.data.contactEmail,
+              contactPhone: response.data.contactPhone,
+              farmTags: response.data.farmTags,
+              forklift: response.data.forklift,
+              loadingDock: response.data.loadingDock,
+              location: response.data.location,
+              locationId: response.data.locationId,
+              transportation: response.data.transportation,
+              uiLoading: false,
+            });
+          }
         })
         .catch((err) => {
           console.log(err);
         });
     }
+    return () => (mounted = false);
   };
 
   render() {

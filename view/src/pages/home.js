@@ -390,7 +390,7 @@ class home extends Component {
             ) : this.state.toRender === "produce" ? (
               <Produce alert={this.alert} />
             ) : this.state.toRender === "surplus" ? (
-              <Surplus alert={this.alert} />
+              <Surplus alert={this.alert} main={true} />
             ) : this.state.toRender === "farms" ? (
               <Farms alert={this.alert} />
             ) : (

@@ -13,12 +13,15 @@ import Container from "@material-ui/core/Container";
 import Skeleton from "@material-ui/lab/Skeleton";
 
 export default function CardSkeleton(props) {
+  console.log(props.padding);
   return (
     <Container maxWidth="lg">
       <Grid container spacing={2} alignItem="center">
-        <Grid item xs={12}>
-          <div style={{ height: "50px" }}></div>
-        </Grid>
+        {!props.noPadding && (
+          <Grid item xs={12}>
+            <div style={{ height: "50px" }}></div>
+          </Grid>
+        )}
         <Grid item xs={12}>
           <Skeleton animation="wave" height="50px" width="100%" />
         </Grid>

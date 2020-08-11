@@ -9,23 +9,7 @@ import FarmForm from "../extras/farmForm";
 import ProduceForm from "../extras/produceForm";
 import SurplusForm from "../extras/surplusForm";
 import Alert from "../extras/alert";
-
-const tableData = {
-  columns: [
-    { title: "Role", field: "contactRole" },
-    { title: "Name", field: "contactName" },
-    { title: "Email", field: "contactEmail" },
-    { title: "Phone Number", field: "contactPhone" },
-  ],
-  data: [
-    {
-      contactRole: "Farm Manager",
-      contactName: "Jane Doe",
-      contactEmail: "jane@doe.com",
-      contactPhone: "(777)851-1234",
-    },
-  ],
-};
+import Surplus from "../components/surplus";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,8 +28,8 @@ const useStyles = makeStyles((theme) => ({
 
 function getSteps() {
   return [
-    "Create a Farm",
-    "Create a Produce Object",
+    "Select a Surplus Object",
+    "Match with a Food Bank",
     "Create a Surplus Object",
   ];
 }
@@ -77,20 +61,7 @@ export default function HorizontalLinearStepper(props) {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return (
-          <FarmForm
-            activeStep={activeStep}
-            handleBack={handleBack}
-            isStepOptional={isStepOptional}
-            handleSkip={handleSkip}
-            handleNext={handleNext}
-            setFarm={setCurrentFarm}
-            alert={props.alert}
-            steps={steps}
-            buttonType={props.buttonType}
-            farmId={props.farmId}
-          />
-        );
+        return <Surplus main={false} alert={props.alert} />;
       case 1:
         return (
           <ProduceForm
@@ -120,7 +91,6 @@ export default function HorizontalLinearStepper(props) {
             alert={props.alert}
             steps={steps}
             buttonType={props.buttonType}
-            reFetch={props.reFetch}
           />
         );
       default:
@@ -226,7 +196,7 @@ export default function HorizontalLinearStepper(props) {
             <Typography className={classes.instructions}>
               {getStepContent(activeStep)}
             </Typography>
-            <div>
+            {/* <div>
               {!isLastStep(activeStep) && (
                 <Button
                   variant="contained"
@@ -236,7 +206,7 @@ export default function HorizontalLinearStepper(props) {
                   Jump to Surplus
                 </Button>
               )}
-            </div>
+            </div> */}
             {/* <div>
               <Button
                 disabled={activeStep === 0}
