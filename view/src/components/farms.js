@@ -189,7 +189,7 @@ TextMaskCustom.propTypes = {
 
 /**
  * This class represents a Farm components, which is a sub-page of the
- * home page where produce objects are visualized, created, updated, edited,
+ * home page where farm objects are visualized, created, updated, edited,
  * and deleted.
  */
 class Farms extends Component {
@@ -278,9 +278,9 @@ class Farms extends Component {
   }
 
   /**
-   * Takes a produce object as an input and deletes the given produce
+   * Takes a farm object as an input and deletes the given farm
    * object from the database
-   * @param data A produce object
+   * @param data A farm object
    */
   deleteTodoHandler(data) {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
@@ -296,9 +296,9 @@ class Farms extends Component {
   }
 
   /**
-   * Takes a produce object as an input and opens a dialog page to
-   * allow the user to update the attributes of the produce object
-   * @param data A produce object
+   * Takes a farm object as an input and opens a dialog page to
+   * allow the user to update the attributes of the farm object
+   * @param data A farm object
    */
   handleEditClickOpen(data) {
     this.setState({
@@ -319,10 +319,10 @@ class Farms extends Component {
   }
 
   /**
-   * Takes a produce object as an input and opens a popup with all the
-   * information about the produce (currently not being used -> will be
+   * Takes a farm object as an input and opens a popup with all the
+   * information about the farm (currently not being used -> will be
    * updated to show augmented information)
-   * @param data A produce object
+   * @param data A farm object
    */
   handleViewOpen(data) {
     this.setState({
@@ -388,7 +388,7 @@ class Farms extends Component {
     };
 
     /**
-     * Either updates or submits a new produce object to the data base
+     * Either updates or submits a new farm object to the data base
      * @param event The event being handled
      */
     const handleSubmit = (event) => {
