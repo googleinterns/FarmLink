@@ -139,7 +139,7 @@ class Todo extends Component {
   /**
    * Given an event, this function updates a state (the target of the event)
    * with a new value
-   * @param {Event} event The event that is attempting to update a state
+   * @param event The event that is attempting to update a state
    */
   handleChange = (event) => {
     this.setState({
@@ -156,7 +156,7 @@ class Todo extends Component {
   /**
    * Takes a todo object as an input and deletes the given todo
    * object from the database
-   * @param {todo object} data 
+   * @param data A todo object 
    */
   handleDeleteTodo(data) {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
@@ -174,7 +174,7 @@ class Todo extends Component {
   /**
    * Takes a todo object as an input and opens a dialog page to 
    * allow the user to update the attributes of the todo object
-   * @param {todo object} data 
+   * @param data A todo object 
    */
   handleEditClick(data) {
     this.setState({
@@ -190,7 +190,7 @@ class Todo extends Component {
    * Takes a todo object as an input and opens a popup with all the
    * information about the todo (currently not being used -> will be
    * updated to show augmented information)
-   * @param {todo object} data 
+   * @param data A todo object 
    */
   handleViewOpen(data) {
     this.setState({
@@ -242,7 +242,7 @@ class Todo extends Component {
 
     /**
      * Either updates or submits a new todo object to the data base
-     * @param {Event} event The event being handled
+     * @param event The event being handled
      */
     const handleSubmit = (event) => {
       authMiddleWare(this.props.history);
