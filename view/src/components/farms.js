@@ -138,6 +138,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+/**
+ * This function sets up the mask used for the phone input of (***) ***-**** 
+ * where * represents a digit 
+ */
 function TextMaskCustom(props) {
   const { inputRef, ...other } = props;
 
@@ -174,7 +178,7 @@ TextMaskCustom.propTypes = {
 };
 
 /**
- * This class represents a Farm components, which is a sub-page of the
+ * This class represents a Farm component, which is a sub-page of the
  * home page where farm objects are visualized, created, updated, edited,
  * and deleted.
  */
@@ -183,6 +187,7 @@ class Farms extends Component {
     super(props);
 
     this.state = {
+      // farm states
       farmName: "",
       farmId: "",
       contactName: "",
@@ -194,6 +199,7 @@ class Farms extends Component {
       location: "",
       locationId: "",
       transportation: false,
+      // page states
       errors: [],
       open: false,
       uiLoading: true,
@@ -202,8 +208,8 @@ class Farms extends Component {
     };
 
     this.onTagsChange = this.onTagsChange.bind(this);
-    this.deleteTodoHandler = this.deleteTodoHandler.bind(this);
-    this.handleEditClickOpen = this.handleEditClickOpen.bind(this);
+    this.handleDeleteTodo = this.handleDeleteTodo.bind(this);
+    this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
   }
 
@@ -226,6 +232,7 @@ class Farms extends Component {
   /** Used to update tags in form */
   onTagsChange = (event, values) => {
     this.setState({
+      // farm state
       farmTags: values,
     });
   };
@@ -236,6 +243,7 @@ class Farms extends Component {
       return;
     }
     this.setState({
+      // farm states
       location: newValue.description,
       locationId: newValue.place_id,
     });
@@ -254,7 +262,9 @@ class Farms extends Component {
       .get("/farms")
       .then((response) => {
         this.setState({
+          // farm state
           farms: response.data,
+          // page state
           uiLoading: false,
         });
       })
@@ -268,7 +278,7 @@ class Farms extends Component {
    * object from the database
    * @param data A farm object
    */
-  deleteTodoHandler(data) {
+  handleDeleteTodo(data) {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     let farmId = data.farm.farmId;
     axios
@@ -286,8 +296,9 @@ class Farms extends Component {
    * allow the user to update the attributes of the farm object
    * @param data A farm object
    */
-  handleEditClickOpen(data) {
+  handleEditClick(data) {
     this.setState({
+      // farm states
       farmName: data.farm.farmName,
       farmId: data.farm.farmId,
       contactName: data.farm.contactName,
@@ -299,6 +310,7 @@ class Farms extends Component {
       location: data.farm.location,
       locationId: data.farm.locationId,
       transportation: data.farm.transportation,
+      // page states
       buttonType: "Edit",
       open: true,
     });
@@ -312,6 +324,7 @@ class Farms extends Component {
    */
   handleViewOpen(data) {
     this.setState({
+      // farm states
       farmName: this.state.farmName,
       contactName: this.state.contactName,
       contactEmail: this.state.contactEmail,
@@ -322,6 +335,7 @@ class Farms extends Component {
       location: this.state.location,
       locationId: this.state.locationId,
       transportation: this.state.transportation,
+      // page states
       viewOpen: true,
     });
   }
@@ -356,8 +370,9 @@ class Farms extends Component {
     const { open, errors, viewOpen } = this.state;
 
     /** Set all states to generic value when opening a dialog page */
-    const handleClickOpen = () => {
+    const handleAddClick = () => {
       this.setState({
+        // farm states
         farmName: "",
         farmId: "",
         contactName: "",
@@ -369,6 +384,7 @@ class Farms extends Component {
         location: "",
         locationId: "",
         transportation: false,
+        // page states
         open: true,
       });
     };
@@ -381,6 +397,7 @@ class Farms extends Component {
       authMiddleWare(this.props.history);
       event.preventDefault();
       const newFarm = {
+        // farm states
         farmName: this.state.farmName,
         contactName: this.state.contactName,
         contactEmail: this.state.contactEmail,
@@ -420,10 +437,12 @@ class Farms extends Component {
     };
 
     const handleViewClose = () => {
+      // page state
       this.setState({ viewOpen: false });
     };
 
-    const handleClose = (event) => {
+    const handleDialogClose = (event) => {
+      // page state
       this.setState({ open: false });
     };
 
@@ -445,14 +464,14 @@ class Farms extends Component {
             className={classes.floatingButton}
             color="primary"
             aria-label="Add Farm"
-            onClick={handleClickOpen}
+            onClick={handleAddClick}
           >
             <AddCircleIcon style={{ fontSize: 60 }} />
           </IconButton>
           <Dialog
             fullScreen
             open={open}
-            onClose={handleClose}
+            onClose={handleDialogClose}
             TransitionComponent={Transition}
           >
             <AppBar className={classes.appBar}>
@@ -460,7 +479,7 @@ class Farms extends Component {
                 <IconButton
                   edge="start"
                   color="inherit"
-                  onClick={handleClose}
+                  onClick={handleDialogClose}
                   aria-label="close"
                 >
                   <CloseIcon />
@@ -671,7 +690,7 @@ class Farms extends Component {
                             Details:
                           </Typography>
                           <Typography variant="body2" component="p">
-                            Location of Farm:{" "}
+                            Location of Farm:
                             {`${farm.location.substring(0, 30)}`}
                             <br />
                             {`${farm.location.substring(30, 78)}`}
@@ -700,7 +719,7 @@ class Farms extends Component {
                             Logistics:
                           </Typography>
                           <Typography variant="body2" component="p">
-                            Have Transportation Means:{" "}
+                            Have Transportation Means:
                             {farm.transportation ? "yes" : "no"}
                             <br />
                             Loading Dock: {farm.loadingDock ? "yes" : "no"}
@@ -714,14 +733,14 @@ class Farms extends Component {
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.handleEditClickOpen({ farm })}
+                        onClick={() => this.handleEditClick({ farm })}
                       >
                         Edit
                       </Button>
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.deleteTodoHandler({ farm })}
+                        onClick={() => this.handleDeleteTodo({ farm })}
                       >
                         Delete
                       </Button>
@@ -775,7 +794,7 @@ class Farms extends Component {
                     Logistics:
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Have Transportation Means:{" "}
+                    Have Transportation Means:
                     {this.state.transportation ? "yes" : "no"}
                     <br />
                     Loading Dock: {this.state.loadingDock ? "yes" : "no"}
@@ -791,12 +810,6 @@ class Farms extends Component {
     }
   }
 }
-
-const farmsExamples = [
-  { title: "Borden Farms", id: 0 },
-  { title: "San Cristobal Apple Orchars", id: 1 },
-  { title: "Taylor Farms", id: 2 },
-];
 
 const tagExamples = [
   { title: "Black Owned" },
