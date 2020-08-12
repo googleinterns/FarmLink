@@ -587,11 +587,11 @@ class Produce extends Component {
                             Shipping Temperatures in Reefer (°F):
                           </Typography>
                           <Typography variant="body2" component="p">
-                            Maintenance Temperature:{" "}
-                            {produce.shippingMaintenanceTemperatureLow} -{" "}
+                            Maintenance Temperature:
+                            {produce.shippingMaintenanceTemperatureLow} -
                             {produce.shippingMaintenanceTemperatureHigh}
                             <br />
-                            Preset Temperature:{" "}
+                            Preset Temperature:
                             {produce.shippingPresetTemperature}
                           </Typography>
                         </Box>
@@ -616,7 +616,7 @@ class Produce extends Component {
                             Internal Statistics:
                           </Typography>
                           <Typography variant="body2" component="p">
-                            Amount Moved by FarmLink (lbs):{" "}
+                            Amount Moved by FarmLink (lbs):
                             {produce.amountMoved}
                           </Typography>
                         </Box>
@@ -675,8 +675,8 @@ class Produce extends Component {
                     Shipping Temperatures in Reefer (°F):
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Maintenance Temperature:{" "}
-                    {this.state.shippingMaintenanceTemperatureLow} -{" "}
+                    Maintenance Temperature:
+                    {this.state.shippingMaintenanceTemperatureLow} -
                     {this.state.shippingMaintenanceTemperatureLow}
                     <br />
                     Preset Temperature: {this.state.shippingPresetTemperature}
