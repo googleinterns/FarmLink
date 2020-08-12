@@ -23,7 +23,6 @@ import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import InputBase from "@material-ui/core/InputBase";
 import Chip from "@material-ui/core/Chip";
-// import { fade } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import Box from "@material-ui/core/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -110,11 +109,6 @@ const styles = (theme) => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    // backgroundColor: fade(theme.palette.primary.main, 0.15),
-    // "&:hover": {
-    // backgroundColor: fade(theme.palette.primary.main, 0.25),
-    // },
-    // //backgroundColor: theme.palette.primary.main,
     marginLeft: 0,
     width: "100%",
   },
@@ -132,16 +126,8 @@ const styles = (theme) => ({
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    //transition: theme.transitions.create("width"),
     width: "100%",
-    // [theme.breakpoints.up("sm")]: {
-    // width: "100ch",
-    // "&:focus": {
-    //     width: "100ch",
-    // },
-    // },
   },
   chip: {
     margin: "4px",
