@@ -23,7 +23,6 @@ import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import InputBase from "@material-ui/core/InputBase";
 import Chip from "@material-ui/core/Chip";
-// import { fade } from '@material-ui/core/styles';
 import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
@@ -111,11 +110,6 @@ const styles = (theme) => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    // backgroundColor: fade(theme.palette.primary.main, 0.15),
-    // '&:hover': {
-    // backgroundColor: fade(theme.palette.primary.main, 0.25),
-    // },
-    // //backgroundColor: theme.palette.primary.main,
     marginLeft: 0,
     width: "100%",
   },
@@ -133,16 +127,8 @@ const styles = (theme) => ({
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    //transition: theme.transitions.create('width'),
     width: "100%",
-    // [theme.breakpoints.up('sm')]: {
-    // width: '100ch',
-    // '&:focus': {
-    //     width: '100ch',
-    // },
-    // },
   },
   chip: {
     margin: "4px",
@@ -153,6 +139,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+/**
+ * This function sets up the mask used for the phone input of (***) ***-****
+ * where * represents a digit
+ */
 function TextMaskCustom(props) {
   const { inputRef, ...other } = props;
 
@@ -188,11 +178,17 @@ TextMaskCustom.propTypes = {
   inputRef: PropTypes.func.isRequired,
 };
 
-class foodbank extends Component {
+/**
+ * This class represents a Food Bank component, which is a sub-page of the
+ * home page where farm objects are visualized, created, updated, edited,
+ * and deleted.
+ */
+class Foodbank extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      // food bank states
       foodbanks: "",
       foodbankName: "",
       location: "",
@@ -208,6 +204,7 @@ class foodbank extends Component {
       maxLoadSize: "",
       refrigerationSpaceAvailable: "",
       foodbankTags: [],
+      // page states
       errors: [],
       open: false,
       uiLoading: true,
@@ -215,34 +212,37 @@ class foodbank extends Component {
       viewOpen: false,
     };
 
-    this.deleteTodoHandler = this.deleteTodoHandler.bind(this);
-    this.handleEditClickOpen = this.handleEditClickOpen.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
+    this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
   }
 
+  /**
+   * Given an event, this function updates a state (the target of the event)
+   * with a new value
+   * @param event The event that is attempting to update a state
+   */
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
     });
   };
 
+  /** Used to uncheck and check the form checkboxes */
   handleChecked = (name) => (event) => {
     this.setState({ ...this.state, [name]: event.target.checked });
   };
 
+  /** Used to update tags in form */
   onTagsChange = (event, values) => {
     this.setState(
       {
+        // food bank state
         farmTags: values,
-      },
-      () => {
-        // This will output an array of objects
-        // given by Autocompelte options property.
-        console.log(this.state.farmTags);
-      }
-    );
+      });
   };
 
+  /** Used to update location from address autocomplete component */
   handleLocation = (newValue) => {
     if (newValue === null) {
       return;
@@ -253,10 +253,15 @@ class foodbank extends Component {
     });
   };
 
-  componentWillMount = () => {
+  /** Returns the authentication token stored in local storage */
+  getAuth = () => {
     authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
+    return localStorage.getItem("AuthToken");
+  };
+
+  /** Load in all of the current todos when the component has mounted */
+  componentDidMount() {
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
       .get("/foodbanks")
       .then((response) => {
@@ -270,7 +275,12 @@ class foodbank extends Component {
       });
   };
 
-  deleteTodoHandler(data) {
+  /**
+   * Takes a farm object as an input and deletes the given farm
+   * object from the database
+   * @param data A farm object
+   */
+  handleDelete(data) {
     authMiddleWare(this.props.history);
     const authToken = localStorage.getItem("AuthToken");
     axios.defaults.headers.common = { Authorization: `${authToken}` };
@@ -285,8 +295,14 @@ class foodbank extends Component {
       });
   }
 
-  handleEditClickOpen(data) {
+  /**
+   * Takes a farm object as an input and opens a dialog page to
+   * allow the user to update the attributes of the farm object
+   * @param data A farm object
+   */
+  handleEditClick(data) {
     this.setState({
+      // food bank states
       foodbankName: data.foodbank.foodbankName,
       location: data.foodbank.location,
       locationId: data.foodbank.locationId,
@@ -301,13 +317,21 @@ class foodbank extends Component {
       maxLoadSize: data.foodbank.maxLoadSize,
       refrigerationSpaceAvailable: data.foodbank.refrigerationSpaceAvailable,
       foodbankTags: data.foodbank.foodbankTags,
+      // page states
       buttonType: "Edit",
       open: true,
     });
   }
 
+  /**
+   * Takes a farm object as an input and opens a popup with all the
+   * information about the farm (currently not being used -> will be
+   * updated to show augmented information)
+   * @param data A farm object
+   */
   handleViewOpen(data) {
     this.setState({
+      // food bank states
       foodbankName: data.foodbank.foodbankName,
       location: data.foodbank.location,
       locationId: data.foodbank.locationId,
@@ -321,6 +345,7 @@ class foodbank extends Component {
       maxLoadSize: data.foodbank.maxLoadSize,
       refrigerationSpaceAvailable: data.foodbank.refrigerationSpaceAvailable,
       foodbankTags: data.foodbank.foodbankTags,
+      // page states
       viewOpen: true,
     });
   }
@@ -354,8 +379,10 @@ class foodbank extends Component {
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
 
-    const handleClickOpen = () => {
+    /** Set all states to generic value when opening a dialog page */
+    const handleAddClick = () => {
       this.setState({
+        // food bank states
         foodbankName: "",
         location: "",
         locationId: "",
@@ -370,14 +397,20 @@ class foodbank extends Component {
         maxLoadSize: "",
         refrigerationSpaceAvailable: "",
         foodbankTags: [],
+        // page state
         open: true,
       });
     };
 
+    /**
+     * Either updates or submits a new farm object to the data base
+     * @param event The event being handled
+     */
     const handleSubmit = (event) => {
       authMiddleWare(this.props.history);
       event.preventDefault();
       const newFoodBank = {
+        // food bank states
         foodbankName: this.state.foodbankName,
         location: this.state.location,
         locationId: this.state.locationId,
@@ -412,20 +445,24 @@ class foodbank extends Component {
       axios.defaults.headers.common = { Authorization: `${authToken}` };
       axios(options)
         .then(() => {
+          // page state
           this.setState({ open: false });
           window.location.reload();
         })
         .catch((error) => {
+          // page state
           this.setState({ open: true, errors: error.response.data });
           console.log(error);
         });
     };
 
     const handleViewClose = () => {
+      // page state 
       this.setState({ viewOpen: false });
     };
 
     const handleClose = (event) => {
+      // page state
       this.setState({ open: false });
     };
 
@@ -447,7 +484,7 @@ class foodbank extends Component {
             className={classes.floatingButton}
             color="primary"
             aria-label="Add Food Bank"
-            onClick={handleClickOpen}
+            onClick={handleAddClick}
           >
             <AddCircleIcon style={{ fontSize: 60 }} />
           </IconButton>
@@ -723,11 +760,11 @@ class foodbank extends Component {
                             Details:
                           </Typography>
                           <Typography variant="body2" component="p">
-                            Location of Food Bank:{" "}
+                            Location of Food Bank: 
                             {`${foodbank.location.substring(0, 30)}`}
                             <br />
                             {`${foodbank.location.substring(30, 78)}`}
-                            Regrigeration Space (in pallets):{" "}
+                            Regrigeration Space (in pallets): 
                             {foodbank.refrigerationSpaceAvailable}
                             <br />
                             Max Load Size (in pallets): {foodbank.maxLoadSize}
@@ -786,20 +823,19 @@ class foodbank extends Component {
                         color="primary"
                         onClick={() => this.handleViewOpen({ foodbank })}
                       >
-                        {" "}
-                        View{" "}
+                        View 
                       </Button>
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.handleEditClickOpen({ foodbank })}
+                        onClick={() => this.handleEditClick({ foodbank })}
                       >
                         Edit
                       </Button>
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.deleteTodoHandler({ foodbank })}
+                        onClick={() => this.handleDelete({ foodbank })}
                       >
                         Delete
                       </Button>
@@ -818,7 +854,6 @@ class foodbank extends Component {
             classes={{ paperFullWidth: classes.dialogeStyle }}
           >
             <DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-              {/* Los Angeles Regional Food Bank */}
               {this.state.foodbankName}
             </DialogTitle>
             <DialogContent dividers>
@@ -840,11 +875,11 @@ class foodbank extends Component {
                     Details:
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Location of Food Bank:{" "}
+                    Location of Food Bank: 
                     {`${this.state.location.substring(0, 30)}`}
                     <br />
                     {`${this.state.location.substring(30, 78)}`}
-                    Regrigeration Space (in pallets):{" "}
+                    Regrigeration Space (in pallets): 
                     {this.state.refrigerationSpaceAvailable}
                     <br />
                     Max Load Size (in pallets): {this.state.maxLoadSize}
@@ -895,15 +930,9 @@ class foodbank extends Component {
   }
 }
 
-const farmsExamples = [
-  { title: "Borden Farms", id: 0 },
-  { title: "San Cristobal Apple Orchars", id: 1 },
-  { title: "Taylor Farms", id: 2 },
-];
-
 const tagExamples = [
   { title: "High Food Insecurity" },
   { title: "Major City" },
 ];
 
-export default withStyles(styles)(foodbank);
+export default withStyles(styles)(Foodbank);
