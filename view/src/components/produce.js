@@ -122,7 +122,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 /**
- * This class represents a Produce components, which is a sub-page of the
+ * This class represents a Produce component, which is a sub-page of the
  * home page where produce objects are visualized, created, updated, edited,
  * and deleted.
  */
@@ -147,8 +147,8 @@ class Produce extends Component {
       viewOpen: false,
     };
 
-    this.deleteTodoHandler = this.deleteTodoHandler.bind(this);
-    this.handleEditClickOpen = this.handleEditClickOpen.bind(this);
+    this.handleDeleteTodo = this.handleDeleteTodo.bind(this);
+    this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
   }
 
@@ -190,7 +190,7 @@ class Produce extends Component {
    * object from the database
    * @param data A produce object
    */
-  deleteTodoHandler(data) {
+  handleDeleteTodo(data) {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     let produceId = data.produce.produceId;
     axios
@@ -208,7 +208,7 @@ class Produce extends Component {
    * allow the user to update the attributes of the produce object
    * @param data A produce object
    */
-  handleEditClickOpen(data) {
+  handleEditClick(data) {
     this.setState({
       name: data.produce.name,
       produceId: data.produce.produceId,
@@ -275,8 +275,8 @@ class Produce extends Component {
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
 
-    /** Set all states to generic value when opening a dialog page */
-    const handleClickOpen = () => {
+    /** Set states related to dialogue to generic value when opening */
+    const handleAddClick = () => {
       this.setState({
         name: "",
         produceId: "",
@@ -343,7 +343,7 @@ class Produce extends Component {
       this.setState({ viewOpen: false });
     };
 
-    const handleClose = (event) => {
+    const handleDialogClose = (event) => {
       this.setState({ open: false });
     };
 
@@ -365,14 +365,14 @@ class Produce extends Component {
             className={classes.floatingButton}
             color="primary"
             aria-label="Add Produce"
-            onClick={handleClickOpen}
+            onClick={handleAddClick}
           >
             <AddCircleIcon style={{ fontSize: 60 }} />
           </IconButton>
           <Dialog
             fullScreen
             open={open}
-            onClose={handleClose}
+            onClose={handleDialogClose}
             TransitionComponent={Transition}
           >
             <AppBar className={classes.appBar}>
@@ -380,7 +380,7 @@ class Produce extends Component {
                 <IconButton
                   edge="start"
                   color="inherit"
-                  onClick={handleClose}
+                  onClick={handleDialogClose}
                   aria-label="close"
                 >
                   <CloseIcon />
@@ -628,20 +628,19 @@ class Produce extends Component {
                         color="primary"
                         onClick={() => this.handleViewOpen({ produce })}
                       >
-                        {" "}
-                        View{" "}
+                        View
                       </Button>
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.handleEditClickOpen({ produce })}
+                        onClick={() => this.handleEditClick({ produce })}
                       >
                         Edit
                       </Button>
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.deleteTodoHandler({ produce })}
+                        onClick={() => this.handleDeleteTodo({ produce })}
                       >
                         Delete
                       </Button>
