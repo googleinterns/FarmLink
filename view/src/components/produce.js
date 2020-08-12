@@ -307,6 +307,7 @@ class Produce extends Component {
       authMiddleWare(this.props.history);
       event.preventDefault();
       const newProduce = {
+        // farm states
         name: this.state.name,
         shippingPresetTemperature: parseFloat(
           this.state.shippingPresetTemperature
@@ -339,19 +340,23 @@ class Produce extends Component {
       axios.defaults.headers.common = { Authorization: `${authToken}` };
       axios(options)
         .then(() => {
+          // page state
           this.setState({ open: false });
           window.location.reload();
         })
         .catch((error) => {
+          // page states
           this.setState({ open: true, errors: error.response.data });
         });
     };
 
     const handleViewClose = () => {
+      // page state (for view modal)
       this.setState({ viewOpen: false });
     };
 
     const handleDialogClose = (event) => {
+      // page state (for dialog)
       this.setState({ open: false });
     };
 
