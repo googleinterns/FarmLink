@@ -672,7 +672,6 @@ class Produce extends Component {
             classes={{ paperFullWidth: classes.dialogStyle }}
           >
             <DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-              Stone Fruits
               {this.state.name}
             </DialogTitle>
             <DialogContent dividers>
