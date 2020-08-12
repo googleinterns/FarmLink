@@ -235,11 +235,10 @@ class Foodbank extends Component {
 
   /** Used to update tags in form */
   onTagsChange = (event, values) => {
-    this.setState(
-      {
-        // food bank state
-        farmTags: values,
-      });
+    this.setState({
+      // food bank state
+      farmTags: values,
+    });
   };
 
   /** Used to update location from address autocomplete component */
@@ -273,7 +272,7 @@ class Foodbank extends Component {
       .catch((err) => {
         console.log(err);
       });
-  };
+  }
 
   /**
    * Takes a food bank object as an input and deletes the given food bank
@@ -457,7 +456,7 @@ class Foodbank extends Component {
     };
 
     const handleViewClose = () => {
-      // page state 
+      // page state
       this.setState({ viewOpen: false });
     };
 
@@ -760,11 +759,11 @@ class Foodbank extends Component {
                             Details:
                           </Typography>
                           <Typography variant="body2" component="p">
-                            Location of Food Bank: 
+                            Location of Food Bank:
                             {`${foodbank.location.substring(0, 30)}`}
                             <br />
                             {`${foodbank.location.substring(30, 78)}`}
-                            Regrigeration Space (in pallets): 
+                            Regrigeration Space (in pallets):
                             {foodbank.refrigerationSpaceAvailable}
                             <br />
                             Max Load Size (in pallets): {foodbank.maxLoadSize}
@@ -823,7 +822,7 @@ class Foodbank extends Component {
                         color="primary"
                         onClick={() => this.handleViewOpen({ foodbank })}
                       >
-                        View 
+                        View
                       </Button>
                       <Button
                         size="small"
@@ -875,11 +874,11 @@ class Foodbank extends Component {
                     Details:
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Location of Food Bank: 
+                    Location of Food Bank:
                     {`${this.state.location.substring(0, 30)}`}
                     <br />
                     {`${this.state.location.substring(30, 78)}`}
-                    Regrigeration Space (in pallets): 
+                    Regrigeration Space (in pallets):
                     {this.state.refrigerationSpaceAvailable}
                     <br />
                     Max Load Size (in pallets): {this.state.maxLoadSize}
