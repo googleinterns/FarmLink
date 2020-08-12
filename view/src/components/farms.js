@@ -208,7 +208,7 @@ class Farms extends Component {
     };
 
     this.onTagsChange = this.onTagsChange.bind(this);
-    this.handleDeleteTodo = this.handleDeleteTodo.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
   }
@@ -278,7 +278,7 @@ class Farms extends Component {
    * object from the database
    * @param data A farm object
    */
-  handleDeleteTodo(data) {
+  handleDelete(data) {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     let farmId = data.farm.farmId;
     axios
@@ -740,7 +740,7 @@ class Farms extends Component {
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.handleDeleteTodo({ farm })}
+                        onClick={() => this.handleDelete({ farm })}
                       >
                         Delete
                       </Button>
