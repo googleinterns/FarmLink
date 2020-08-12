@@ -149,7 +149,7 @@ class Produce extends Component {
       viewOpen: false,
     };
 
-    this.handleDeleteTodo = this.handleDeleteTodo.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
   }
@@ -192,7 +192,7 @@ class Produce extends Component {
    * object from the database
    * @param data A produce object
    */
-  handleDeleteTodo(data) {
+  handleDelete(data) {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     let produceId = data.produce.produceId;
     axios
@@ -653,7 +653,7 @@ class Produce extends Component {
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.handleDeleteTodo({ produce })}
+                        onClick={() => this.handleDelete({ produce })}
                       >
                         Delete
                       </Button>
