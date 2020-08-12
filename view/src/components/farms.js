@@ -139,8 +139,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 /**
- * This function sets up the mask used for the phone input of (***) ***-**** 
- * where * represents a digit 
+ * This function sets up the mask used for the phone input of (***) ***-****
+ * where * represents a digit
  */
 function TextMaskCustom(props) {
   const { inputRef, ...other } = props;
