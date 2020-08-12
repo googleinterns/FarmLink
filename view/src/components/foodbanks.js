@@ -180,7 +180,7 @@ TextMaskCustom.propTypes = {
 
 /**
  * This class represents a Food Bank component, which is a sub-page of the
- * home page where farm objects are visualized, created, updated, edited,
+ * home page where food bank objects are visualized, created, updated, edited,
  * and deleted.
  */
 class Foodbank extends Component {
@@ -276,9 +276,9 @@ class Foodbank extends Component {
   };
 
   /**
-   * Takes a farm object as an input and deletes the given farm
+   * Takes a food bank object as an input and deletes the given food bank
    * object from the database
-   * @param data A farm object
+   * @param data A food bank object
    */
   handleDelete(data) {
     authMiddleWare(this.props.history);
@@ -296,9 +296,9 @@ class Foodbank extends Component {
   }
 
   /**
-   * Takes a farm object as an input and opens a dialog page to
-   * allow the user to update the attributes of the farm object
-   * @param data A farm object
+   * Takes a food bank object as an input and opens a dialog page to
+   * allow the user to update the attributes of the food bank object
+   * @param data A food bank object
    */
   handleEditClick(data) {
     this.setState({
@@ -324,10 +324,10 @@ class Foodbank extends Component {
   }
 
   /**
-   * Takes a farm object as an input and opens a popup with all the
-   * information about the farm (currently not being used -> will be
+   * Takes a food bank object as an input and opens a popup with all the
+   * information about the food bank (currently not being used -> will be
    * updated to show augmented information)
-   * @param data A farm object
+   * @param data A food bank object
    */
   handleViewOpen(data) {
     this.setState({
@@ -403,7 +403,7 @@ class Foodbank extends Component {
     };
 
     /**
-     * Either updates or submits a new farm object to the data base
+     * Either updates or submits a new food bank object to the data base
      * @param event The event being handled
      */
     const handleSubmit = (event) => {
