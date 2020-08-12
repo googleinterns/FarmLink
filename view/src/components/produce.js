@@ -131,6 +131,7 @@ class Produce extends Component {
     super(props);
 
     this.state = {
+      // states of the produce component
       produceObjects: "",
       name: "",
       produceId: "",
@@ -140,6 +141,7 @@ class Produce extends Component {
       price: "",
       pricePaid: "",
       amountMoved: "",
+      // states of the page components (dialogue, loading, etc.)
       errors: [],
       open: false,
       uiLoading: true,
@@ -210,6 +212,7 @@ class Produce extends Component {
    */
   handleEditClick(data) {
     this.setState({
+      // produce states
       name: data.produce.name,
       produceId: data.produce.produceId,
       shippingPresetTemperature: data.produce.shippingPresetTemperature,
@@ -220,6 +223,7 @@ class Produce extends Component {
       amountMoved: data.produce.amountMoved,
       price: data.produce.price,
       pricePaid: data.produce.pricePaid,
+      // page states
       buttonType: "Edit",
       open: true,
     });
@@ -233,6 +237,7 @@ class Produce extends Component {
    */
   handleViewOpen(data) {
     this.setState({
+      // produce states
       name: data.produce.name,
       shippingPresetTemperature: data.produce.shippingPresetTemperature,
       shippingMaintenanceTemperatureLow:
@@ -242,6 +247,7 @@ class Produce extends Component {
       amountMoved: data.produce.amountMoved,
       price: data.produce.price,
       pricePaid: data.produce.pricePaid,
+      // page state
       viewOpen: true,
     });
   }
@@ -278,6 +284,7 @@ class Produce extends Component {
     /** Set states related to dialogue to generic value when opening */
     const handleAddClick = () => {
       this.setState({
+        // produce states
         name: "",
         produceId: "",
         shippingPresetTemperature: 0,
@@ -286,6 +293,7 @@ class Produce extends Component {
         price: "",
         pricePaid: "",
         amountMoved: "",
+        // page states
         buttonType: "",
         open: true,
       });
