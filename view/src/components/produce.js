@@ -512,8 +512,8 @@ class produce extends Component {
                   <Grid item xs={4}>
                     <TextField
                       variant="outlined"
-                      required
-                      fullWidth
+                          required
+                          fullWidth
                       id="shippingPresetTemperature"
                       label="Shipping Preset Temperature"
                             name="shippingPresetTemperature"
