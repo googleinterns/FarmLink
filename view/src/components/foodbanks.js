@@ -89,12 +89,12 @@ const styles = (theme) => ({
   uiProgess: {
     position: "fixed",
     zIndex: "1000",
-    height: "31px",
-    width: "31px",
+    height: "32px",
+    width: "32px",
     left: "50%",
     top: "35%",
   },
-  dialogeStyle: {
+  dialogStyle: {
     maxWidth: "50%",
   },
   viewRoot: {
@@ -850,7 +850,7 @@ class Foodbank extends Component {
             aria-labelledby="customized-dialog-title"
             open={viewOpen}
             fullWidth
-            classes={{ paperFullWidth: classes.dialogeStyle }}
+            classes={{ paperFullWidth: classes.dialogStyle }}
           >
             <DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
               {this.state.foodbankName}
