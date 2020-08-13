@@ -689,7 +689,7 @@ class Produce extends Component {
                   <Typography variant="body2" component="p">
                     Maintenance Temperature:
                     {this.state.shippingMaintenanceTemperatureLow} -
-                    {this.state.shippingMaintenanceTemperatureLow}
+                    {this.state.shippingMaintenanceTemperatureHigh}
                     <br />
                     Preset Temperature: {this.state.shippingPresetTemperature}
                   </Typography>
