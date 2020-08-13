@@ -1,32 +1,14 @@
 import React, { Component } from "react";
 
-import CardSkeletons from "../extras/skeleton";
-
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import Slide from "@material-ui/core/Slide";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
 import Container from "@material-ui/core/Container";
-import CardActions from "@material-ui/core/CardActions";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import CardContent from "@material-ui/core/CardContent";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import MuiDialogContent from "@material-ui/core/DialogContent";
-import InputBase from "@material-ui/core/InputBase";
-// import { fade } from '@material-ui/core/styles';
-import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import Box from "@material-ui/core/Box";
-import Alert from "@material-ui/lab/Alert";
+
 
 import axios from "axios";
 import dayjs from "dayjs";
@@ -78,13 +60,10 @@ const styles = (theme) => ({
   uiProgess: {
     position: "fixed",
     zIndex: "1000",
-    height: "31px",
-    width: "31px",
+    height: "32px",
+    width: "32px",
     left: "50%",
     top: "35%",
-  },
-  dialogeStyle: {
-    maxWidth: "50%",
   },
   viewRoot: {
     margin: 0,
@@ -99,11 +78,6 @@ const styles = (theme) => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    // backgroundColor: fade(theme.palette.primary.main, 0.15),
-    // '&:hover': {
-    // backgroundColor: fade(theme.palette.primary.main, 0.25),
-    // },
-    // //backgroundColor: theme.palette.primary.main,
     marginLeft: 0,
     width: "100%",
   },
@@ -121,16 +95,8 @@ const styles = (theme) => ({
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    //transition: theme.transitions.create('width'),
     width: "100%",
-    // [theme.breakpoints.up('sm')]: {
-    // width: '100ch',
-    // '&:focus': {
-    //     width: '100ch',
-    // },
-    // },
   },
   buttons: {
     paddingTop: "24px",
@@ -140,15 +106,16 @@ const styles = (theme) => ({
   },
 });
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
+/**
+ * Represents a Produce component form, which is used to submit new
+ * Produce objects or to fetch and edit an individual Produce object
+ */
 class ProduceForm extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      // produce states
       produceObjects: "",
       name: "",
       produceId: "",
@@ -159,31 +126,41 @@ class ProduceForm extends Component {
       pricePaid: "",
       amountMoved: "",
       errors: [],
-      open: false,
+      // page states
       uiLoading: true,
-      buttonType: "",
-      viewOpen: false,
     };
-
-    this.handleEditClickOpen = this.handleEditClickOpen.bind(this);
   }
 
+  /**
+   * Given an event, this function updates a state (the target of the event)
+   * with a new value
+   * @param event The event that is attempting to update a state
+   */
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
     });
   };
 
-  componentWillMount = () => {
+  /** Returns the authentication token stored in local storage */
+  getAuth = () => {
+    authMiddleWare(this.props.history);
+    return localStorage.getItem("AuthToken");
+  };
+
+  /**
+   * If the form is being opened to edit a produce object then load
+   * individual produce object when the component has mounted
+   */
+  componentDidMount() {
     if (this.props.buttonType === "Edit") {
-      authMiddleWare(this.props.history);
-      const authToken = localStorage.getItem("AuthToken");
-      axios.defaults.headers.common = { Authorization: `${authToken}` };
+      axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
       axios
         .get(`produce/${this.props.produceId}`)
         .then((response) => {
           this.props.setProduce(response.data);
           this.setState({
+            // produce states
             name: response.data.name,
             produceId: response.data.produceId,
             shippingPresetTemperature: response.data.shippingPresetTemperature,
@@ -194,54 +171,29 @@ class ProduceForm extends Component {
             price: response.data.price,
             pricePaid: response.data.pricePaid,
             amountMoved: response.data.amountMoved,
+            // page state
             uiLoading: false,
           });
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         });
     }
   };
 
-  handleEditClickOpen(data) {
-    this.setState({
-      name: data.produce.name,
-      produceId: data.produce.produceId,
-      shippingPresetTemperature: data.produce.shippingPresetTemperature,
-      shippingMaintenanceTemperatureLow:
-        data.produce.shippingMaintenanceTemperatureLow,
-      shippingMaintenanceTemperatureHigh:
-        data.produce.shippingMaintenanceTemperatureHigh,
-      amountMoved: data.produce.amountMoved,
-      price: data.produce.price,
-      pricePaid: data.produce.pricePaid,
-      buttonType: "Edit",
-      open: true,
-    });
-  }
-
   render() {
     dayjs.extend(relativeTime);
     const { classes } = this.props;
-    const { open, errors, viewOpen } = this.state;
+    const { errors } = this.state;
 
-    const handleClickOpen = () => {
-      this.setState({
-        name: "",
-        produceId: "",
-        shippingPresetTemperature: 0,
-        shippingMaintenanceTemperatureLow: "",
-        shippingMaintenanceTemperatureHigh: "",
-        price: "",
-        pricePaid: "",
-        amountMoved: "",
-        buttonType: "",
-        open: true,
-      });
-    };
-
+    /**
+     * Either updates or submits a new produce object to the data base
+     * @param event The event being handled
+     */
     const handleSubmit = (event) => {
+      // go to the next page of the Stepper (parent object)
       this.props.handleNext();
+      // submit the new produce object or update the existing one 
       authMiddleWare(this.props.history);
       event.preventDefault();
       const newProduce = {
@@ -277,7 +229,7 @@ class ProduceForm extends Component {
       axios.defaults.headers.common = { Authorization: `${authToken}` };
       axios(options)
         .then(() => {
-          this.setState({ open: false });
+          // send a success alert
           const message =
             this.props.buttonType === "Edit" ? " edited!" : " submitted!";
           this.props.alert(
@@ -286,6 +238,7 @@ class ProduceForm extends Component {
           );
         })
         .catch((error) => {
+          // send a failure alert
           const message =
             this.props.buttonType === "Edit" ? " edit" : " submit";
           this.props.alert(
@@ -294,10 +247,11 @@ class ProduceForm extends Component {
               message +
               " the produce!"
           );
-          this.setState({ open: true, errors: error.response.data });
-          console.log(newProduce);
+          this.setState({ errors: error.response.data });
         });
     };
+
+    // display loading circle if waiting to load in individual produce data 
     if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>
@@ -459,6 +413,7 @@ class ProduceForm extends Component {
               </Grid>
             </form>
           </Container>
+          {/* The buttons below control the stepper */}
           <div className={classes.buttons}>
             <Button
               disabled={this.props.activeStep === 0}

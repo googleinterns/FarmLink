@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
@@ -8,24 +8,6 @@ import Typography from "@material-ui/core/Typography";
 import FarmForm from "../extras/farmForm";
 import ProduceForm from "../extras/produceForm";
 import SurplusForm from "../extras/surplusForm";
-import Alert from "../extras/alert";
-
-const tableData = {
-  columns: [
-    { title: "Role", field: "contactRole" },
-    { title: "Name", field: "contactName" },
-    { title: "Email", field: "contactEmail" },
-    { title: "Phone Number", field: "contactPhone" },
-  ],
-  data: [
-    {
-      contactRole: "Farm Manager",
-      contactName: "Jane Doe",
-      contactEmail: "jane@doe.com",
-      contactPhone: "(777)851-1234",
-    },
-  ],
-};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/** Defines the steps in the Stepper (each is a form) */
 function getSteps() {
   return [
     "Create a Farm",
@@ -50,43 +33,33 @@ function getSteps() {
   ];
 }
 
-// function getStepContent(step) {
-//   switch (step) {
-//     case 0:
-//       return <FarmForm />
-//     case 1:
-//       return 'Create a Produce Object';
-//     case 2:
-//       return 'Create a Surplus Object';
-//     default:
-//       return 'Unknown step';
-//   }
-// }
-
-export default function HorizontalLinearStepper(props) {
+export default function SurplusStepper(props) {
   const classes = useStyles();
+  // stepper states
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
+  // form states (relevant to the final step - surplus form)
   const [currentFarm, setCurrentFarm] = React.useState("");
   const [currentProduce, setCurrentProduce] = React.useState("");
 
   const steps = getSteps();
 
-  const farmRef = useRef();
-
+  /** Gets the content to display at each step */
   const getStepContent = (step) => {
     switch (step) {
       case 0:
         return (
           <FarmForm
+            // props needed for the Stepper
             activeStep={activeStep}
             handleBack={handleBack}
             isStepOptional={isStepOptional}
             handleSkip={handleSkip}
             handleNext={handleNext}
+            steps={steps}
+            // props needed for the forms 
             setFarm={setCurrentFarm}
             alert={props.alert}
-            steps={steps}
             buttonType={props.buttonType}
             farmId={props.farmId}
           />
@@ -94,14 +67,16 @@ export default function HorizontalLinearStepper(props) {
       case 1:
         return (
           <ProduceForm
+          // props needed for the Stepper
             activeStep={activeStep}
             handleBack={handleBack}
             isStepOptional={isStepOptional}
             handleSkip={handleSkip}
             handleNext={handleNext}
+            steps={steps}
+            // props needed for the forms 
             setProduce={setCurrentProduce}
             alert={props.alert}
-            steps={steps}
             buttonType={props.buttonType}
             produceId={props.produceId}
           />
@@ -109,16 +84,18 @@ export default function HorizontalLinearStepper(props) {
       case 2:
         return (
           <SurplusForm
+            // props needed for the Stepper
             activeStep={activeStep}
             handleBack={handleBack}
             isStepOptional={isStepOptional}
             handleSkip={handleSkip}
             handleNext={handleNext}
+            steps={steps}
+            // props needed for the forms
             surplusId={props.surplusId}
             currentFarm={currentFarm}
             currentProduce={currentProduce}
             alert={props.alert}
-            steps={steps}
             buttonType={props.buttonType}
           />
         );
@@ -127,31 +104,23 @@ export default function HorizontalLinearStepper(props) {
     }
   };
 
+  /** Sets which steps are optional (can be skipped) */
   const isStepOptional = (step) => {
     return step === 1 || step === 0;
   };
 
+  /** Sets the last step (so formatting can change on last step) */
   const isLastStep = (step) => {
     return step === 2;
   };
 
+  /** Determines whether a step has been skipped */
   const isStepSkipped = (step) => {
     return skipped.has(step);
   };
 
-  const handleSubmit = (step) => {
-    if (step === 0) {
-      // farmRef.current.handleSubmit();
-      //   console.log("not at all in the main frame");
-      // setFarmSubmit(true);
-      // for(let i = 0; i < 100000; i++) {}
-      // console.log(farmSubmit);
-      //farmRef.current.toSubmit();
-    }
-  };
-
+  /** Moves to the next step (page) in the Stepper */
   const handleNext = () => {
-    handleSubmit(activeStep);
     let newSkipped = skipped;
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values());
@@ -162,10 +131,12 @@ export default function HorizontalLinearStepper(props) {
     setSkipped(newSkipped);
   };
 
+  /** Moves to the previous step (page) in the Stepper */
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  /** Skips the current step (page) in the Stpper */
   const handleSkip = () => {
     if (!isStepOptional(activeStep)) {
       // You probably want to guard against something like this,
@@ -181,10 +152,12 @@ export default function HorizontalLinearStepper(props) {
     });
   };
 
+  /** Jumps to the last page (surplus form) */
   const jumpToSurplus = () => {
     setActiveStep(steps.length - 1);
   };
 
+  /** Takes the user back to the first step */
   const handleReset = () => {
     setActiveStep(0);
   };
@@ -214,7 +187,7 @@ export default function HorizontalLinearStepper(props) {
         {activeStep === steps.length ? (
           <div>
             <Typography className={classes.instructions}>
-              All steps completed - you&apos;re finished
+              All steps completed - you're finished
             </Typography>
             <Button onClick={handleReset} className={classes.button}>
               Reset
@@ -236,34 +209,6 @@ export default function HorizontalLinearStepper(props) {
                 </Button>
               )}
             </div>
-            {/* <div>
-              <Button
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                className={classes.button}
-              >
-                Back
-              </Button>
-              {isStepOptional(activeStep) && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSkip}
-                  className={classes.button}
-                >
-                  Skip
-                </Button>
-              )}
-
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleNext}
-                className={classes.button}
-              >
-                {activeStep === steps.length - 1 ? "Finish" : "Next"}
-              </Button>
-            </div> */}
           </div>
         )}
       </div>

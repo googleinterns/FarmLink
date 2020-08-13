@@ -1,37 +1,16 @@
 import React, { Component } from "react";
 
-import CardSkeletons from "../extras/skeleton";
-
 import withStyles from "@material-ui/core/styles/withStyles";
-import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import Slide from "@material-ui/core/Slide";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
 import Container from "@material-ui/core/Container";
-import CardActions from "@material-ui/core/CardActions";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import CardContent from "@material-ui/core/CardContent";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import MuiDialogContent from "@material-ui/core/DialogContent";
-import InputBase from "@material-ui/core/InputBase";
-// import { fade } from '@material-ui/core/styles';
-import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import Box from "@material-ui/core/Box";
-import Alert from "@material-ui/lab/Alert";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
-
 import AsyncInput from "../extras/asynchronous";
 
 import axios from "axios";
@@ -84,13 +63,10 @@ const styles = (theme) => ({
   uiProgess: {
     position: "fixed",
     zIndex: "1000",
-    height: "31px",
-    width: "31px",
+    height: "32px",
+    width: "32px",
     left: "50%",
     top: "35%",
-  },
-  dialogeStyle: {
-    maxWidth: "50%",
   },
   viewRoot: {
     margin: 0,
@@ -105,11 +81,6 @@ const styles = (theme) => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    // backgroundColor: fade(theme.palette.primary.main, 0.15),
-    // '&:hover': {
-    // backgroundColor: fade(theme.palette.primary.main, 0.25),
-    // },
-    // //backgroundColor: theme.palette.primary.main,
     marginLeft: 0,
     width: "100%",
   },
@@ -125,19 +96,6 @@ const styles = (theme) => ({
   inputRoot: {
     color: "inherit",
   },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    //transition: theme.transitions.create('width'),
-    width: "100%",
-    // [theme.breakpoints.up('sm')]: {
-    // width: '100ch',
-    // '&:focus': {
-    //     width: '100ch',
-    // },
-    // },
-  },
   buttons: {
     paddingTop: "24px",
   },
@@ -146,15 +104,16 @@ const styles = (theme) => ({
   },
 });
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
+/**
+ * Represents a Surplus component form, which is used to submit new
+ * Surplus objects or to fetch and edit an individual Surplus object
+ */
 class ProduceForm extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      // surplus states
       originFarmId: "",
       produceId: "",
       available: false,
@@ -162,100 +121,79 @@ class ProduceForm extends Component {
       totalQuantityAvailable: "",
       packagingType: "",
       errors: [],
-      open: false,
+      // page states
       uiLoading: true,
-      buttonType: "",
-      viewOpen: false,
     };
-
-    // this.handleEditClickOpen = this.handleEditClickOpen.bind(this);
   }
 
+  /**
+   * Given an event, this function updates a state (the target of the event)
+   * with a new value
+   * @param event The event that is attempting to update a state
+   */
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
     });
   };
 
+  /**
+   * Given the name of a state and the new value, will update the state
+   * to that new value
+   * @param name  Name of the state that will be change
+   * @param value New value that will be assigned to the state
+   */
   handleAsyncChange = (name, value) => {
     this.setState({
       [name]: value,
     });
   };
 
-  componentWillMount = () => {
+  /** Returns the authentication token stored in local storage */
+  getAuth = () => {
     authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
+    return localStorage.getItem("AuthToken");
+  };
+
+  /**
+   * If the form is being opened to edit a surplus object then 
+   * load individual surplus object when the component has mounted
+   */
+  componentDidMount() {
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
       .get(`surplus/${this.props.surplusId}`)
       .then((response) => {
         this.setState({
+          // surplus states
           originFarmId: response.data.originFarmId,
           produceId: response.data.produceId,
           available: response.data.available,
           cost: response.data.cost,
           totalQuantityAvailable: response.data.totalQuantityAvailable,
           packagingType: response.data.packagingType,
+          // page state
           uiLoading: false,
         });
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   };
-
-  //   handleEditClickOpen(data) {
-  //     this.setState({
-  //       name: data.produce.name,
-  //       produceId: data.produce.produceId,
-  //       shippingPresetTemperature: data.produce.shippingPresetTemperature,
-  //       shippingMaintenanceTemperatureLow:
-  //         data.produce.shippingMaintenanceTemperatureLow,
-  //       shippingMaintenanceTemperatureHigh:
-  //         data.produce.shippingMaintenanceTemperatureHigh,
-  //       amountMoved: data.produce.amountMoved,
-  //       price: data.produce.price,
-  //       pricePaid: data.produce.pricePaid,
-  //       buttonType: "Edit",
-  //       open: true,
-  //     });
-  //   }
 
   render() {
     dayjs.extend(relativeTime);
     const { classes } = this.props;
-    const { open, errors, viewOpen } = this.state;
+    const { errors } = this.state;
 
-    const farmValue = {
-      contactEmail: "george@sjfarms.com",
-      contactName: "George James",
-      contactPhone: "(123) 456-7890",
-      farmName: "San Jose Farms",
-      farmTags: [],
-      forklift: false,
-      loadingDock: false,
-      location: "San Jose, CA, USA",
-      locationId: "ChIJ9T_5iuTKj4ARe3GfygqMnbk",
-      transporation: false,
-    };
-
-    const handleClickOpen = () => {
-      this.setState({
-        surplusId: "",
-        originFarmId: "",
-        produceId: "",
-        available: false,
-        cost: "",
-        totalQuantityAvailable: "",
-        packagingType: "",
-        open: true,
-      });
-    };
-
+    /**
+     * Either updates or submits a new surplus object to the data base
+     * @param event The event being handled
+     */
     const handleSubmit = (event) => {
+      // go to the next page of the Stepper (parent object)
       this.props.handleNext();
-      authMiddleWare(this.props.history);
+      // submit the new surplus object or update the existing one
       event.preventDefault();
       const newSurplus = {
         originFarmId: this.state.originFarmId,
@@ -279,21 +217,20 @@ class ProduceForm extends Component {
           data: newSurplus,
         };
       }
-      const authToken = localStorage.getItem("AuthToken");
-      axios.defaults.headers.common = { Authorization: `${authToken}` };
+      axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
       axios(options)
         .then(() => {
-          this.setState({ open: false });
+          // send a success alert
           const message =
             this.props.buttonType === "Edit" ? " edited!" : " submitted!";
           this.props.alert(
             "success",
             "Surplus has successfully been" + message
           );
-          //this.setState({ alert: true })
           window.location.reload();
         })
         .catch((error) => {
+          // send a failure alter
           const message =
             this.props.buttonType === "Edit" ? " edit" : " submit";
           this.props.alert(
@@ -302,10 +239,11 @@ class ProduceForm extends Component {
               message +
               " the Surplus!"
           );
-          this.setState({ open: true, errors: error.response.data });
-          //   console.log(newProduce);
+          this.setState({ errors: error.response.data });
         });
     };
+
+    // display loading circle if waiting to load in individual farm data 
     if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>
@@ -430,14 +368,9 @@ class ProduceForm extends Component {
                   </FormControl>
                 </Grid>
               </Grid>
-              {/* comment out ->           <div className={classes.table}>
-                    <CustomTable
-                      title="Operating Hours"
-                      data={tableData}
-                    />
-                  </div>  */}
             </form>
           </Container>
+          {/* The buttons below control the stepper */}
           <div className={classes.buttons}>
             <Button
               disabled={this.props.activeStep === 0}

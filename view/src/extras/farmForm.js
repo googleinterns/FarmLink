@@ -1,50 +1,28 @@
-import React, { Component, forwardRef, useImperativeHandle } from "react";
+import React, { Component } from "react";
 
 import Address from "../extras/address";
-import CardSkeletons from "../extras/skeleton";
+
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import Slide from "@material-ui/core/Slide";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
 import Container from "@material-ui/core/Container";
-import CardActions from "@material-ui/core/CardActions";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import CardContent from "@material-ui/core/CardContent";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import MuiDialogContent from "@material-ui/core/DialogContent";
-import InputBase from "@material-ui/core/InputBase";
 import Chip from "@material-ui/core/Chip";
-// import { fade } from "@material-ui/core/styles";
-import SearchIcon from "@material-ui/icons/Search";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Box from "@material-ui/core/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
 
 import PropTypes from "prop-types";
 import MaskedInput from "react-text-mask";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 
 import axios from "axios";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { authMiddleWare } from "../util/auth";
 
 const styles = (theme) => ({
@@ -92,13 +70,10 @@ const styles = (theme) => ({
   uiProgess: {
     position: "fixed",
     zIndex: "1000",
-    height: "31px",
-    width: "31px",
+    height: "32px",
+    width: "32px",
     left: "50%",
     top: "35%",
-  },
-  dialogeStyle: {
-    maxWidth: "50%",
   },
   viewRoot: {
     margin: 0,
@@ -113,11 +88,6 @@ const styles = (theme) => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    // backgroundColor: fade(theme.palette.primary.main, 0.15),
-    // "&:hover": {
-    // backgroundColor: fade(theme.palette.primary.main, 0.25),
-    // },
-    // //backgroundColor: theme.palette.primary.main,
     marginLeft: 0,
     width: "100%",
   },
@@ -135,16 +105,8 @@ const styles = (theme) => ({
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    //transition: theme.transitions.create("width"),
     width: "100%",
-    // [theme.breakpoints.up("sm")]: {
-    // width: "100ch",
-    // "&:focus": {
-    //     width: "100ch",
-    // },
-    // },
   },
   chip: {
     margin: "4px",
@@ -157,6 +119,10 @@ const styles = (theme) => ({
   },
 });
 
+/**
+ * Sets up the mask used for the phone input of (***) ***-****
+ * where * represents a digit
+ */
 function TextMaskCustom(props) {
   const { inputRef, ...other } = props;
 
@@ -192,11 +158,16 @@ TextMaskCustom.propTypes = {
   inputRef: PropTypes.func.isRequired,
 };
 
+/**
+ * Represents a Farm component form, which is used to submit new
+ * Farm objects or to fetch and edit an individual farm object
+ */
 class FarmForm extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      // farm state
       farms: "",
       farmName: "",
       farmId: "",
@@ -209,66 +180,63 @@ class FarmForm extends Component {
       location: "",
       locationId: "",
       transportation: false,
+      // page state
       errors: [],
-      open: false,
       uiLoading: true,
-      viewOpen: false,
     };
 
     this.onTagsChange = this.onTagsChange.bind(this);
   }
 
+  /**
+   * Given an event, this function updates a state (the target of the event)
+   * with a new value
+   * @param event The event that is attempting to update a state
+   */
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
     });
   };
 
-  // toSubmit = (this.props, ref) => {
-  //     forwardRef((this.props, ref) => {
-  //       useImperativeAHandle(ref, () => ({
-  //           handleSubmit();
-  //       }));
-  //   });
-  //   }
-
+  /** Used to update tags in form */
   onTagsChange = (event, values) => {
     this.setState(
-      {
-        farmTags: values,
-      },
-      () => {
-        // This will output an array of objects
-        // given by Autocompelte options property.
-        //console.log(this.state.farmTags);
-      }
-    );
+    {
+      farmTags: values,
+    });
   };
 
+  /** Used to update location from address autocomplete component */
   handleLocation = (newValue) => {
     if (newValue === null) {
       return;
     }
-    //console.log(newValue);
     this.setState({
       location: newValue.description,
       locationId: newValue.place_id,
     });
   };
 
-  // will get one farm and render it into edit form
+  /** Returns the authentication token stored in local storage */
+  getAuth = () => {
+    authMiddleWare(this.props.history);
+    return localStorage.getItem("AuthToken");
+  };
 
-  componentWillMount = () => {
+  /**
+   * If the form is being opened to edit a farm then load individual farm 
+   * when the component has mounted
+   */
+  componentDidMount() {
     if (this.props.buttonType === "Edit") {
-      authMiddleWare(this.props.history);
-      const authToken = localStorage.getItem("AuthToken");
-      axios.defaults.headers.common = { Authorization: `${authToken}` };
+      axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
       axios
         .get(`farms/${this.props.farmId}`)
         .then((response) => {
           this.props.setFarm(response.data);
           this.setState({
-            // farms: response.data,
+            // farm states
             farmName: response.data.farmName,
             farmId: response.data.farmId,
             contactName: response.data.contactName,
@@ -280,22 +248,28 @@ class FarmForm extends Component {
             location: response.data.location,
             locationId: response.data.locationId,
             transportation: response.data.transportation,
+            // page state
             uiLoading: false,
           });
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         });
     }
   };
 
   render() {
     const { classes } = this.props;
-    const { open, errors, viewOpen } = this.state;
+    const { errors } = this.state;
 
+    /**
+     * Either updates or submits a new farm object to the data base
+     * @param event The event being handled
+     */
     const handleSubmit = (event) => {
+      // go to the next page of the Stepper (parent object)
       this.props.handleNext();
-      authMiddleWare(this.props.history);
+      // submit the new farm or update the existing farm
       event.preventDefault();
       const newFarm = {
         farmName: this.state.farmName,
@@ -309,7 +283,7 @@ class FarmForm extends Component {
         locationId: this.state.locationId,
         transportation: this.state.transportation,
       };
-      console.log(newFarm);
+      console.error(newFarm);
       let options = {};
       if (this.props.buttonType === "Edit") {
         options = {
@@ -324,26 +298,28 @@ class FarmForm extends Component {
           data: newFarm,
         };
       }
-      const authToken = localStorage.getItem("AuthToken");
-      axios.defaults.headers.common = { Authorization: `${authToken}` };
+      axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
       axios(options)
         .then(() => {
+          // send a success alert
           const message =
             this.props.buttonType === "Edit" ? " edited!" : " submitted!";
           this.props.alert("success", "Farm has been successfully" + message);
         })
         .catch((error) => {
+          // send a failure alert
           const message =
             this.props.buttonType === "Edit" ? " edit" : " submit";
           this.props.alert(
             "error",
             "An error has occured when attempting to " + message + " the farm!"
           );
-          this.setState({ open: true, errors: error.response.data });
-          console.log(error);
+          this.setState({ errors: error.response.data });
+          console.error(error);
         });
     };
 
+    // display loading circle if waiting to load in individual farm data 
     if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>
@@ -518,6 +494,7 @@ class FarmForm extends Component {
               </Grid>
             </form>
           </Container>
+          {/* The buttons below control the stepper */}
           <div className={classes.buttons}>
             <Button
               disabled={this.props.activeStep === 0}
