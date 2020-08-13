@@ -8,6 +8,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import parse from "autosuggest-highlight/parse";
 import throttle from "lodash/throttle";
 
+/**
+ * This function creates a script tag with the src and id 
+ * set to the value of the parameters. It is the child of
+ * of the position parameter
+ * @param src       The source for the script tag
+ * @param position  The parent object of the script tag
+ * @param id        The id of the script tag
+ */
 function loadScript(src, position, id) {
   if (!position) {
     return;
@@ -29,13 +37,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function GoogleMaps(props) {
+/**
+ * This functional component exports a form input field that autocompletes
+ * user's location queries. It queries the Google place API and uses the
+ * handle location prop passed from the parent to save the desired information
+ * from the resulting locaiton.
+ * @param props Used to pass default location from parent and function 
+ *              to handle location change in parent 
+ */
+export default function AddressAutocompleteField(props) {
   const classes = useStyles();
   const [value, setValue] = React.useState(props.location);
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState([]);
   const loaded = React.useRef(false);
 
+  // add the script tag using loadScript
   if (typeof window !== "undefined" && !loaded.current) {
     if (!document.querySelector("#google-maps")) {
       loadScript(
@@ -48,6 +65,7 @@ export default function GoogleMaps(props) {
     loaded.current = true;
   }
 
+  // used to memoize results from API (for optimization)
   const fetch = React.useMemo(
     () =>
       throttle((request, callback) => {
@@ -56,6 +74,7 @@ export default function GoogleMaps(props) {
     []
   );
 
+  // used to update the options for the autocomplete field
   React.useEffect(() => {
     let active = true;
 
