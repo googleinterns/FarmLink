@@ -213,7 +213,7 @@ class Surplus extends Component {
       .catch((err) => {
         console.error(err);
       });
-  };
+  }
 
   /**
    * Takes a food bank object as an input and deletes the given food bank
@@ -354,9 +354,7 @@ class Surplus extends Component {
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          {this.state.uiLoading && (
-            <CardSkeletons classes={classes} />
-          )}
+          {this.state.uiLoading && <CardSkeletons classes={classes} />}
         </main>
       );
     } else {
@@ -429,7 +427,7 @@ class Surplus extends Component {
                   <Card className={classes.root} variant="outlined">
                     <CardContent>
                       <Typography variant="h5" component="h2">
-                        {surplus.totalQuantityAvailable} lbs of 
+                        {surplus.totalQuantityAvailable} lbs of
                         {surplus.produceName} from {surplus.originFarmName}
                       </Typography>
                       <Box
@@ -465,7 +463,7 @@ class Surplus extends Component {
                           <Typography variant="body2" component="p">
                             Type of Produce: {surplus.produceName}
                             <br />
-                            Total Quantity Available (lbs): 
+                            Total Quantity Available (lbs):
                             {surplus.totalQuantityAvailable}
                             <br />
                             Cost (USD / lb): {surplus.cost}
@@ -479,8 +477,7 @@ class Surplus extends Component {
                         color="primary"
                         onClick={() => this.handleViewOpen({ surplus })}
                       >
-                         
-                        View 
+                        View
                       </Button>
                       <Button
                         size="small"
@@ -511,8 +508,8 @@ class Surplus extends Component {
             classes={{ paperFullWidth: classes.dialogStyle }}
           >
             <DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-              {surplus.totalQuantityAvailable} lbs of{" "}
-              {surplus.produceName} from {surplus.originFarmName}
+              {surplus.totalQuantityAvailable} lbs of {surplus.produceName} from 
+              {surplus.originFarmName}
             </DialogTitle>
             <DialogContent dividers>
               <Box
@@ -523,15 +520,11 @@ class Surplus extends Component {
                 m={0}
               >
                 <Box p={3}>
-                  <Typography
-                    className={classes.pos}
-                    color="textSecondary"
-                  >
+                  <Typography className={classes.pos} color="textSecondary">
                     Logistics:
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Origin: {surplus.originFarmName} (link with card +
-                    info)
+                    Origin: {surplus.originFarmName} (link with card + info)
                     <br />
                     Packing Type: {surplus.packagingType}
                     <br />
@@ -539,16 +532,13 @@ class Surplus extends Component {
                   </Typography>
                 </Box>
                 <Box p={3}>
-                  <Typography
-                    className={classes.pos}
-                    color="textSecondary"
-                  >
+                  <Typography className={classes.pos} color="textSecondary">
                     Details:
                   </Typography>
                   <Typography variant="body2" component="p">
                     Type of Produce: {surplus.produceName}
                     <br />
-                    Total Quantity Available (lbs): 
+                    Total Quantity Available (lbs):
                     {surplus.totalQuantityAvailable}
                     <br />
                     Cost (USD / lb): {surplus.cost}
