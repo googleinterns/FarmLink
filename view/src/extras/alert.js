@@ -1,5 +1,4 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import { makeStyles } from "@material-ui/core/styles";
@@ -17,25 +16,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+/**
+ * Creates an alert that shows up on the snackbar to help 
+ * users visualize when certain action are completed or if 
+ * errors occur
+ * @param props Determine severity of alert, message presented
+ *              and control opening and closing of the alert 
+ */
 export default function CustomizedSnackbars(props) {
+  // Styling and duration of the alert
   const classes = useStyles();
-  console.log(props.message);
-  console.log(props.severity);
+  const alertDuration = 6000;
+
   return (
     <div className={classes.root}>
       <Snackbar
         open={props.open}
-        autoHideDuration={6000}
+        autoHideDuration={alertDuration}
         onClose={props.handleClose}
       >
         <Alert onClose={props.handleClose} severity={props.severity}>
           {props.message}
         </Alert>
       </Snackbar>
-      {/* <Alert severity="error">This is an error message!</Alert>
-      <Alert severity="warning">This is a warning message!</Alert>
-      <Alert severity="info">This is an information message!</Alert>
-      <Alert severity="success">This is a success message!</Alert> */}
     </div>
   );
 }
