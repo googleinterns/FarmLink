@@ -44,6 +44,11 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { authMiddleWare } from "../util/auth";
 
+const TAG_EXAMPLES = [
+  { title: "High Food Insecurity" },
+  { title: "Major City" },
+];
+
 const styles = (theme) => ({
   content: {
     flexGrow: 1,
@@ -140,7 +145,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 /**
- * This function sets up the mask used for the phone input of (***) ***-****
+ * Sets up the mask used for the phone input of (***) ***-****
  * where * represents a digit
  */
 function TextMaskCustom(props) {
@@ -179,7 +184,7 @@ TextMaskCustom.propTypes = {
 };
 
 /**
- * This class represents a Food Bank component, which is a sub-page of the
+ * Represents a Food Bank component, which is a sub-page of the
  * home page where food bank objects are visualized, created, updated, edited,
  * and deleted.
  */
@@ -230,7 +235,7 @@ class Foodbank extends Component {
 
   /** Used to uncheck and check the form checkboxes */
   handleChecked = (name) => (event) => {
-    this.setState({ ...this.state, [name]: event.target.checked });
+    this.setState({ [name]: event.target.checked });
   };
 
   /** Used to update tags in form */
@@ -258,7 +263,7 @@ class Foodbank extends Component {
     return localStorage.getItem("AuthToken");
   };
 
-  /** Load in all of the current todos when the component has mounted */
+  /** Load in all of the current food banks when the component has mounted */
   componentDidMount() {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
@@ -270,7 +275,7 @@ class Foodbank extends Component {
         });
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   }
 
@@ -290,7 +295,7 @@ class Foodbank extends Component {
         window.location.reload();
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   }
 
@@ -451,7 +456,7 @@ class Foodbank extends Component {
         .catch((error) => {
           // page state
           this.setState({ open: true, errors: error.response.data });
-          console.log(error);
+          console.error(error);
         });
     };
 
@@ -686,7 +691,7 @@ class Foodbank extends Component {
                       multiple
                       id="tags-filled"
                       onChange={this.onTagsChange}
-                      options={tagExamples.map((option) => option.title)}
+                      options={TAG_EXAMPLES.map((option) => option.title)}
                       defaultValue={[this.state.foodbankTags]}
                       freeSolo
                       renderTags={(value, getTagProps) =>
@@ -799,6 +804,7 @@ class Foodbank extends Component {
                             Loading Dock: {foodbank.loadingDock ? "yes" : "no"}
                           </Typography>
                         </Box>
+                        {/* --> this will be implemented when we get hours from Place API <--
                         <Box p={3}>
                           <Typography
                             className={classes.pos}
@@ -813,7 +819,7 @@ class Foodbank extends Component {
                             <br />
                             Sunday: closed
                           </Typography>
-                        </Box>
+                        </Box> */}
                       </Box>
                     </CardContent>
                     <CardActions>
@@ -928,10 +934,5 @@ class Foodbank extends Component {
     }
   }
 }
-
-const tagExamples = [
-  { title: "High Food Insecurity" },
-  { title: "Major City" },
-];
 
 export default withStyles(styles)(Foodbank);
