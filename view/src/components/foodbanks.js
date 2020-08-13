@@ -465,7 +465,7 @@ class Foodbank extends Component {
       this.setState({ viewOpen: false });
     };
 
-    const handleClose = (event) => {
+    const handleDialogClose = (event) => {
       // page state
       this.setState({ open: false });
     };
@@ -495,7 +495,7 @@ class Foodbank extends Component {
           <Dialog
             fullScreen
             open={open}
-            onClose={handleClose}
+            onClose={handleDialogClose}
             TransitionComponent={Transition}
           >
             <AppBar className={classes.appBar}>
@@ -503,7 +503,7 @@ class Foodbank extends Component {
                 <IconButton
                   edge="start"
                   color="inherit"
-                  onClick={handleClose}
+                  onClick={handleDialogClose}
                   aria-label="close"
                 >
                   <CloseIcon />
@@ -736,7 +736,6 @@ class Foodbank extends Component {
                   <Card className={classes.root} variant="outlined">
                     <CardContent>
                       <Typography variant="h5" component="h2">
-                        {/* Los Angeles Regional Food Bank */}
                         {foodbank.foodbankName}
                       </Typography>
                       <Chip
@@ -912,18 +911,6 @@ class Foodbank extends Component {
                     Pallet: {this.state.pallet ? "yes" : "no"}
                     <br />
                     Loading Dock: {this.state.loadingDock ? "yes" : "no"}
-                  </Typography>
-                </Box>
-                <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
-                    Hours of Operation:
-                  </Typography>
-                  <Typography variant="body2" component="p">
-                    Monday-Friday: 9am - 5pm
-                    <br />
-                    Saturday: 10am - 4pm
-                    <br />
-                    Sunday: closed
                   </Typography>
                 </Box>
               </Box>
