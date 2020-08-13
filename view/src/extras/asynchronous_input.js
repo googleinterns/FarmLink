@@ -5,11 +5,28 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import axios from "axios";
 import { authMiddleWare } from "../util/auth";
 
-export default function Asynchronous(props) {
+/**
+ * Creates an asynchronous input that will query database for options
+ * when it is opened by the user (to avoid loading on page reload). 
+ * @param props Propositions passed from parent that determine where the 
+ *              data should come from, how to update the input state in the 
+ *              parent, and other settings of the input 
+ */
+export default function AsynchronousInput(props) {
+  // whether or not the input is open
   const [open, setOpen] = React.useState(false);
+  // options for the input
   const [options, setOptions] = React.useState([]);
+  // determines whether or not to show loading circle
   const loading = open && options.length === 0;
 
+  /** Returns the authentication token stored in local storage */
+  const getAuth = () => {
+    authMiddleWare(props.history);
+    return localStorage.getItem("AuthToken");
+  }
+
+  /** Asynchronously loads in the possible responmes from props.target path */
   React.useEffect(() => {
     let active = true;
 
@@ -18,9 +35,7 @@ export default function Asynchronous(props) {
     }
 
     (async () => {
-      authMiddleWare(props.history);
-      const authToken = localStorage.getItem("AuthToken");
-      axios.defaults.headers.common = { Authorization: `${authToken}` };
+      axios.defaults.headers.common = { Authorization: `${getAuth()}` };
       axios
         .get(props.target)
         .then((response) => {
