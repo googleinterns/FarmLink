@@ -1,5 +1,10 @@
 const { db } = require('../util/admin');
 
+/*
+display a list of all produce
+GET /produce
+success response: array of produce objects
+*/
 exports.getAllProduce = (request, response) => {
     db.collection('produce').get()
     .then((data) => {
@@ -24,6 +29,11 @@ exports.getAllProduce = (request, response) => {
     });
 }
 
+/*
+display a specific produce
+GET /produce/:id
+success response: produce object
+*/
 exports.getOneProduce = (request, response) => {
     db.doc(`/produce/${request.params.produceId}`).get()
     .then((doc) => {
@@ -35,6 +45,21 @@ exports.getOneProduce = (request, response) => {
     });
 }
 
+/*
+create a new produce
+POST /produce
+data params:
+{
+    name: [string],
+    shippingPresetTemperature: [number],
+    shippingMaintenanceTemperatureLow: [number],
+    shippingMaintenanceTemperatureHigh: [number],
+    amountMoved: [number],
+    price: [number],
+    pricePaid: [number]
+}
+success response: produce object
+*/
 exports.postOneProduce = (request, response) => {
     const newProduceItem = {
         name: request.body.name,
@@ -45,39 +70,46 @@ exports.postOneProduce = (request, response) => {
         price: parseFloat(request.body.price),
         pricePaid: parseFloat(request.body.pricePaid),
     };
-    db
-        .collection('produce')
-        .add(newProduceItem)
-        .then((doc) => {
-            let responseProduceItem = newProduceItem;
-            responseProduceItem.id = doc.id;
-            return response.json(responseProduceItem);
-        })
-        .catch((err) => {
-            console.log(err);
-            return response.status(500).json({error: err.code});
-        });
+    db.collection('produce').add(newProduceItem)
+    .then((doc) => {
+        let responseProduceItem = newProduceItem;
+        responseProduceItem.id = doc.id;
+        return response.json(responseProduceItem);
+    })
+    .catch((err) => {
+        console.log(err);
+        return response.status(500).json({error: err.code});
+    });
 }
 
+/*
+delete a specific produce
+DELETE /produce/:id
+success response: {message: 'Delete successfull'}
+*/
 exports.deleteProduce = (request, response) => {
     const document = db.doc(`/produce/${request.params.produceId}`);
-    document
-        .get()
-        .then((doc) => {
-            if (!doc.exists) {
-                return response.status(404).json({ error: 'Produce Object not found' })
-            }
-            return document.delete();
-        })
-        .then(() => {
-            response.json({ message: 'Delete successfull' });
-        })
-        .catch((err) => {
-            console.log(err);
-            return response.status(500).json({error: err.code});
-        });
+    document.get()
+    .then((doc) => {
+        if (!doc.exists) {
+            return response.status(404).json({error: 'Produce Object not found'})
+        }
+        return document.delete();
+    })
+    .then(() => {
+        response.json({message: 'Delete successfull'});
+    })
+    .catch((err) => {
+        console.log(err);
+        return response.status(500).json({error: err.code});
+    });
 }
 
+/*
+update a specific produce
+PUT /produce/:id
+success response: {message: 'Updated successfully'}
+*/
 exports.editProduce = (request, response) => {
     let document = db.collection('produce').doc(`${request.params.produceId}`)
     document.update(request.body)
