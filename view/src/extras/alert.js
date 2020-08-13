@@ -17,11 +17,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Creates an alert that shows up on the snackbar to help 
- * users visualize when certain action are completed or if 
+ * Creates an alert that shows up on the snackbar to help
+ * users visualize when certain action are completed or if
  * errors occur
  * @param props Determine severity of alert, message presented
- *              and control opening and closing of the alert 
+ *              and control opening and closing of the alert
  */
 export default function CustomizedSnackbars(props) {
   // Styling and duration of the alert

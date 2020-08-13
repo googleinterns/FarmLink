@@ -11,23 +11,23 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme) => ({
   search: {
     height: "48px",
-    width: "100%"
+    width: "100%",
   },
   skeletonPadding: {
-    height: "48px"
-  }
+    height: "48px",
+  },
 }));
 
 /**
  * Creates a skeleton card that looks like the cards populated with information
  * from the database. These skeletons can replace the circular loading dial. Check
- * out material design cards for more information. 
+ * out material design cards for more information.
  */
 export default function CardSkeleton(props) {
   // Styling for the card skeleton
   const classes = useStyles();
   const paddingHeight = "48px";
-  const textWidth = "250px"
+  const textWidth = "250px";
 
   return (
     <Container maxWidth="lg">
