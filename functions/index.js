@@ -41,26 +41,31 @@ const {
 } = require('./APIs/deals')
 
 exports.api = functions.https.onRequest(app);
+
 app.get('/produce', auth, getAllProduce);
 app.get('/produce/:produceId', auth, getOneProduce);
 app.post('/produce', auth, postOneProduce);
 app.delete('/produce/:produceId', auth, deleteProduce);
 app.put('/produce/:produceId', auth, editProduce);
+
 app.get('/farms', auth, getAllFarms);
 app.get('/farms/:farmId', auth, getOneFarm);
 app.post('/farms', auth, postOneFarm);
 app.delete('/farms/:farmId', auth, deleteFarm);
 app.put('/farms/:farmId', auth, editFarm);
+
 app.get('/foodbanks', auth, getAllFoodBanks);
 app.get('/foodbanks/:foodbankId', auth, getOneFoodBank);
 app.post('/foodbanks', auth, postOneFoodBank);
 app.delete('/foodbanks/:foodbankId', auth, deleteFoodBank);
 app.put('/foodbanks/:foodbankId', auth, editFoodBank);
+
 app.get('/surplus', auth, getAllSurplus);
 app.get('/surplus/:surplusId', auth, getOneSurplus);
 app.post('/surplus', auth, postOneSurplus);
 app.delete('/surplus/:surplusId', auth, deleteSurplus);
 app.put('/surplus/:surplusId', auth, editSurplus);
+
 app.get('/deals', auth, getAllDeals);
 app.get('/deals/:dealId', auth, getOneDeal);
 app.post('/deals', auth, postOneDeal);

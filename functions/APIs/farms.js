@@ -1,5 +1,10 @@
 const { db } = require('../util/admin');
 
+/*
+display a list of all farms
+GET /farms
+success response: array of farm objects
+*/
 exports.getAllFarms = (request, response) => {
     db.collection('farms').get()
     .then((data) => {
@@ -25,6 +30,11 @@ exports.getAllFarms = (request, response) => {
     });
 }
 
+/*
+display a specific farm
+GET /farms/:id
+success response: farm object
+*/
 exports.getOneFarm = (request, response) => {
     db.doc(`/farms/${request.params.farmId}`).get()
     .then((doc) => {
@@ -36,6 +46,22 @@ exports.getOneFarm = (request, response) => {
     });
 }
 
+/*
+create a new farm
+POST /farms
+data params:
+{
+    farmName: [string],
+    location: [string],
+    hours: [array],
+    transportation: [boolean],
+    contacts: [array],
+    loadingDock: [boolean],
+    forklift: [boolean],
+    farmTags: [array]
+}
+success response: farm object
+*/
 exports.postOneFarm = (request, response) => {
     const newFarmItem = {
         farmName: request.body.farmName,
@@ -47,39 +73,46 @@ exports.postOneFarm = (request, response) => {
         forklift: request.body.forklift === 'true',
         farmTags: request.body.farmTags,
     };
-    db
-        .collection('farms')
-        .add(newFarmItem)
-        .then((doc) => {
-            let responseFarmItem = newFarmItem;
-            responseFarmItem.id = doc.id;
-            return response.json(responseFarmItem);
-        })
-        .catch((err) => {
-            console.log(err);
-            return response.status(500).json({error: err.code});
-        });
+    db.collection('farms').add(newFarmItem)
+    .then((doc) => {
+        let responseFarmItem = newFarmItem;
+        responseFarmItem.id = doc.id;
+        return response.json(responseFarmItem);
+    })
+    .catch((err) => {
+        console.log(err);
+        return response.status(500).json({error: err.code});
+    });
 }
 
+/*
+delete a specific farm
+DELETE /farms/:id
+success response: {message: 'Delete successfull'}
+*/
 exports.deleteFarm = (request, response) => {
     const document = db.doc(`/farms/${request.params.farmId}`);
-    document
-        .get()
-        .then((doc) => {
-            if (!doc.exists) {
-                return response.status(404).json({ error: 'Farm Object not found' })
-            }
-            return document.delete();
-        })
-        .then(() => {
-            response.json({ message: 'Delete successfull' });
-        })
-        .catch((err) => {
-            console.log(err);
-            return response.status(500).json({error: err.code});
-        });
+    document.get()
+    .then((doc) => {
+        if (!doc.exists) {
+            return response.status(404).json({ error: 'Farm Object not found' })
+        }
+        return document.delete();
+    })
+    .then(() => {
+        response.json({ message: 'Delete successfull' });
+    })
+    .catch((err) => {
+        console.log(err);
+        return response.status(500).json({error: err.code});
+    });
 }
 
+/*
+update a specific farm
+PUT /farms/:id
+success response: {message: 'Updated successfully'}
+*/
 exports.editFarm = (request, response) => {
     let document = db.collection('farms').doc(`${request.params.farmId}`)
     document.update(request.body)

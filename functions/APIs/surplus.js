@@ -1,5 +1,10 @@
 const { db } = require('../util/admin');
 
+/*
+display a list of all surplus
+GET /surplus
+success response: array of surplus objects
+*/
 exports.getAllSurplus = (request, response) => {
     db.collection('surplus').get()
     .then((data) => {
@@ -8,6 +13,7 @@ exports.getAllSurplus = (request, response) => {
             surplus.push(doc);
         });
 
+        //get produce object that is linked to surplus object
         function queryProduce(produceId) {
             return new Promise(function(resolve, reject) {
                 db.doc(`/produce/${produceId}`).get()
@@ -20,6 +26,7 @@ exports.getAllSurplus = (request, response) => {
             });
         }
 
+        //get farm object that is linked to surplus object
         function queryFarms(originFarmId) {
             return new Promise(function(resolve, reject) {
                 db.doc(`/farms/${originFarmId}`).get()
@@ -32,6 +39,7 @@ exports.getAllSurplus = (request, response) => {
             });
         }
 
+        //get produce and farm objects that are linked to surplus object
         function queryProduceAndFarms(doc) {
             return new Promise(function(resolve, reject) {
                 Promise.all([
@@ -75,6 +83,11 @@ exports.getAllSurplus = (request, response) => {
     });
 }
 
+/*
+display a specific surplus
+GET /surplus/:id
+success response: surplus object
+*/
 exports.getOneSurplus = (request, response) => {
     db.doc(`/surplus/${request.params.surplusId}`).get()
     .then((doc) => {
@@ -86,6 +99,20 @@ exports.getOneSurplus = (request, response) => {
     });
 }
 
+/*
+create a new surplus
+POST /surplus
+data params:
+{
+    produceId: [string],
+    originFarmId: [string],
+    available: [boolean],
+    cost: [number],
+    totalQuantityAvailable: [number],
+    packagingType: [string]
+}
+success response: surplus object
+*/
 exports.postOneSurplus = (request, response) => {
     const newSurplusItem = {
         produceId: request.body.produceId,
@@ -95,39 +122,46 @@ exports.postOneSurplus = (request, response) => {
         totalQuantityAvailable: parseFloat(request.body.totalQuantityAvailable),
         packagingType: request.body.packagingType,
     };
-    db
-        .collection('surplus')
-        .add(newSurplusItem)
-        .then((doc) => {
-            let responseSurplusItem = newSurplusItem;
-            responseSurplusItem.id = doc.id;
-            return response.json(responseSurplusItem);
-        })
-        .catch((err) => {
-            console.log(err);
-            return response.status(500).json({error: err.code});
-        });
+    db.collection('surplus').add(newSurplusItem)
+    .then((doc) => {
+        let responseSurplusItem = newSurplusItem;
+        responseSurplusItem.id = doc.id;
+        return response.json(responseSurplusItem);
+    })
+    .catch((err) => {
+        console.log(err);
+        return response.status(500).json({error: err.code});
+    });
 }
 
+/*
+delete a specific surplus
+DELETE /surplus/:id
+success response: {message: 'Delete successfull'}
+*/
 exports.deleteSurplus = (request, response) => {
     const document = db.doc(`/surplus/${request.params.surplusId}`);
-    document
-        .get()
-        .then((doc) => {
-            if (!doc.exists) {
-                return response.status(404).json({ error: 'Surplus Object not found' })
-            }
-            return document.delete();
-        })
-        .then(() => {
-            response.json({ message: 'Delete successfull' });
-        })
-        .catch((err) => {
-            console.log(err);
-            return response.status(500).json({error: err.code});
-        });
+    document.get()
+    .then((doc) => {
+        if (!doc.exists) {
+            return response.status(404).json({ error: 'Surplus Object not found' })
+        }
+        return document.delete();
+    })
+    .then(() => {
+        response.json({ message: 'Delete successfull' });
+    })
+    .catch((err) => {
+        console.log(err);
+        return response.status(500).json({error: err.code});
+    });
 }
 
+/*
+update a specific surplus
+PUT /surplus/:id
+success response: {message: 'Updated successfully'}
+*/
 exports.editSurplus = (request, response) => {
     let document = db.collection('surplus').doc(`${request.params.surplusId}`)
     document.update(request.body)
