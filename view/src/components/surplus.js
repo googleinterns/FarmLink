@@ -1,14 +1,11 @@
 import React, { Component } from "react";
-import AsyncInput from "../extras/asynchronous";
 import CardSkeletons from "../extras/skeleton";
-import CustomTable from "../extras/table";
 import SurplusStepper from "../extras/surplusStepper";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -24,20 +21,10 @@ import CardContent from "@material-ui/core/CardContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import InputBase from "@material-ui/core/InputBase";
-// import { fade } from '@material-ui/core/styles';
 import SearchIcon from "@material-ui/icons/Search";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import SurplusIcon from "@material-ui/icons/ShowChart";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
-
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
 
 import axios from "axios";
 import dayjs from "dayjs";
@@ -91,12 +78,12 @@ const styles = (theme) => ({
   uiProgess: {
     position: "fixed",
     zIndex: "1000",
-    height: "31px",
-    width: "31px",
+    height: "32px",
+    width: "32px",
     left: "50%",
     top: "35%",
   },
-  dialogeStyle: {
+  dialogStyle: {
     maxWidth: "50%",
   },
   viewRoot: {
@@ -115,11 +102,6 @@ const styles = (theme) => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    // backgroundColor: fade(theme.palette.primary.main, 0.15),
-    // '&:hover': {
-    // backgroundColor: fade(theme.palette.primary.main, 0.25),
-    // },
-    // //backgroundColor: theme.palette.primary.main,
     marginLeft: 0,
     width: "100%",
   },
@@ -137,48 +119,29 @@ const styles = (theme) => ({
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    //transition: theme.transitions.create('width'),
     width: "100%",
-    // [theme.breakpoints.up('sm')]: {
-    // width: '100ch',
-    // '&:focus': {
-    //     width: '100ch',
-    // },
-    // },
   },
   table: {
     marginTop: "50px",
   },
 });
 
-const tableData = {
-  columns: [
-    { title: "Role", field: "contactRole" },
-    { title: "Name", field: "contactName" },
-    { title: "Email", field: "contactEmail" },
-    { title: "Phone Number", field: "contactPhone" },
-  ],
-  data: [
-    {
-      contactRole: "Farm Manager",
-      contactName: "Jane Doe",
-      contactEmail: "jane@doe.com",
-      contactPhone: "(777)851-1234",
-    },
-  ],
-};
-
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-class todo extends Component {
+/**
+ * Represents a Surplus component, which is a sub-page of the
+ * home page where food bank objects are visualized, created, updated, edited,
+ * and deleted.
+ */
+class Surplus extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      // surplus state
       surplusObjects: "",
       surplusId: "",
       produceId: "",
@@ -192,6 +155,7 @@ class todo extends Component {
       cost: "",
       totalQuantityAvailable: "",
       packagingType: "",
+      // page state
       errors: [],
       open: false,
       uiLoading: true,
@@ -199,68 +163,65 @@ class todo extends Component {
       viewOpen: false,
     };
 
-    this.deleteTodoHandler = this.deleteTodoHandler.bind(this);
-    this.handleEditClickOpen = this.handleEditClickOpen.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
+    this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
   }
 
+  /**
+   * Given an event, this function updates a state (the target of the event)
+   * with a new value
+   * @param event The event that is attempting to update a state
+   */
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
     });
   };
 
+  /**
+   * Given the name of a state updates the state to a new value provided
+   * as a a parameter
+   * @param name  Name of the state that will be change
+   * @param value New value for the state
+   */
   handleAsyncChange = (name, value) => {
-    console.log(name);
-    console.log(value);
     this.setState({
       [name]: value,
     });
   };
 
-  getSurplus = () => {
-    return axios.get("/todos");
-  };
-
-  getFarms = () => {
-    return axios.get("/farms");
-  };
-
-  componentWillMount = () => {
+  /** Returns the authentication token stored in local storage */
+  getAuth = () => {
     authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
+    return localStorage.getItem("AuthToken");
+  };
+
+  /** Load in all of the current food banks when the component has mounted */
+  componentDidMount() {
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
-      // .all([this.getSurplus(), this.getFarms()])
-      // .then(axios.spread((...responses) => {
-      //   this.setState({
-      //     todos: responses[0].data,
-      //     farms: responses[1].data,
-      //     uiLoading: false
-      //   });
-      //   console.log(this.state.todos);
-      //   console.log(this.state.farms);
-      // }))
-      // .catch((err) => {
-      //   console.log("OH SHIT SHIT SHIT");
-      //   console.log(err);
-      // });
       .get("/surplus")
       .then((response) => {
         this.setState({
+          // surplus state
           surplusObjects: response.data,
+          // page state
           uiLoading: false,
         });
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   };
 
-  deleteTodoHandler(data) {
-    authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
+  /**
+   * Takes a food bank object as an input and deletes the given food bank
+   * object from the database
+   * @param data A food bank object
+   */
+  handleDelete(data) {
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     let surplusId = data.surplus.surplusId;
     axios
       .delete(`surplus/${surplusId}`)
@@ -269,7 +230,7 @@ class todo extends Component {
         this.props.alert("success", "Surplus successfully deleted!");
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         this.props.alert(
           "error",
           "An error occurred when attempting to delete the Surplus!"
@@ -277,8 +238,14 @@ class todo extends Component {
       });
   }
 
-  handleEditClickOpen(data) {
+  /**
+   * Takes a food bank object as an input and opens a dialog page to
+   * allow the user to update the attributes of the food bank object
+   * @param data A food bank object
+   */
+  handleEditClick(data) {
     this.setState({
+      // surplus state
       surplusId: data.surplus.surplusId,
       produceId: data.surplus.produceId,
       produceName: data.surplus.produceName,
@@ -291,13 +258,21 @@ class todo extends Component {
       cost: data.surplus.cost,
       totalQuantityAvailable: data.surplus.totalQuantityAvailable,
       packagingType: data.surplus.packagingType,
+      // page state
       buttonType: "Edit",
       open: true,
     });
   }
 
+  /**
+   * Takes a food bank object as an input and opens a popup with all the
+   * information about the food bank (currently not being used -> will be
+   * updated to show augmented information)
+   * @param data A food bank object
+   */
   handleViewOpen(data) {
     this.setState({
+      // surplus state
       surplusId: data.surplus.surplusId,
       produceId: data.surplus.produceId,
       produceName: data.surplus.produceName,
@@ -310,6 +285,7 @@ class todo extends Component {
       cost: data.surplus.cost,
       totalQuantityAvailable: data.surplus.totalQuantityAvailable,
       packagingType: data.surplus.packagingType,
+      // page state
       viewOpen: true,
     });
   }
@@ -343,8 +319,10 @@ class todo extends Component {
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
 
+    /** Set all states to generic value when opening a dialog page */
     const handleClickOpen = () => {
       this.setState({
+        // surplus state
         surplusId: "",
         produceId: "",
         produceName: "",
@@ -357,54 +335,19 @@ class todo extends Component {
         cost: "",
         totalQuantityAvailable: "",
         packagingType: "",
+        // page state
         buttonType: "",
         open: true,
       });
     };
 
-    // const handleSubmit = (event) => {
-    //   authMiddleWare(this.props.history);
-    //   event.preventDefault();
-    //   const newSurplus = {
-    //     produceId: this.state.produceId,
-    //     originFarmId: this.state.originFarmId,
-    //     available: this.state.available,
-    //     cost: this.state.cost,
-    //     totalQuantityAvailable: this.state.totalQuantityAvailable,
-    //     packagingType: this.state.packagingType,
-    //   };
-    //   let options = {};
-    //   if (this.state.buttonType === "Edit") {
-    //     options = {
-    //       url: `/surplus/${this.state.surplusId}`,
-    //       method: "put",
-    //       data: newSurplus,
-    //     };
-    //   } else {
-    //     options = {
-    //       url: "/surplus",
-    //       method: "post",
-    //       data: newSurplus,
-    //     };
-    //   }
-    //   const authToken = localStorage.getItem("AuthToken");
-    //   axios.defaults.headers.common = { Authorization: `${authToken}` };
-    //   axios(options)
-    //     .then(() => {
-    //       this.setState({ open: false });
-    //       window.location.reload();
-    //     })
-    //     .catch((error) => {
-    //       this.setState({ open: true, errors: error.response.data });
-    //       console.log(error);
-    //     });
-    // };
-
     const handleViewClose = () => {
+      // page state
       this.setState({ viewOpen: false });
     };
 
-    const handleClose = (event) => {
+    const handleDialogClose = (event) => {
+      // page state
       this.setState({ open: false });
     };
 
@@ -412,7 +355,6 @@ class todo extends Component {
       return (
         <main className={classes.content}>
           {this.state.uiLoading && (
-            // <CircularProgress size={150} className={classes.uiProgess} />
             <CardSkeletons classes={classes} />
           )}
         </main>
@@ -429,23 +371,10 @@ class todo extends Component {
           >
             <AddIcon />
           </Fab>
-          {/* <SpeedDial 
-            className={classes.floatingButton}
-            actions={actions}
-            click={handleClickOpen}
-          /> */}
-          {/* <IconButton
-            className={classes.floatingButton}
-            color="primary"
-            aria-label="Add Todo"
-            onClick={handleClickOpen}
-          >
-            <AddCircleIcon style={{ fontSize: 60 }} />
-          </IconButton> */}
           <Dialog
             fullScreen
             open={open}
-            onClose={handleClose}
+            onClose={handleDialogClose}
             TransitionComponent={Transition}
           >
             <AppBar className={classes.appBar}>
@@ -453,7 +382,7 @@ class todo extends Component {
                 <IconButton
                   edge="start"
                   color="inherit"
-                  onClick={handleClose}
+                  onClick={handleDialogClose}
                   aria-label="close"
                 >
                   <CloseIcon />
@@ -475,136 +404,6 @@ class todo extends Component {
                 handleChange={this.handleChange}
                 handleAsyncChange={this.handleAsyncChange}
               />
-              {/* <form className={classes.form} noValidate>
-                <Grid container spacing={4} allignItems="center">
-                  <Grid item xs={6}>
-      comment out ->               <Autocomplete
-                      id="originFarm"
-                      options={this.state.farms}
-                      getOptionLabel={(farm) => farm.farmName}
-                      onChange={(event, newValue) => {
-                        //setOptions(newValue ? [newValue, ...options] : options);
-                        //setValue(newValue);
-                        console.log(newValue.farmId);
-                        // console.log(newValue);
-                      }}
-                      fullWidth
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Origin Farm"
-                          variant="outlined"
-                        />
-                      )}
-                    /> 
-                    <AsyncInput
-                      history={this.props.history}
-                      target="/farms"
-                      label="Source Farm"
-                      optionSelected={(option, value) =>
-                        option.farmName === value.farmName
-                      }
-                      optionLabel={(option) => option.farmName}
-                      handleChange={this.handleCustomChange}
-                      returnValue="farmId"
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <AsyncInput
-                      history={this.props.history}
-                      target="/produce"
-                      label="Produce Types"
-                      optionSelected={(option, value) =>
-                        option.name === value.name
-                      }
-                      optionLabel={(option) => option.name}
-                      handleChange={this.handleCustomChange}
-                      returnValue="produceId"
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <FormControl variant="outlined" fullWidth>
-                      <InputLabel id="available-label">Status</InputLabel>
-                      <Select
-                        labelId="available-outlined-label"
-                        id="available"
-                        // value={age}
-                        onChange={this.handleChange}
-                        label="Status"
-                      >
-                        <MenuItem value={true}>Available</MenuItem>
-                        <MenuItem value={false}>Not Available</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="cost"
-                      label="Cost (per lb)"
-                      name="cost"
-                      type="number"
-                      autoComplete="cost"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">$</InputAdornment>
-                        ),
-                      }}
-                      // helperText={errors.title}
-                      // value={this.state.title}
-                      // error={errors.title ? true : false}
-                      // onChange={this.handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="totalQuantityAvailable"
-                      label="Total Quantity Available"
-                      name="totalQuantityAvailable"
-                      type="number"
-                      autoComplete="totalQuantityAvailable"
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">lbs</InputAdornment>
-                        ),
-                      }}
-                      // helperText={errors.title}
-                      // value={this.state.title}
-                      // error={errors.title ? true : false}
-                      // onChange={this.handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <FormControl variant="outlined" fullWidth>
-                      <InputLabel id="packagingType-label">
-                        Packaging Type
-                      </InputLabel>
-                      <Select
-                        labelId="packagingType-outlined-label"
-                        id="packagingType"
-                        // value={age}
-                        onChange={this.handleChange}
-                        label="Packaging Type"
-                      >
-                        <MenuItem value="Open Crates">Open Crates</MenuItem>
-                        <MenuItem value="Closed Crates">Closed Crates</MenuItem>
-                        <MenuItem value="Sacks">Sacks</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                </Grid>
-      comment out ->           <div className={classes.table}>
-                  <CustomTable
-                    title="Operating Hours"
-                    data={tableData}
-                  />
-                </div> 
-              </form> */}
             </Container>
           </Dialog>
           <Container maxWidth="lg">
@@ -630,9 +429,8 @@ class todo extends Component {
                   <Card className={classes.root} variant="outlined">
                     <CardContent>
                       <Typography variant="h5" component="h2">
-                        {surplus.totalQuantityAvailable} lbs of{" "}
+                        {surplus.totalQuantityAvailable} lbs of 
                         {surplus.produceName} from {surplus.originFarmName}
-                        {/* {todo.title} */}
                       </Typography>
                       <Box
                         display="flex"
@@ -667,7 +465,7 @@ class todo extends Component {
                           <Typography variant="body2" component="p">
                             Type of Produce: {surplus.produceName}
                             <br />
-                            Total Quantity Available (lbs):{" "}
+                            Total Quantity Available (lbs): 
                             {surplus.totalQuantityAvailable}
                             <br />
                             Cost (USD / lb): {surplus.cost}
@@ -681,20 +479,20 @@ class todo extends Component {
                         color="primary"
                         onClick={() => this.handleViewOpen({ surplus })}
                       >
-                        {" "}
-                        View{" "}
+                         
+                        View 
                       </Button>
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.handleEditClickOpen({ surplus })}
+                        onClick={() => this.handleEditClick({ surplus })}
                       >
                         Edit
                       </Button>
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.deleteTodoHandler({ surplus })}
+                        onClick={() => this.handleDelete({ surplus })}
                       >
                         Delete
                       </Button>
@@ -710,26 +508,13 @@ class todo extends Component {
             aria-labelledby="customized-dialog-title"
             open={viewOpen}
             fullWidth
-            classes={{ paperFullWidth: classes.dialogeStyle }}
+            classes={{ paperFullWidth: classes.dialogStyle }}
           >
             <DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-              50k lbs of Apples from Taylor Farms
-              {/* {this.state.title} */}
+              {surplus.totalQuantityAvailable} lbs of{" "}
+              {surplus.produceName} from {surplus.originFarmName}
             </DialogTitle>
             <DialogContent dividers>
-              {/* <TextField
-								fullWidth
-								id="todoDetails"
-								name="body"
-								multiline
-								readonly
-								rows={1}
-								rowsMax={25}
-								value={this.state.body}
-								InputProps={{
-									disableUnderline: true
-								}}
-							/> */}
               <Box
                 display="flex"
                 flexDirection="row"
@@ -738,27 +523,35 @@ class todo extends Component {
                 m={0}
               >
                 <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
+                  <Typography
+                    className={classes.pos}
+                    color="textSecondary"
+                  >
                     Logistics:
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Origin: Taylor Farms (link with card + info)
+                    Origin: {surplus.originFarmName} (link with card +
+                    info)
                     <br />
-                    Packing Type: Crates
+                    Packing Type: {surplus.packagingType}
                     <br />
-                    Available: yes
+                    Available: {surplus.available ? "yes" : "no"}
                   </Typography>
                 </Box>
                 <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
+                  <Typography
+                    className={classes.pos}
+                    color="textSecondary"
+                  >
                     Details:
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Type of Produce: Apples
+                    Type of Produce: {surplus.produceName}
                     <br />
-                    Total Quantity Available (lbs): 50,000
+                    Total Quantity Available (lbs): 
+                    {surplus.totalQuantityAvailable}
                     <br />
-                    Cost (USD / lb): $0.62
+                    Cost (USD / lb): {surplus.cost}
                   </Typography>
                 </Box>
               </Box>
@@ -770,16 +563,4 @@ class todo extends Component {
   }
 }
 
-const farmsExamples = [
-  { title: "Borden Farms", id: 0 },
-  { title: "San Cristobal Apple Orchars", id: 1 },
-  { title: "Taylor Farms", id: 2 },
-];
-
-const produceExamples = [
-  { title: "Stone Fruits" },
-  { title: "Potatoes" },
-  { title: "Dairy/Eggs" },
-];
-
-export default withStyles(styles)(todo);
+export default withStyles(styles)(Surplus);
