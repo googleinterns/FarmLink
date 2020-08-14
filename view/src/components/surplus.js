@@ -133,8 +133,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 /**
  * Represents a Surplus component, which is a sub-page of the
- * home page where food bank objects are visualized, created, updated, edited,
- * and deleted.
+ * home page where surplus objects are visualized, created, updated,
+ * edited,and deleted.
  */
 class Surplus extends Component {
   constructor(props) {
@@ -445,8 +445,7 @@ class Surplus extends Component {
                             Logistics:
                           </Typography>
                           <Typography variant="body2" component="p">
-                            Origin: {surplus.originFarmName} (link with card +
-                            info)
+                            Origin: {surplus.originFarmName}
                             <br />
                             Packing Type: {surplus.packagingType}
                             <br />
@@ -508,7 +507,7 @@ class Surplus extends Component {
             classes={{ paperFullWidth: classes.dialogStyle }}
           >
             <DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-              {surplus.totalQuantityAvailable} lbs of {surplus.produceName} from 
+              {surplus.totalQuantityAvailable} lbs of {surplus.produceName} from
               {surplus.originFarmName}
             </DialogTitle>
             <DialogContent dividers>
@@ -524,7 +523,7 @@ class Surplus extends Component {
                     Logistics:
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Origin: {surplus.originFarmName} (link with card + info)
+                    Origin: {surplus.originFarmName}
                     <br />
                     Packing Type: {surplus.packagingType}
                     <br />
