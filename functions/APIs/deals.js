@@ -89,8 +89,8 @@ exports.postOneDeal = (request, response) => {
         farmId: request.body.farmId,
         foodbankId: request.body.foodbankId,
         surplusId: request.body.surplusId,
-        farmContactKey: request.body.farmContactKey,
-        foodbankContactKey: request.body.foodbankContactKey,
+        farmContactKey: request.body.farmContactKey, //the index of the contact in the contacts array
+        foodbankContactKey: request.body.foodbankContactKey, //the index of the contact in the contacts array
         farmlinkContactName: request.body.farmlinkContactName,
         farmlinkContactPhone: request.body.farmlinkContactPhone,
         farmlinkContactEmail: request.body.farmlinkContactEmail,
