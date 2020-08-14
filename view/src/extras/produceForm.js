@@ -178,7 +178,7 @@ class ProduceForm extends Component {
           console.error(err);
         });
     }
-  };
+  }
 
   render() {
     dayjs.extend(relativeTime);
@@ -192,7 +192,7 @@ class ProduceForm extends Component {
     const handleSubmit = (event) => {
       // go to the next page of the Stepper (parent object)
       this.props.handleNext();
-      // submit the new produce object or update the existing one 
+      // submit the new produce object or update the existing one
       authMiddleWare(this.props.history);
       event.preventDefault();
       const newProduce = {
@@ -250,7 +250,7 @@ class ProduceForm extends Component {
         });
     };
 
-    // display loading circle if waiting to load in individual produce data 
+    // display loading circle if waiting to load in individual produce data
     if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>

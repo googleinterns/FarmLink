@@ -156,7 +156,7 @@ class ProduceForm extends Component {
   };
 
   /**
-   * If the form is being opened to edit a surplus object then 
+   * If the form is being opened to edit a surplus object then
    * load individual surplus object when the component has mounted
    */
   componentDidMount() {
@@ -179,7 +179,7 @@ class ProduceForm extends Component {
       .catch((err) => {
         console.error(err);
       });
-  };
+  }
 
   render() {
     dayjs.extend(relativeTime);
@@ -243,7 +243,7 @@ class ProduceForm extends Component {
         });
     };
 
-    // display loading circle if waiting to load in individual farm data 
+    // display loading circle if waiting to load in individual farm data
     if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>
