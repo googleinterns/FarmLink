@@ -138,6 +138,9 @@ const styles = (theme) => ({
   chip: {
     margin: "4px",
   },
+  foodbankLocation: {
+    maxWidth: "280px",
+  }
 });
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -762,12 +765,10 @@ class Foodbank extends Component {
                           >
                             Details:
                           </Typography>
-                          <Typography variant="body2" component="p">
-                            Location of Food Bank:
-                            {`${foodbank.location.substring(0, 30)}`}
+                          <Typography variant="body2" component="p" className={classes.foodbankLocation}>
+                            Location of Food Bank: {foodbank.location}
                             <br />
-                            {`${foodbank.location.substring(30, 78)}`}
-                            Regrigeration Space (in pallets):
+                            Refridgeration Space (in pallets):
                             {foodbank.refrigerationSpaceAvailable}
                             <br />
                             Max Load Size (in pallets): {foodbank.maxLoadSize}
@@ -879,11 +880,9 @@ class Foodbank extends Component {
                     Details:
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Location of Food Bank:
-                    {`${this.state.location.substring(0, 30)}`}
+                    Location of Food Bank: {this.state.location}
                     <br />
-                    {`${this.state.location.substring(30, 78)}`}
-                    Regrigeration Space (in pallets):
+                    Refridgeration Space (in pallets):
                     {this.state.refrigerationSpaceAvailable}
                     <br />
                     Max Load Size (in pallets): {this.state.maxLoadSize}
