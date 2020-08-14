@@ -73,7 +73,7 @@ const styles = (theme) => ({
   pos: {
     marginBottom: 12,
   },
-  uiProgess: {
+  uiProgress: {
     position: "fixed",
     zIndex: "1000",
     height: "31px",
@@ -130,7 +130,7 @@ class produce extends Component {
     // this.data will store the JSON array response from the get request to our specificed database
     // this.value will store the string query that the user enters into the search bar or selects from the Material-UI autocomplete suggestions
     // the variable names "data" and "value" are required to have these names in order for the SearchResults library to use their information
-    
+
     this.state = {
       data: "",
       value: "",
@@ -343,7 +343,7 @@ class produce extends Component {
         <main className={classes.content}>
           <div className={classes.toolbar} />
           {this.state.uiLoading && (
-            <CircularProgress size={150} className={classes.uiProgess} />
+            <CircularProgress size={150} className={classes.uiProgress} />
           )}
         </main>
       );
@@ -544,7 +544,7 @@ class produce extends Component {
                 <div>
                   <input
                     type="text"
-                    value={value}
+                    value={this.valueff}
                     onChange={this.handleSearch}
                   />
                 </div>
@@ -561,14 +561,14 @@ class produce extends Component {
                       input: classes.inputInput,
                     }}
                     inputProps={{ "aria-label": "search" }}
-                    value={this.state.value}
+                    value={this.state.valueff}
                     onChange={this.handleSearch}
                   />
                 </div>
               </Grid>
               <SearchResults
-                value={value}
-                data={data}
+                value={this.value}
+                data={this.data}
                 renderResults={(results) => (
                   <div>
                     {results.map((produce) => (
