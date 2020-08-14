@@ -71,6 +71,7 @@ export default function AsynchronousInput(props) {
         setOpen(false);
       }}
       onChange={(event, newValue) => {
+        if (newValue === null) return;
         props.handleChange(props.returnValue, newValue[props.paramName]);
       }}
       getOptionSelected={props.optionSelected}
