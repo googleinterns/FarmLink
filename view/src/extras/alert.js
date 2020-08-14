@@ -23,16 +23,16 @@ const useStyles = makeStyles((theme) => ({
  * @param props Determine severity of alert, message presented
  *              and control opening and closing of the alert
  */
-export default function CustomizedSnackbars(props) {
+export default function CustomizedSnackbar(props) {
   // Styling and duration of the alert
   const classes = useStyles();
-  const alertDuration = 6000;
+  const DEFAULT_DURATION_MSEC = 6000;
 
   return (
     <div className={classes.root}>
       <Snackbar
         open={props.open}
-        autoHideDuration={alertDuration}
+        autoHideDuration={props.duration || DEFAULT_DURATION_MSEC}
         onClose={props.handleClose}
       >
         <Alert onClose={props.handleClose} severity={props.severity}>
