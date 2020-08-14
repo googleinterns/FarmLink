@@ -67,8 +67,8 @@ export default function HorizontalLinearStepper(props) {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
-  const [currentFarm, setCurrentFarm] = React.useState("");
-  const [currentProduce, setCurrentProduce] = React.useState("");
+  const [currentFarm, setCurrentFarm] = React.useState({});
+  const [currentProduce, setCurrentProduce] = React.useState({});
 
   const steps = getSteps();
 
