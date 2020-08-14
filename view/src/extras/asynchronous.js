@@ -14,7 +14,7 @@ export default function Asynchronous(props) {
     let active = true;
 
     if (!loading) {
-      return undefined;
+      return;
     }
 
     (async () => {
@@ -56,6 +56,7 @@ export default function Asynchronous(props) {
         setOpen(false);
       }}
       onChange={(event, newValue) => {
+        if (newValue === null) return;
         props.handleChange(props.returnValue, newValue[props.paramName]);
       }}
       getOptionSelected={props.optionSelected}
