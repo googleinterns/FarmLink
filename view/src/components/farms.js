@@ -132,6 +132,9 @@ const styles = (theme) => ({
   chip: {
     margin: "4px",
   },
+  farmLocation: {
+    maxWidth: "280px",
+  },
 });
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -689,11 +692,12 @@ class Farms extends Component {
                           >
                             Details:
                           </Typography>
-                          <Typography variant="body2" component="p">
-                            Location of Farm:
-                            {`${farm.location.substring(0, 30)}`}
-                            <br />
-                            {`${farm.location.substring(30, 78)}`}
+                          <Typography
+                            variant="body2"
+                            component="p"
+                            className={classes.farmLocation}
+                          >
+                            Location of Farm: {farm.location}
                           </Typography>
                         </Box>
                         <Box p={3}>
