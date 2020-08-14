@@ -39,8 +39,8 @@ export default function SurplusStepper(props) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
   // form states (relevant to the final step - surplus form)
-  const [currentFarm, setCurrentFarm] = React.useState("");
-  const [currentProduce, setCurrentProduce] = React.useState("");
+  const [currentFarm, setCurrentFarm] = React.useState({});
+  const [currentProduce, setCurrentProduce] = React.useState({});
 
   const steps = getSteps();
 
