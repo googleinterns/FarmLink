@@ -1,7 +1,7 @@
 const { db } = require('../util/admin');
 
 /*
-display a list of all farms
+read a list of all farms
 GET /farms
 success response: array of farm objects
 */
@@ -31,7 +31,7 @@ exports.getAllFarms = (request, response) => {
 }
 
 /*
-display a specific farm
+read a specific farm
 GET /farms/:id
 success response: farm object
 */

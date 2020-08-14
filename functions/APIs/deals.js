@@ -1,7 +1,7 @@
 const { db } = require('../util/admin');
 
 /*
-display a list of all deals
+read a list of all deals
 GET /deals
 success response: array of deal objects
 */
@@ -42,7 +42,7 @@ exports.getAllDeals = (request, response) => {
 }
 
 /*
-display a specific deal
+read a specific deal
 GET /deals/:id
 success response: deal object
 */

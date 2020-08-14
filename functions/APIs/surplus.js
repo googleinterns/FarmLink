@@ -1,7 +1,7 @@
 const { db } = require('../util/admin');
 
 /*
-display a list of all surplus
+read a list of all surplus
 GET /surplus
 success response: array of surplus objects
 */
@@ -84,7 +84,7 @@ exports.getAllSurplus = (request, response) => {
 }
 
 /*
-display a specific surplus
+read a specific surplus
 GET /surplus/:id
 success response: surplus object
 */

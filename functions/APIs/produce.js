@@ -1,7 +1,7 @@
 const { db } = require('../util/admin');
 
 /*
-display a list of all produce
+read a list of all produce
 GET /produce
 success response: array of produce objects
 */
@@ -30,7 +30,7 @@ exports.getAllProduce = (request, response) => {
 }
 
 /*
-display a specific produce
+read a specific produce
 GET /produce/:id
 success response: produce object
 */

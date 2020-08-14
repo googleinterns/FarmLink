@@ -1,7 +1,7 @@
 const { db } = require('../util/admin');
 
 /*
-display a list of all food banks
+read a list of all food banks
 GET /foodbanks
 success response: array of food bank objects
 */
@@ -33,7 +33,7 @@ exports.getAllFoodBanks = (request, response) => {
 }
 
 /*
-display a specific food bank
+read a specific food bank
 GET /foodbanks/:id
 success response: food bank object
 */
