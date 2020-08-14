@@ -3,7 +3,7 @@ const { db } = require('../util/admin');
 /*
 read a list of all surplus
 GET /surplus
-success response: array of surplus objects
+success response: array of surplus objects (documented in POST /surplus)
 */
 exports.getAllSurplus = (request, response) => {
     db.collection('surplus').get()
@@ -86,7 +86,7 @@ exports.getAllSurplus = (request, response) => {
 /*
 read a specific surplus
 GET /surplus/:id
-success response: surplus object
+success response: surplus object (documented in POST /surplus)
 */
 exports.getOneSurplus = (request, response) => {
     db.doc(`/surplus/${request.params.surplusId}`).get()
@@ -111,7 +111,7 @@ data params:
     totalQuantityAvailable: [number],
     packagingType: [string]
 }
-success response: surplus object
+success response: surplus object (documented in POST /surplus)
 */
 exports.postOneSurplus = (request, response) => {
     const newSurplusItem = {

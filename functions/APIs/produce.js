@@ -3,7 +3,7 @@ const { db } = require('../util/admin');
 /*
 read a list of all produce
 GET /produce
-success response: array of produce objects
+success response: array of produce objects (documented in POST /produce)
 */
 exports.getAllProduce = (request, response) => {
     db.collection('produce').get()
@@ -32,7 +32,7 @@ exports.getAllProduce = (request, response) => {
 /*
 read a specific produce
 GET /produce/:id
-success response: produce object
+success response: produce object (documented in POST /produce)
 */
 exports.getOneProduce = (request, response) => {
     db.doc(`/produce/${request.params.produceId}`).get()
@@ -58,7 +58,7 @@ data params:
     price: [number],
     pricePaid: [number]
 }
-success response: produce object
+success response: produce object (documented in POST /produce)
 */
 exports.postOneProduce = (request, response) => {
     const newProduceItem = {

@@ -3,7 +3,7 @@ const { db } = require('../util/admin');
 /*
 read a list of all food banks
 GET /foodbanks
-success response: array of food bank objects
+success response: array of food bank objects (documented in POST /foodbanks)
 */
 exports.getAllFoodBanks = (request, response) => {
     db.collection('foodbanks').get()
@@ -35,7 +35,7 @@ exports.getAllFoodBanks = (request, response) => {
 /*
 read a specific food bank
 GET /foodbanks/:id
-success response: food bank object
+success response: food bank object (documented in POST /foodbanks)
 */
 exports.getOneFoodBank = (request, response) => {
     db.doc(`/foodbanks/${request.params.foodbankId}`).get()
@@ -64,7 +64,7 @@ data params:
     refrigerationSpaceAvailable: [number],
     foodbankTags: [array]
 }
-success response: food bank object
+success response: food bank object (documented in POST /foodbanks)
 */
 exports.postOneFoodBank = (request, response) => {
     const newFoodBankItem = {

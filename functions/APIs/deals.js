@@ -3,7 +3,7 @@ const { db } = require('../util/admin');
 /*
 read a list of all deals
 GET /deals
-success response: array of deal objects
+success response: array of deal objects (documented in POST /deals)
 */
 exports.getAllDeals = (request, response) => {
     db.collection('deals').get()
@@ -44,7 +44,7 @@ exports.getAllDeals = (request, response) => {
 /*
 read a specific deal
 GET /deals/:id
-success response: deal object
+success response: deal object (documented in POST /deals)
 */
 exports.getOneDeal = (request, response) => {
     db.doc(`/deals/${request.params.dealId}`).get()
@@ -82,7 +82,7 @@ data params:
     associatedPress: [array],
     notes: [string]
 }
-success response: deal object
+success response: deal object (documented in POST /deals)
 */
 exports.postOneDeal = (request, response) => {
     const newDealItem = {

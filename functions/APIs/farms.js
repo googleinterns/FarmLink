@@ -3,7 +3,7 @@ const { db } = require('../util/admin');
 /*
 read a list of all farms
 GET /farms
-success response: array of farm objects
+success response: array of farm objects (documented in POST /farms)
 */
 exports.getAllFarms = (request, response) => {
     db.collection('farms').get()
@@ -33,7 +33,7 @@ exports.getAllFarms = (request, response) => {
 /*
 read a specific farm
 GET /farms/:id
-success response: farm object
+success response: farm object (documented in POST /farms)
 */
 exports.getOneFarm = (request, response) => {
     db.doc(`/farms/${request.params.farmId}`).get()
@@ -60,7 +60,7 @@ data params:
     forklift: [boolean],
     farmTags: [array]
 }
-success response: farm object
+success response: farm object (documented in POST /farms)
 */
 exports.postOneFarm = (request, response) => {
     const newFarmItem = {
