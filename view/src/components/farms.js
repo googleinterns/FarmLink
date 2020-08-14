@@ -226,7 +226,7 @@ class Farms extends Component {
 
   /** Used to uncheck and check the form checkboxes */
   handleChecked = (name) => (event) => {
-    this.setState({ ...this.state, [name]: event.target.checked });
+    this.setState({ [name]: event.target.checked });
   };
 
   /** Used to update tags in form */
@@ -621,7 +621,7 @@ class Farms extends Component {
                       multiple
                       id="farmTags"
                       onChange={this.onTagsChange}
-                      options={tagExamples.map((option) => option.title)} // need to create agregated tags array
+                      options={tagExamples.map((option) => option.title)} // need to create aggregated tags array
                       defaultValue={this.state.farmTags}
                       freeSolo
                       renderTags={(value, getTagProps) =>
