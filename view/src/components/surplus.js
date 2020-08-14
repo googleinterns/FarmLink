@@ -157,10 +157,10 @@ class Surplus extends Component {
       packagingType: "",
       // page state
       errors: [],
-      open: false,
+      open: false, // use to open the edit / add dialog (form)
       uiLoading: true,
       buttonType: "",
-      viewOpen: false,
+      viewOpen: false, // used to open the view dialgo
     };
 
     this.handleDelete = this.handleDelete.bind(this);
