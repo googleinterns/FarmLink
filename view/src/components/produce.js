@@ -127,8 +127,13 @@ class produce extends Component {
   constructor(props) {
     super(props);
 
+    // this.data will store the JSON array response from the get request to our specificed database
+    // this.value will store the string query that the user enters into the search bar or selects from the Material-UI autocomplete suggestions
+    // the variable names "data" and "value" are required to have these names in order for the SearchResults library to use their information
+    
     this.state = {
       data: "",
+      value: "",
       name: "",
       produceId: "",
       shippingPresetTemperature: "",
@@ -140,7 +145,6 @@ class produce extends Component {
       errors: [],
       open: false,
       uiLoading: true,
-      value: "",
       buttonType: "",
       viewOpen: false,
     };
