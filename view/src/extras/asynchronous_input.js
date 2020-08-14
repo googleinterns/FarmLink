@@ -8,7 +8,7 @@ import { authMiddleWare } from "../util/auth";
 /**
  * Creates an asynchronous input that will query database for options
  * when it is opened by the user (to avoid loading on page reload). 
- * @param props Propositions passed from parent that determine where the 
+ * @param props Properties passed from parent that determine where the 
  *              data should come from, how to update the input state in the 
  *              parent, and other settings of the input 
  */
@@ -26,12 +26,12 @@ export default function AsynchronousInput(props) {
     return localStorage.getItem("AuthToken");
   }
 
-  /** Asynchronously loads in the possible responmes from props.target path */
+  /** Asynchronously loads in the possible responses from props.target path */
   React.useEffect(() => {
     let active = true;
 
     if (!loading) {
-      return undefined;
+      return;
     }
 
     (async () => {
