@@ -93,9 +93,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-
 /**
- * This class represents a Todo components, which is a sub-page of the 
+ * This class represents a Todo components, which is a sub-page of the
  * home page where todo objects are visualized, created, updated, edited,
  * and deleted.
  */
@@ -134,7 +133,7 @@ class Todo extends Component {
       .catch((err) => {
         console.error(err);
       });
-  };
+  }
 
   /**
    * Given an event, this function updates a state (the target of the event)
@@ -151,12 +150,12 @@ class Todo extends Component {
   getAuth = () => {
     authMiddleWare(this.props.history);
     return localStorage.getItem("AuthToken");
-  }
+  };
 
   /**
    * Takes a todo object as an input and deletes the given todo
    * object from the database
-   * @param data A todo object 
+   * @param data A todo object
    */
   handleDeleteTodo(data) {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
@@ -172,9 +171,9 @@ class Todo extends Component {
   }
 
   /**
-   * Takes a todo object as an input and opens a dialog page to 
+   * Takes a todo object as an input and opens a dialog page to
    * allow the user to update the attributes of the todo object
-   * @param data A todo object 
+   * @param data A todo object
    */
   handleEditClick(data) {
     this.setState({
@@ -190,7 +189,7 @@ class Todo extends Component {
    * Takes a todo object as an input and opens a popup with all the
    * information about the todo (currently not being used -> will be
    * updated to show augmented information)
-   * @param data A todo object 
+   * @param data A todo object
    */
   handleViewOpen(data) {
     this.setState({
