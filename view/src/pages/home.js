@@ -81,12 +81,15 @@ const styles = (theme) => ({
     color: theme.palette.primary.white,
     transparent: true,
   },
+  center: {
+    textAlign: "center",
+  },
 });
 
 /**
  * The Home component comprises the structure of the home page which
  * is able to load in all the other component pages (in components directory).
- * It contains the Toolbar at the top of the page and a Drawer that provides 
+ * It contains the Toolbar at the top of the page and a Drawer that provides
  * acccess to all the component pages. In addition, it controls the alert
  * component accross any child of the home page.
  */
@@ -106,7 +109,7 @@ class Home extends Component {
   /**
    * Creates an alert with the severity and message provided as parameters.
    * This function will passed to the children of home to allow them to call
-   * the alert aparatus. 
+   * the alert aparatus.
    */
   alert = (newSeverity, newMessage) => {
     localStorage.setItem("severity", newSeverity);
@@ -165,7 +168,8 @@ class Home extends Component {
     this.setState({ toRender: "foodbanks" });
   };
 
-  /** Logs the user out of the web application (by removing bearer token from local storage) */   
+  /** Logs the user out of the web application (by removing bearer token from local storage) */
+
   logoutHandler = (event) => {
     localStorage.removeItem("AuthToken");
     this.props.history.push("/login");
@@ -229,7 +233,7 @@ class Home extends Component {
         console.log(error);
         this.setState({ errorMsg: "Error in retrieving the data" });
       });
-  };
+  }
 
   render() {
     const { classes } = this.props;
@@ -261,7 +265,7 @@ class Home extends Component {
           >
             <div className={classes.toolbar} />
             <Divider />
-            <center>
+            <div className={classes.center}>
               <Avatar
                 src={this.state.profilePicture}
                 className={classes.avatar}
@@ -269,7 +273,7 @@ class Home extends Component {
               <p>
                 {this.state.firstName} {this.state.lastName}
               </p>
-            </center>
+            </div>
             <Divider />
             <List>
               <ListItem
@@ -281,7 +285,7 @@ class Home extends Component {
                 <ListItemIcon>
                   <NatureIcon
                     className={this.isSelected("farms") && classes.selectedIcon}
-                  /> 
+                  />
                 </ListItemIcon>
                 <ListItemText primary="Farms" />
               </ListItem>
@@ -296,7 +300,7 @@ class Home extends Component {
                     className={
                       this.isSelected("foodbanks") && classes.selectedIcon
                     }
-                  /> 
+                  />
                 </ListItemIcon>
                 <ListItemText primary="Food Banks" />
               </ListItem>
@@ -309,7 +313,7 @@ class Home extends Component {
                 <ListItemIcon>
                   <DealIcon
                     className={this.isSelected("deals") && classes.selectedIcon}
-                  /> 
+                  />
                 </ListItemIcon>
                 <ListItemText primary="Deals" />
               </ListItem>
@@ -324,7 +328,7 @@ class Home extends Component {
                     className={
                       this.isSelected("surplus") && classes.selectedIcon
                     }
-                  /> 
+                  />
                 </ListItemIcon>
                 <ListItemText primary="Surplus" />
               </ListItem>
@@ -339,7 +343,7 @@ class Home extends Component {
                     className={
                       this.isSelected("produce") && classes.selectedIcon
                     }
-                  /> 
+                  />
                 </ListItemIcon>
                 <ListItemText primary="Produce" />
               </ListItem>
@@ -349,18 +353,18 @@ class Home extends Component {
                 key="Account"
                 onClick={this.loadAccountPage}
               >
-                <ListItemIcon>   
+                <ListItemIcon>
                   <AccountBoxIcon
                     className={
                       this.isSelected("account") && classes.selectedIcon
                     }
-                  /> 
+                  />
                 </ListItemIcon>
                 <ListItemText primary="Account" />
               </ListItem>
               <ListItem button key="Logout" onClick={this.logoutHandler}>
                 <ListItemIcon>
-                  <ExitToAppIcon /> 
+                  <ExitToAppIcon />
                 </ListItemIcon>
                 <ListItemText primary="Logout" />
               </ListItem>
@@ -378,7 +382,7 @@ class Home extends Component {
             />
             {/* Load in the content of the selected component page */}
             {this.state.toRender === "deals" ? (
-              <Deal alert={this.alert} /> 
+              <Deal alert={this.alert} />
             ) : this.state.toRender === "account" ? (
               <Account alert={this.alert} />
             ) : this.state.toRender === "produce" ? (
@@ -388,7 +392,7 @@ class Home extends Component {
             ) : this.state.toRender === "farms" ? (
               <Farms alert={this.alert} />
             ) : (
-              <FoodBanks alert={this.alert} main={true}/>
+              <FoodBanks alert={this.alert} main={true} />
             )}
           </div>
         </div>
