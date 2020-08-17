@@ -1,5 +1,10 @@
 const { db } = require('../util/admin');
 
+/*
+display a list of all deals
+GET /deals
+success response: array of deal objects
+*/
 exports.getAllDeals = (request, response) => {
     db.collection('deals').get()
     .then((data) => {
@@ -36,6 +41,11 @@ exports.getAllDeals = (request, response) => {
     });
 }
 
+/*
+display a specific deal
+GET /deals/:id
+success response: deal object
+*/
 exports.getOneDeal = (request, response) => {
     db.doc(`/deals/${request.params.dealId}`).get()
     .then((doc) => {
@@ -47,6 +57,33 @@ exports.getOneDeal = (request, response) => {
     });
 }
 
+/*
+create a new deal
+POST /deals
+data params:
+{
+    farmId: [string],
+    foodbankId: [string],
+    surplusId: [string],
+    farmContactKey: [string],
+    foodbankContactKey: [string],
+    farmlinkContactName: [string],
+    farmlinkContactPhone: [string],
+    farmlinkContactEmail: [string],
+    pickupDate: [string],
+    pickupTime: [string],
+    deliveryDate: [string],
+    deliveryTime: [string],
+    bill: [string],
+    fundsPaidToFarm: [number],
+    fundsPaidForShipping: [number],
+    totalSpent: [number],
+    invoice: [string],
+    associatedPress: [array],
+    notes: [string]
+}
+success response: deal object
+*/
 exports.postOneDeal = (request, response) => {
     const newDealItem = {
         farmId: request.body.farmId,
@@ -69,39 +106,46 @@ exports.postOneDeal = (request, response) => {
         associatedPress: request.body.associatedPress,
         notes: request.body.notes,
     };
-    db
-        .collection('deals')
-        .add(newDealItem)
-        .then((doc) => {
-            let responseDealItem = newDealItem;
-            responseDealItem.id = doc.id;
-            return response.json(responseDealItem);
-        })
-        .catch((err) => {
-            console.log(err);
-            return response.status(500).json({error: err.code});
-        });
+    db.collection('deals').add(newDealItem)
+    .then((doc) => {
+        let responseDealItem = newDealItem;
+        responseDealItem.id = doc.id;
+        return response.json(responseDealItem);
+    })
+    .catch((err) => {
+        console.log(err);
+        return response.status(500).json({error: err.code});
+    });
 }
 
+/*
+delete a specific deal
+DELETE /deals/:id
+success response: {message: 'Delete successfull'}
+*/
 exports.deleteDeal = (request, response) => {
     const document = db.doc(`/deals/${request.params.dealId}`);
-    document
-        .get()
-        .then((doc) => {
-            if (!doc.exists) {
-                return response.status(404).json({ error: 'Deal Object not found' })
-            }
-            return document.delete();
-        })
-        .then(() => {
-            response.json({ message: 'Delete successfull' });
-        })
-        .catch((err) => {
-            console.log(err);
-            return response.status(500).json({error: err.code});
-        });
+    document.get()
+    .then((doc) => {
+        if (!doc.exists) {
+            return response.status(404).json({ error: 'Deal Object not found' })
+        }
+        return document.delete();
+    })
+    .then(() => {
+        response.json({ message: 'Delete successfull' });
+    })
+    .catch((err) => {
+        console.log(err);
+        return response.status(500).json({error: err.code});
+    });
 }
 
+/*
+update a specific deal
+PUT /deals/:id
+success response: {message: 'Updated successfully'}
+*/
 exports.editDeal = (request, response) => {
     let document = db.collection('deals').doc(`${request.params.dealId}`)
     document.update(request.body)

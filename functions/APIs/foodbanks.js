@@ -1,5 +1,10 @@
 const { db } = require('../util/admin');
 
+/*
+display a list of all food banks
+GET /foodbanks
+success response: array of food bank objects
+*/
 exports.getAllFoodBanks = (request, response) => {
     db.collection('foodbanks').get()
     .then((data) => {
@@ -27,6 +32,11 @@ exports.getAllFoodBanks = (request, response) => {
     });
 }
 
+/*
+display a specific food bank
+GET /foodbanks/:id
+success response: food bank object
+*/
 exports.getOneFoodBank = (request, response) => {
     db.doc(`/foodbanks/${request.params.foodbankId}`).get()
     .then((doc) => {
@@ -38,6 +48,24 @@ exports.getOneFoodBank = (request, response) => {
     });
 }
 
+/*
+create a new food bank
+POST /foodbanks
+data params:
+{
+    foodbankName: [string],
+    location: [string],
+    hours: [array],
+    contacts: [array],
+    forklift: [boolean],
+    pallet: [boolean],
+    loadingDock: [boolean],
+    maxLoadSize: [number],
+    refrigerationSpaceAvailable: [number],
+    foodbankTags: [array]
+}
+success response: food bank object
+*/
 exports.postOneFoodBank = (request, response) => {
     const newFoodBankItem = {
         foodbankName: request.body.foodbankName,
@@ -51,39 +79,46 @@ exports.postOneFoodBank = (request, response) => {
         refrigerationSpaceAvailable: parseFloat(request.body.refrigerationSpaceAvailable),
         foodbankTags: request.body.foodbankTags,
     };
-    db
-        .collection('foodbanks')
-        .add(newFoodBankItem)
-        .then((doc) => {
-            let responseFoodBankItem = newFoodBankItem;
-            responseFoodBankItem.id = doc.id;
-            return response.json(responseFoodBankItem);
-        })
-        .catch((err) => {
-            console.log(err);
-            return response.status(500).json({error: err.code});
-        });
+    db.collection('foodbanks').add(newFoodBankItem)
+    .then((doc) => {
+        let responseFoodBankItem = newFoodBankItem;
+        responseFoodBankItem.id = doc.id;
+        return response.json(responseFoodBankItem);
+    })
+    .catch((err) => {
+        console.log(err);
+        return response.status(500).json({error: err.code});
+    });
 }
 
+/*
+delete a specific food bank
+DELETE /foodbanks/:id
+success response: {message: 'Delete successfull'}
+*/
 exports.deleteFoodBank = (request, response) => {
     const document = db.doc(`/foodbanks/${request.params.foodbankId}`);
-    document
-        .get()
-        .then((doc) => {
-            if (!doc.exists) {
-                return response.status(404).json({ error: 'FoodBank Object not found' })
-            }
-            return document.delete();
-        })
-        .then(() => {
-            response.json({ message: 'Delete successfull' });
-        })
-        .catch((err) => {
-            console.log(err);
-            return response.status(500).json({error: err.code});
-        });
+    document.get()
+    .then((doc) => {
+        if (!doc.exists) {
+            return response.status(404).json({ error: 'FoodBank Object not found' })
+        }
+        return document.delete();
+    })
+    .then(() => {
+        response.json({ message: 'Delete successfull' });
+    })
+    .catch((err) => {
+        console.log(err);
+        return response.status(500).json({error: err.code});
+    });
 }
 
+/*
+update a specific food bank
+PUT /foodbanks/:id
+success response: {message: 'Updated successfully'}
+*/
 exports.editFoodBank = (request, response) => {
     let document = db.collection('foodbanks').doc(`${request.params.foodbankId}`)
     document.update(request.body)

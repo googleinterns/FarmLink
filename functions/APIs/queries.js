@@ -5,8 +5,8 @@ require('dotenv').config();
 /*
 find food banks that are a specific distance from a farm
 GET /queryFoodBanksByDistance
-URL params: locationId, distance
-success response: array of objects
+URL params: locationId, distance (miles)
+success response: array of food bank objects
 */
 exports.queryFoodBanksByDistance = (request, response) => {
     db.collection('foodbanks').get()
@@ -16,6 +16,7 @@ exports.queryFoodBanksByDistance = (request, response) => {
             foodbanks.push(doc.data());
         });
 
+        //calculate distances between farms and food banks
         function calculateDistances(data) {
             return new Promise(function(resolve, reject) {
                 axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:${request.query.locationId}&destinations=place_id:${data.locationId}&key=${process.env.API_KEY}`)
@@ -51,8 +52,8 @@ exports.queryFoodBanksByDistance = (request, response) => {
 /*
 find farms that are a specific distance from a food bank
 GET /queryFarmsByDistance
-URL params: locationId, distance
-success response: array of objects
+URL params: locationId, distance (miles)
+success response: array of farm objects
 */
 exports.queryFarmsByDistance = (request, response) => {
     db.collection('farms').get()
@@ -62,6 +63,7 @@ exports.queryFarmsByDistance = (request, response) => {
             farms.push(doc.data());
         });
 
+        //calculate distances between farms and food banks
         function calculateDistances(data) {
             return new Promise(function(resolve, reject) {
                 axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:${request.query.locationId}&destinations=place_id:${data.locationId}&key=${process.env.API_KEY}`)
