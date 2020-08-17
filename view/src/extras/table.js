@@ -44,20 +44,20 @@ const tableIcons = {
 };
 
 /**
- * Creates a custom table component that allows the user to search, edit, 
- * add, and delete entries into the table. The data that populates the 
- * table is loaded in through props passed by a parent. 
+ * Creates a custom table component that allows the user to search, edit,
+ * add, and delete entries into the table. The data that populates the
+ * table is loaded in through props passed by a parent.
  */
 export default function CustomTable(props) {
   // populates the table using the tableState property passed by the parent elem
-  const [ tableState, setState] = React.useState(props.tableState);
+  const [tableState, setState] = React.useState(props.tableState);
 
   return (
     <MaterialTable
       title={props.title}
       // pulls the columns and data from the tableState state
-      columns={ tableState.columns}
-      data={ tableState.data}
+      columns={tableState.columns}
+      data={tableState.data}
       // imports the icons
       icons={tableIcons}
       editable={{
