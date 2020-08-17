@@ -83,17 +83,31 @@ const styles = (theme) => ({
   },
 });
 
-class home extends Component {
+/**
+ * The Home component comprises the structure of the home page which
+ * is able to load in all the other component pages (in components directory).
+ * It contains the Toolbar at the top of the page and a Drawer that provides 
+ * acccess to all the component pages. In addition, it controls the alert
+ * component accross any child of the home page.
+ */
+class Home extends Component {
+  /** Opens an alert in the snackbar at the bottom of the page */
   openAlert = () => {
     localStorage.setItem("showAlert", "true");
     this.setState({ showAlert: true });
   };
 
+  /** Closes an alert in the snackbar at the bottom of the page */
   closeAlert = () => {
     localStorage.setItem("showAlert", "false");
     this.setState({ showAlert: false });
   };
 
+  /**
+   * Creates an alert with the severity and message provided as parameters.
+   * This function will passed to the children of home to allow them to call
+   * the alert aparatus. 
+   */
   alert = (newSeverity, newMessage) => {
     localStorage.setItem("severity", newSeverity);
     localStorage.setItem("message", newMessage);
@@ -104,58 +118,60 @@ class home extends Component {
     this.openAlert();
   };
 
+  /**
+   * This function gets a value from local storage with name. If that value is not
+   * found in local storage, it will return the standard value provided as a param.
+   */
   getStorage = (name, standardVal) => {
     const storedContent = localStorage.getItem(name) || standardVal;
-
     return {
       storedContent,
     };
   };
 
-  saveStateToLocalStorage = () => {
-    console.log("to storage");
-    // for every item in React state
-    for (let key in this.state) {
-      // save to localStorage
-      localStorage.setItem(key, JSON.stringify(this.state[key]));
-    }
-  };
-
+  /** Loads the account page (and stores in local storage to remember after page reload) */
   loadAccountPage = (event) => {
     localStorage.setItem("toRender", "account");
     this.setState({ toRender: "account" });
   };
 
+  /** Loads the deals page (and stores in local storage to remember after page reload) */
   loadTodoPage = (event) => {
     localStorage.setItem("toRender", "deals");
     this.setState({ toRender: "deals" });
   };
 
+  /** Loads the produce page (and stores in local storage to remember after page reload) */
   loadProducePage = (event) => {
     localStorage.setItem("toRender", "produce");
     this.setState({ toRender: "produce" });
   };
 
+  /** Loads the surplus page (and stores in local storage to remember after page reload) */
   loadSurplusPage = (event) => {
     localStorage.setItem("toRender", "surplus");
     this.setState({ toRender: "surplus" });
   };
 
+  /** Loads the farms page (and stores in local storage to remember after page reload) */
   loadFarmsPage = (event) => {
     localStorage.setItem("toRender", "farms");
     this.setState({ toRender: "farms" });
   };
 
+  /** Loads the food banks page (and stores in local storage to remember after page reload) */
   loadFoodBanksPage = (event) => {
     localStorage.setItem("toRender", "foodbanks");
     this.setState({ toRender: "foodbanks" });
   };
 
+  /** Logs the user out of the web application (by removing bearer token from local storage) */   
   logoutHandler = (event) => {
     localStorage.removeItem("AuthToken");
     this.props.history.push("/login");
   };
 
+  /** Determines whether "selected" CSS should be applied to a page. Only applies to current page. */
   isSelected = (name) => {
     return this.state.toRender === name;
   };
@@ -164,36 +180,46 @@ class home extends Component {
     super(props);
 
     this.state = {
+      // Get values from local storage or load default values
       toRender: this.getStorage("toRender", "deals")["storedContent"],
       showAlert:
         this.getStorage("showAlert", "false")["storedContent"] === "true",
       severity: this.getStorage("severity", "")["storedContent"],
       message: this.getStorage("message", "")["storedContent"],
+      // User states - set to default value
       firstName: "",
       lastName: "",
-      profilePicture: "",
-      uiLoading: true,
       imageLoading: false,
+      profilePicture: "",
+      // Page state - set to default value
+      uiLoading: true,
     };
   }
 
-  componentDidMount() {
+  /** Returns the authentication token stored in local storage */
+  getAuth = () => {
     authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
+    return localStorage.getItem("AuthToken");
+  };
+
+  /** Load in the user's information when the component has mounted */
+  componentDidMount() {
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
       .get("/user")
       .then((response) => {
         console.log(this.state);
         this.setState({
+          // user states
           firstName: response.data.userCredentials.firstName,
           lastName: response.data.userCredentials.lastName,
           email: response.data.userCredentials.email,
           phoneNumber: response.data.userCredentials.phoneNumber,
           country: response.data.userCredentials.country,
           username: response.data.userCredentials.username,
-          uiLoading: false,
           profilePicture: response.data.userCredentials.imageUrl,
+          // page state
+          uiLoading: false,
         });
       })
       .catch((error) => {
@@ -342,6 +368,7 @@ class home extends Component {
           </Drawer>
 
           <div className={classes.contentContainer}>
+            {/* The alert component that is activated by any child of the home page */}
             <Alert
               open={this.state.showAlert}
               handleOpen={this.openAlert}
@@ -349,6 +376,7 @@ class home extends Component {
               severity={this.state.severity}
               message={this.state.message}
             />
+            {/* Load in the content of the selected component page */}
             {this.state.toRender === "deals" ? (
               <Deal alert={this.alert} /> 
             ) : this.state.toRender === "account" ? (
@@ -369,4 +397,4 @@ class home extends Component {
   }
 }
 
-export default withStyles(styles)(home);
+export default withStyles(styles)(Home);
