@@ -503,8 +503,8 @@ class Surplus extends Component {
             classes={{ paperFullWidth: classes.dialogStyle }}
           >
             <DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-              {surplus.totalQuantityAvailable} lbs of {surplus.produceName} from
-              {surplus.originFarmName}
+              {this.state.totalQuantityAvailable} lbs of {this.state.produceName} from
+              {this.state.originFarmName}
             </DialogTitle>
             <DialogContent dividers>
               <Box
@@ -519,11 +519,11 @@ class Surplus extends Component {
                     Logistics:
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Origin: {surplus.originFarmName}
+                    Origin: {this.state.originFarmName}
                     <br />
-                    Packing Type: {surplus.packagingType}
+                    Packing Type: {this.state.packagingType}
                     <br />
-                    Available: {surplus.available ? "yes" : "no"}
+                    Available: {this.state.available ? "yes" : "no"}
                   </Typography>
                 </Box>
                 <Box p={3}>
@@ -531,12 +531,12 @@ class Surplus extends Component {
                     Details:
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Type of Produce: {surplus.produceName}
+                    Type of Produce: {this.state.produceName}
                     <br />
                     Total Quantity Available (lbs):
-                    {surplus.totalQuantityAvailable}
+                    {this.state.totalQuantityAvailable}
                     <br />
-                    Cost (USD / lb): {surplus.cost}
+                    Cost (USD / lb): {this.state.cost}
                   </Typography>
                 </Box>
               </Box>
