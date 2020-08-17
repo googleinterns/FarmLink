@@ -65,6 +65,37 @@ export default function AddressAutocompleteField(props) {
     loaded.current = true;
   }
 
+  // handles the rendering of potential location options for the autocomplete field
+  const handleOptionsRender = (option) => {
+    const matches = option.structured_formatting.main_text_matched_substrings;
+    const parts = parse(
+      option.structured_formatting.main_text,
+      matches.map((match) => [match.offset, match.offset + match.length])
+    );
+
+    return (
+      <Grid container alignItems="center">
+        <Grid item>
+          <LocationOnIcon className={classes.icon} />
+        </Grid>
+        <Grid item xs>
+          {parts.map((part, index) => (
+            <span
+              key={index}
+              style={{ fontWeight: part.highlight ? 700 : 400 }}
+            >
+              {part.text}
+            </span>
+          ))}
+
+          <Typography variant="body2" color="textSecondary">
+            {option.structured_formatting.secondary_text}
+          </Typography>
+        </Grid>
+      </Grid>
+    );
+  };
+
   // used to memoize results from API (for optimization)
   const fetch = React.useMemo(
     () =>
@@ -143,36 +174,7 @@ export default function AddressAutocompleteField(props) {
           fullWidth
         />
       )}
-      renderOption={(option) => {
-        const matches =
-          option.structured_formatting.main_text_matched_substrings;
-        const parts = parse(
-          option.structured_formatting.main_text,
-          matches.map((match) => [match.offset, match.offset + match.length])
-        );
-
-        return (
-          <Grid container alignItems="center">
-            <Grid item>
-              <LocationOnIcon className={classes.icon} />
-            </Grid>
-            <Grid item xs>
-              {parts.map((part, index) => (
-                <span
-                  key={index}
-                  style={{ fontWeight: part.highlight ? 700 : 400 }}
-                >
-                  {part.text}
-                </span>
-              ))}
-
-              <Typography variant="body2" color="textSecondary">
-                {option.structured_formatting.secondary_text}
-              </Typography>
-            </Grid>
-          </Grid>
-        );
-      }}
+      renderOption={handleOptionsRender}
     />
   );
 }
