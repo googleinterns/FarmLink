@@ -1,0 +1,24 @@
+{
+  "name": "farmlink3",
+  "version": "1.0.0",
+  "description": "a logistics platform built for the farmlink project",
+  "main": "index.js",
+  "dependencies": {
+    "firebase": "^7.16.1",
+    "react-router-dom": "^5.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/googleinterns/FarmLink.git"
+  },
+  "author": "Google Intern Team",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/googleinterns/FarmLink/issues"
+  },
+  "homepage": "https://github.com/googleinterns/FarmLink#readme"
+}
