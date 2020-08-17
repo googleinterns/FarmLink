@@ -46,22 +46,22 @@ const styles = (theme) => ({
     color: "white",
     textAlign: "center",
     position: "absolute",
-    top: 14,
-    right: 10,
+    top: "14px",
+    right: "10px",
   },
   floatingButton: {
     position: "fixed",
-    bottom: 16,
-    right: 16,
+    bottom: "16px",
+    right: "16px",
   },
   form: {
-    width: "98%",
+    width: "calc(100% - 32px)",
     marginLeft: 13,
     marginTop: theme.spacing(3),
   },
   toolbar: theme.mixins.toolbar,
   root: {
-    minWidth: 470,
+    minWidth: "470px",
   },
   bullet: {
     display: "inline-block",
