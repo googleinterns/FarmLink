@@ -93,3 +93,72 @@ exports.queryFarmsByDistance = (request, response) => {
         return response.status(500).json({error: err.code});
     });
 }
+
+/*
+find farms with surplus that are a specific distance from a food bank
+GET /querySurplusByDistance
+URL params: locationId, distance
+success response: array of objects
+*/
+exports.querySurplusByDistance = (request, response) => {
+    db.collection('surplus').get()
+    .then((data) => {
+        let surplus = [];
+        data.forEach((doc) => {
+            surplus.push(doc.data());
+        });
+
+        function queryFarms(data) {
+            return new Promise(function(resolve, reject) {
+                db.doc(`/farms/${data.originFarmId}`).get()
+                .then((doc) => {
+                    let surplus = data;
+                    let farm = doc.data();
+                    resolve({
+                        ...surplus,
+                        ...farm
+                    });
+                })
+                .catch((err) => {
+                    return reject(err);
+                });
+            });
+        }
+
+        function calculateDistances(data) {
+            return new Promise(function(resolve, reject) {
+                axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:${request.query.locationId}&destinations=place_id:${data.locationId}&key=${process.env.API_KEY}`)
+                .then((response) => {
+                    let distance = response.data.rows[0].elements[0].distance.text;
+                    if (parseInt(distance.split(" ")[0].replace(/,/g, "")) < request.query.distance) {
+                        resolve(data);
+                    }
+                    else {
+                        resolve();
+                    }
+                })
+                .catch((err) => {
+                    return reject(err);
+                });
+            })
+        }
+
+        Promise.all(surplus.map(queryFarms))
+        .then((results) => {
+            Promise.all(results.map(calculateDistances))
+            .then((results) => {
+                return response.json(results.filter(result => result != null));
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    })
+    .catch((err) => {
+        console.log(err);
+        return response.status(500).json({error: err.code});
+    });
+}
