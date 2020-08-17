@@ -504,7 +504,8 @@ class produce extends Component {
                                 <Grid item xs={12}>
 										<Autocomplete
 											id="combo-box-demo"
-											options={data.map((produce) => produce.title)}
+                      options={data.map((produce) => produce.title)}
+                      onChange={this.handleSearch}
 
 											style={{ width: 300 }}
 											
@@ -563,7 +564,7 @@ class produce extends Component {
 										<div>
                             				{results.map((produce) => (
 												<Grid item xs={12}>
-													<Card className={classes.root} variant="outlined">
+													<Card key={produce.produceId} className={classes.root} variant="outlined">
 														<CardContent>
 															<Typography variant="h5" component="h2">
 																{produce.name}
