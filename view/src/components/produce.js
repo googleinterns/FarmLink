@@ -544,7 +544,7 @@ class produce extends Component {
                 <div>
                   <input
                     type="text"
-                    value={this.valueff}
+                    value={this.state.value}
                     onChange={this.handleSearch}
                   />
                 </div>
@@ -561,7 +561,7 @@ class produce extends Component {
                       input: classes.inputInput,
                     }}
                     inputProps={{ "aria-label": "search" }}
-                    value={this.state.valueff}
+                    value={this.state.value}
                     onChange={this.handleSearch}
                   />
                 </div>
