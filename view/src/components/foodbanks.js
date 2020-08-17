@@ -64,22 +64,22 @@ const styles = (theme) => ({
     color: "white",
     textAlign: "center",
     position: "absolute",
-    top: 14,
-    right: 10,
+    top: "14px",
+    right: "10px",
   },
   floatingButton: {
     position: "fixed",
-    bottom: 0,
-    right: 0,
+    bottom: "0px",
+    right: "0px",
   },
   form: {
-    width: "98%",
-    marginLeft: 13,
+    width: "calc(100% - 32px)",
+    marginLeft: "12px",
     marginTop: theme.spacing(3),
   },
   toolbar: theme.mixins.toolbar,
   root: {
-    minWidth: 470,
+    minWidth: "470px",
   },
   bullet: {
     display: "inline-block",
@@ -87,7 +87,7 @@ const styles = (theme) => ({
     transform: "scale(0.8)",
   },
   pos: {
-    marginBottom: 12,
+    marginBottom: "12px",
   },
   uiProgess: {
     position: "fixed",
@@ -101,7 +101,7 @@ const styles = (theme) => ({
     maxWidth: "50%",
   },
   viewRoot: {
-    margin: 0,
+    margin: "0px",
     padding: theme.spacing(2),
   },
   closeButton: {
@@ -113,7 +113,7 @@ const styles = (theme) => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    marginLeft: 0,
+    marginLeft: "0px",
     width: "100%",
   },
   searchIcon: {
@@ -526,7 +526,7 @@ class Foodbank extends Component {
             </AppBar>
             <Container maxWidth="lg">
               <form className={classes.form} noValidate>
-                <Grid container spacing={4} allignItems="center">
+                <Grid container spacing={4} alignItems="center">
                   <Grid item xs={6}>
                     <TextField
                       variant="outlined"
@@ -770,7 +770,7 @@ class Foodbank extends Component {
                           >
                             Location of Food Bank: {foodbank.location}
                             <br />
-                            Refridgeration Space (in pallets):
+                            Refrigeration Space (in pallets):
                             {foodbank.refrigerationSpaceAvailable}
                             <br />
                             Max Load Size (in pallets): {foodbank.maxLoadSize}
@@ -884,7 +884,7 @@ class Foodbank extends Component {
                   <Typography variant="body2" component="p">
                     Location of Food Bank: {this.state.location}
                     <br />
-                    Refridgeration Space (in pallets):
+                    Refrigeration Space (in pallets):
                     {this.state.refrigerationSpaceAvailable}
                     <br />
                     Max Load Size (in pallets): {this.state.maxLoadSize}
