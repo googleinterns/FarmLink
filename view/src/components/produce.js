@@ -721,4 +721,4 @@ class Produce extends Component {
   }
 }
 
-export default withStyles(styles)(produce);
+export default withStyles(styles)(Produce);
