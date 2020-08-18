@@ -18,7 +18,11 @@ import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 
-/** Adds icons to all of the actions in the table */
+/** 
+ * Adds icons to all of the actions in the table. This const connects
+ * icons to certain material-table actions (forwardRef is used to get
+ * actions from children of the material-table class such as Add, Check, etc)
+ * */
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -49,19 +53,17 @@ const tableIcons = {
  * table is loaded in through props passed by a parent.
  */
 export default function CustomTable(props) {
-  // populates the table using the tableState property passed by the parent elem
+  // Populates the table using the tableState property passed by the parent elem
   const [tableState, setState] = React.useState(props.tableState);
 
   return (
     <MaterialTable
       title={props.title}
-      // pulls the columns and data from the tableState state
       columns={tableState.columns}
       data={tableState.data}
-      // imports the icons
       icons={tableIcons}
       editable={{
-        // updates the table data after user adds row to table
+        // Updates the table data after user adds row to table
         onRowAdd: (newData) =>
           new Promise((resolve) => {
             setTimeout(() => {
@@ -73,7 +75,7 @@ export default function CustomTable(props) {
               });
             }, 600);
           }),
-        // updates the table data after user edits the table
+        // Updates the table data after user edits the table
         onRowUpdate: (newData, oldData) =>
           new Promise((resolve) => {
             setTimeout(() => {
@@ -87,7 +89,7 @@ export default function CustomTable(props) {
               }
             }, 600);
           }),
-        // updates the table data after the user deletes a row
+        // Updates the table data after the user deletes a row
         onRowDelete: (oldData) =>
           new Promise((resolve) => {
             setTimeout(() => {
