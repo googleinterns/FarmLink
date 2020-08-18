@@ -67,11 +67,11 @@ export default function AddressAutocompleteField(props) {
 
   // Handles the rendering of potential location options for the autocomplete field
   const handleOptionsRender = (option) => {
-    const matches;
-    const parts;
-    if(option && option.structured_formatting.main_text_matched_substrings) {
+    let matches;
+    let parts;
+    if (option && option.structured_formatting.main_text_matched_substrings) {
       matches = option.structured_formatting.main_text_matched_substrings;
-      parts =  parse(
+      parts = parse(
         option.structured_formatting.main_text,
         matches.map((match) => [match.offset, match.offset + match.length])
       );
