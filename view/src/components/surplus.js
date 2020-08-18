@@ -222,10 +222,14 @@ class Surplus extends Component {
     this.reFetchSurplus();
   };
 
+  /** Returns the authentication token stored in local storage */
+  getAuth = () => {
+    authMiddleWare(this.props.history);
+    return localStorage.getItem("AuthToken");
+  };
+
   /** Function to refresh the cards in the page without calling window.reload */
   reFetchSurplus = () => {
-    authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
     axios.defaults.headers.common = { Authorization: `${authToken}` };
     axios
       .get("/surplus")
@@ -239,12 +243,6 @@ class Surplus extends Component {
       .catch((err) => {
         console.error(err);
       });
-  };
-
-  /** Returns the authentication token stored in local storage */
-  getAuth = () => {
-    authMiddleWare(this.props.history);
-    return localStorage.getItem("AuthToken");
   };
 
   /** Load in all of the current food banks when the component has mounted */
