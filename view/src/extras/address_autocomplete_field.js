@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
  * This functional component exports a form input field that autocompletes
  * user's location queries. It queries the Google place API and uses the
  * handle location prop passed from the parent to save the desired information
- * from the resulting locaiton.
+ * from the resulting location.
  * @param props Used to pass default location from parent and function
  *              to handle location change in parent
  */
@@ -52,7 +52,7 @@ export default function AddressAutocompleteField(props) {
   const [options, setOptions] = React.useState([]);
   const loaded = React.useRef(false);
 
-  // add the script tag using loadScript
+  // Add the script tag using loadScript
   if (typeof window !== "undefined" && !loaded.current) {
     if (!document.querySelector("#google-maps")) {
       loadScript(
@@ -65,13 +65,19 @@ export default function AddressAutocompleteField(props) {
     loaded.current = true;
   }
 
-  // handles the rendering of potential location options for the autocomplete field
+  // Handles the rendering of potential location options for the autocomplete field
   const handleOptionsRender = (option) => {
-    const matches = option.structured_formatting.main_text_matched_substrings;
-    const parts = parse(
-      option.structured_formatting.main_text,
-      matches.map((match) => [match.offset, match.offset + match.length])
-    );
+    const matches;
+    const parts;
+    if(option && option.structured_formatting.main_text_matched_substrings) {
+      matches = option.structured_formatting.main_text_matched_substrings;
+      parts =  parse(
+        option.structured_formatting.main_text,
+        matches.map((match) => [match.offset, match.offset + match.length])
+      );
+    } else {
+      console.error("Error occurred when loading address autocomplete options");
+    }
 
     return (
       <Grid container alignItems="center">
@@ -96,7 +102,7 @@ export default function AddressAutocompleteField(props) {
     );
   };
 
-  // used to memoize results from API (for optimization)
+  // Used to memoize results from API (for optimization)
   const fetch = React.useMemo(
     () =>
       throttle((request, callback) => {
@@ -105,7 +111,7 @@ export default function AddressAutocompleteField(props) {
     []
   );
 
-  // used to update the options for the autocomplete field
+  // Used to update the options for the autocomplete field
   React.useEffect(() => {
     let active = true;
 

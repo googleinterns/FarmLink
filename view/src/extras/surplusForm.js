@@ -220,7 +220,7 @@ class ProduceForm extends Component {
       axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
       axios(options)
         .then(() => {
-          // send a success alert
+          // Send a success alert
           const message =
             this.props.buttonType === "Edit" ? " edited!" : " submitted!";
           this.props.alert(
@@ -230,7 +230,7 @@ class ProduceForm extends Component {
           window.location.reload();
         })
         .catch((error) => {
-          // send a failure alter
+          // Send a failure alter
           const message =
             this.props.buttonType === "Edit" ? " edit" : " submit";
           this.props.alert(
@@ -243,7 +243,7 @@ class ProduceForm extends Component {
         });
     };
 
-    // display loading circle if waiting to load in individual farm data
+    // Display loading circle if waiting to load in individual farm data
     if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>

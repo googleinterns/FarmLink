@@ -159,7 +159,7 @@ class ProduceForm extends Component {
         .then((response) => {
           this.props.setProduce(response.data);
           this.setState({
-            // produce states
+            // Produce states
             name: response.data.name,
             produceId: response.data.produceId,
             shippingPresetTemperature: response.data.shippingPresetTemperature,
@@ -170,7 +170,7 @@ class ProduceForm extends Component {
             price: response.data.price,
             pricePaid: response.data.pricePaid,
             amountMoved: response.data.amountMoved,
-            // page state
+            // Page state
             uiLoading: false,
           });
         })
@@ -190,9 +190,9 @@ class ProduceForm extends Component {
      * @param event The event being handled
      */
     const handleSubmit = (event) => {
-      // go to the next page of the Stepper (parent object)
+      // Go to the next page of the Stepper (parent object)
       this.props.handleNext();
-      // submit the new produce object or update the existing one
+      // Submit the new produce object or update the existing one
       authMiddleWare(this.props.history);
       event.preventDefault();
       const newProduce = {
@@ -250,7 +250,7 @@ class ProduceForm extends Component {
         });
     };
 
-    // display loading circle if waiting to load in individual produce data
+    // Display loading circle if waiting to load in individual produce data
     if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>
