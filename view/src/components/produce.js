@@ -161,7 +161,8 @@ class produce extends Component {
 
 		this.deleteTodoHandler = this.deleteTodoHandler.bind(this);
 		this.handleEditClickOpen = this.handleEditClickOpen.bind(this);
-		this.handleViewOpen = this.handleViewOpen.bind(this);
+    this.handleViewOpen = this.handleViewOpen.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
 	}
 
 	handleChange = (event) => {
@@ -231,8 +232,9 @@ class produce extends Component {
 	}
 
 	handleSearch = event => {
-		const { value } = event.target;
-		this.setState({ value });
+    const { value } = event.target;
+    this.setState({ value });
+    console.log("New Value: ", this.state.value)
 	  };
 
 	render() {
@@ -504,36 +506,17 @@ class produce extends Component {
                                 <Grid item xs={12}>
 										<Autocomplete
 											id="combo-box-demo"
-                      options={data.map((produce) => produce.title)}
-                      onChange={this.handleSearch}
-
+                      						options={data.map((produce) => produce.name)}
+                      						value={value}
+                      						onSelect={this.handleSearch}
 											style={{ width: 300 }}
-											
 											renderInput={(params) => 
 												<TextField {...params} 
-													label="Combo box" 
+                          							label="Combo box" 
 													variant="outlined" 
-													
 												/>}
 											/>
-
-									<Autocomplete
-									
-										multiple
-										id="tags-filled"
-										options={data}
-										getOptionLabel={(option) => option.name}
-										onInputChange={this.handleSearch}
-										freeSolo={true}
-										renderTags={(value, getTagProps) =>
-										value.map((option, index) => (
-											<Chip variant="standard" label={option} {...getTagProps({ index })} />
-										))
-										}
-										renderInput={(params) => (
-										<TextField {...params} variant="standard" label="search" placeholder="Search..." />
-										)}
-									/>									
+									    
                                     <div>
 										<input type="text" value={this.state.value} onChange={this.handleSearch} />	
                                     </div>
