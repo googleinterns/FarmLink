@@ -515,7 +515,7 @@ class produce extends Component {
 										options={data.map((produce) => produce.name)}
 										value={value}
 										onSelect={this.handleSearch} // grab the name from data element for value
-										fullWidth
+										fullWidth={true}
 										renderInput={(params) => 
 											<TextField {...params} 
 												label="Search by produce name" 
