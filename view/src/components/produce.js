@@ -504,22 +504,23 @@ class produce extends Component {
                         <Grid container spacing={2}
                               alignItem="center">
                                 <Grid item xs={12}>
-										<Autocomplete
-											id="combo-box-demo"
-                      						options={data.map((produce) => produce.name)}
-                      						value={value}
-                      						onSelect={this.handleSearch}
-											style={{ width: 300 }}
-											renderInput={(params) => 
-												<TextField {...params} 
-                          							label="Combo box" 
-													variant="outlined" 
-												/>}
-											/>
-									    
-                                    <div>
-										<input type="text" value={this.state.value} onChange={this.handleSearch} />	
-                                    </div>
+									<SearchIcon className={classes.searchIcon}/>
+									<Autocomplete
+										id="produce-name-search"
+										options={data.map((produce) => produce.name)}
+										//getOptionLabel=
+										value={value}
+										onSelect={this.handleSearch}
+										fullWidth
+										renderInput={(params) => 
+											<TextField {...params} 
+												label="Search by produce name" 
+												variant="outlined" 
+												onChange={this.handleSearch}
+											/>}
+										/>
+									
+            
 									
 									<div className={classes.search}>
 									<div className={classes.searchIcon}>
