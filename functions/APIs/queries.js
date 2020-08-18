@@ -1,5 +1,6 @@
 const { db } = require('../util/admin');
 const axios = require('axios');
+const _ = require('lodash');
 require('dotenv').config();
 
 //calculate distances between farms and food banks
@@ -12,8 +13,11 @@ function calculateDistances(data, request) {
         url.searchParams.set("key", process.env.API_KEY);
         axios.get(url.href)
         .then((response) => {
-            let distance = response.data.rows[0].elements[0].distance.text;
-            if (parseInt(distance.split(" ")[0].replace(/,/g, "")) < parseInt(request.query.distance)) {
+            let distanceValue = response.data.rows[0].elements[0].distance.value;
+            let distanceText = response.data.rows[0].elements[0].distance.text;
+            if (parseInt(distanceText.split(" ")[0].replace(/,/g, "")) < parseInt(request.query.distance)) {
+                data["distanceValue"] = distanceValue;
+                data["distanceText"] = distanceText;
                 resolve(data);
             }
             else {
@@ -44,7 +48,9 @@ exports.queryFoodBanksByDistance = (request, response) => {
             return calculateDistances(foodbank, request);
         }))
         .then((results) => {
-            return response.json(results.filter(result => result != null));
+            results = results.filter(result => result != null);
+            results = _.orderBy(results, ["distanceValue"]);
+            return response.json(results);
         })
         .catch((err) => {
             console.log(err);
@@ -74,7 +80,9 @@ exports.queryFarmsByDistance = (request, response) => {
             return calculateDistances(farm, request);
         }))
         .then((results) => {
-            return response.json(results.filter(result => result != null));
+            results = results.filter(result => result != null);
+            results = _.orderBy(results, ["distanceValue"]);
+            return response.json(results);
         })
         .catch((err) => {
             console.log(err);
@@ -123,7 +131,9 @@ exports.querySurplusByDistance = (request, response) => {
                 return calculateDistances(result, request);
             }))
             .then((results) => {
-                return response.json(results.filter(result => result != null));
+                results = results.filter(result => result != null);
+                results = _.orderBy(results, ["distanceValue"]);
+                return response.json(results);
             })
             .catch((err) => {
                 console.log(err);
