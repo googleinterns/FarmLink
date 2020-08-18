@@ -230,7 +230,7 @@ class Surplus extends Component {
 
   /** Function to refresh the cards in the page without calling window.reload */
   reFetchSurplus = () => {
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
       .get("/surplus")
       .then((response) => {
