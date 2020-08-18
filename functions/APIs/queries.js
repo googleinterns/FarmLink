@@ -2,6 +2,30 @@ const { db } = require('../util/admin');
 const axios = require('axios');
 require('dotenv').config();
 
+//calculate distances between farms and food banks
+function calculateDistances(data, request) {
+    return new Promise(function(resolve, reject) {
+        const url = new URL("https://maps.googleapis.com/maps/api/distancematrix/json");
+        url.searchParams.set("units", "imperial");
+        url.searchParams.set("origins", `place_id:${request.query.locationId}`);
+        url.searchParams.set("destinations", `place_id:${data.locationId}`);
+        url.searchParams.set("key", process.env.API_KEY);
+        axios.get(url.href)
+        .then((response) => {
+            let distance = response.data.rows[0].elements[0].distance.text;
+            if (parseInt(distance.split(" ")[0].replace(/,/g, "")) < parseInt(request.query.distance)) {
+                resolve(data);
+            }
+            else {
+                resolve();
+            }
+        })
+        .catch((err) => {
+            return reject(err);
+        });
+    })
+}
+
 /*
 find food banks that are a specific distance from a farm
 GET /queryFoodBanksByDistance
@@ -16,26 +40,9 @@ exports.queryFoodBanksByDistance = (request, response) => {
             foodbanks.push(doc.data());
         });
 
-        //calculate distances between farms and food banks
-        function calculateDistances(data) {
-            return new Promise(function(resolve, reject) {
-                axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:${request.query.locationId}&destinations=place_id:${data.locationId}&key=${process.env.API_KEY}`)
-                .then((response) => {
-                    let distance = response.data.rows[0].elements[0].distance.text;
-                    if (parseInt(distance.split(" ")[0].replace(/,/g, "")) < request.query.distance) {
-                        resolve(data);
-                    }
-                    else {
-                        resolve();
-                    }
-                })
-                .catch((err) => {
-                    return reject(err);
-                });
-            })
-        }
-
-        Promise.all(foodbanks.map(calculateDistances))
+        Promise.all(foodbanks.map(function(foodbank) {
+            return calculateDistances(foodbank, request);
+        }))
         .then((results) => {
             return response.json(results.filter(result => result != null));
         })
@@ -63,26 +70,9 @@ exports.queryFarmsByDistance = (request, response) => {
             farms.push(doc.data());
         });
 
-        //calculate distances between farms and food banks
-        function calculateDistances(data) {
-            return new Promise(function(resolve, reject) {
-                axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:${request.query.locationId}&destinations=place_id:${data.locationId}&key=${process.env.API_KEY}`)
-                .then((response) => {
-                    let distance = response.data.rows[0].elements[0].distance.text;
-                    if (parseInt(distance.split(" ")[0].replace(/,/g, "")) < request.query.distance) {
-                        resolve(data);
-                    }
-                    else {
-                        resolve();
-                    }
-                })
-                .catch((err) => {
-                    return reject(err);
-                });
-            })
-        }
-
-        Promise.all(farms.map(calculateDistances))
+        Promise.all(farms.map(function(farm) {
+            return calculateDistances(farm, request);
+        }))
         .then((results) => {
             return response.json(results.filter(result => result != null));
         })
@@ -127,27 +117,11 @@ exports.querySurplusByDistance = (request, response) => {
             });
         }
 
-        function calculateDistances(data) {
-            return new Promise(function(resolve, reject) {
-                axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:${request.query.locationId}&destinations=place_id:${data.locationId}&key=${process.env.API_KEY}`)
-                .then((response) => {
-                    let distance = response.data.rows[0].elements[0].distance.text;
-                    if (parseInt(distance.split(" ")[0].replace(/,/g, "")) < request.query.distance) {
-                        resolve(data);
-                    }
-                    else {
-                        resolve();
-                    }
-                })
-                .catch((err) => {
-                    return reject(err);
-                });
-            })
-        }
-
         Promise.all(surplus.map(queryFarms))
         .then((results) => {
-            Promise.all(results.map(calculateDistances))
+            Promise.all(results.map(function(result) {
+                return calculateDistances(result, request);
+            }))
             .then((results) => {
                 return response.json(results.filter(result => result != null));
             })
