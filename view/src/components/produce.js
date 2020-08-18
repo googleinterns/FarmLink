@@ -549,6 +549,8 @@ class produce extends Component {
                   />
                 </div>
               </Grid>
+			</Grid>
+			<Grid container spacing={2} alignItem="center">
               <SearchResults
                 value={value}
                 data={data}
