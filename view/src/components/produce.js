@@ -225,11 +225,6 @@ class produce extends Component {
     this.setState({ value });
   };
 
-  handleAutoCompleteSearch = (event) => {
-    const { value } = event.target;
-    this.setState({ value });
-  };
-
   showValue = () => {
     console.log(this.state.value);
     return this.state.value;
@@ -537,14 +532,6 @@ class produce extends Component {
           <Container maxWidth="lg">
             <Grid container spacing={2} alignItem="center">
               <Grid item xs={12}>
-                <div>
-                  <input
-                    type="text"
-                    value={value}
-                    onChange={this.handleSearch}
-                  />
-                </div>
-
                 <div className={classes.search}>
                   <div className={classes.searchIcon}>
                     <SearchIcon />
