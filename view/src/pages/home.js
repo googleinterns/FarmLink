@@ -136,7 +136,7 @@ class Home extends Component {
   loadPage = (name) => {
     localStorage.setItem("toRender", name);
     this.setState({ toRender: name });
-  }
+  };
 
   /** Logs the user out of the web application (by removing bearer token from local storage) */
   logoutHandler = (event) => {
@@ -147,6 +147,26 @@ class Home extends Component {
   /** Determines whether "selected" CSS should be applied to a page. Only applies to current page. */
   isSelected = (name) => {
     return this.state.toRender === name;
+  };
+
+  /** Returns chosen page from drawer menu (displays alert if error occurs) */
+  renderSwitch = () => {
+    switch (this.state.toRender) {
+      case "deals":
+        return <Deal alert={this.alert} />;
+      case "account":
+        return <Account alert={this.alert} />;
+      case "produce":
+        return <Produce alert={this.alert} />;
+      case "surplus":
+        return <Surplus alert={this.alert} main={true} />;
+      case "farms":
+        return <Farms alert={this.alert} />;
+      case "foodbanks":
+        return <FoodBanks alert={this.alert} main={true} />;
+    }
+    console.error("Failed to load page");
+    this.alert("error", "Failed to load page!");
   };
 
   constructor(props) {
@@ -349,19 +369,7 @@ class Home extends Component {
               message={this.state.message}
             />
             {/* Load in the content of the selected component page */}
-            {this.state.toRender === "deals" ? (
-              <Deal alert={this.alert} />
-            ) : this.state.toRender === "account" ? (
-              <Account alert={this.alert} />
-            ) : this.state.toRender === "produce" ? (
-              <Produce alert={this.alert} />
-            ) : this.state.toRender === "surplus" ? (
-              <Surplus alert={this.alert} main={true} />
-            ) : this.state.toRender === "farms" ? (
-              <Farms alert={this.alert} />
-            ) : (
-              <FoodBanks alert={this.alert} main={true} />
-            )}
+            {this.renderSwitch()}
           </div>
         </div>
       );
