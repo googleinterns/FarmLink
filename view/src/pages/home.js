@@ -90,8 +90,8 @@ const styles = (theme) => ({
  * The Home component comprises the structure of the home page which
  * is able to load in all the other component pages (in components directory).
  * It contains the Toolbar at the top of the page and a Drawer that provides
- * acccess to all the component pages. In addition, it controls the alert
- * component accross any child of the home page.
+ * access to all the component pages. In addition, it controls the alert
+ * component across any children of the home page.
  */
 class Home extends Component {
   /** Opens an alert in the snackbar at the bottom of the page */
@@ -122,7 +122,7 @@ class Home extends Component {
   };
 
   /**
-   * This function gets a value from local storage with name. If that value is not
+   * This function gets the "name" value from local storage with name. If that value is not
    * found in local storage, it will return the standard value provided as a param.
    */
   getStorage = (name, standardVal) => {
@@ -132,44 +132,13 @@ class Home extends Component {
     };
   };
 
-  /** Loads the account page (and stores in local storage to remember after page reload) */
-  loadAccountPage = (event) => {
-    localStorage.setItem("toRender", "account");
-    this.setState({ toRender: "account" });
-  };
-
-  /** Loads the deals page (and stores in local storage to remember after page reload) */
-  loadTodoPage = (event) => {
-    localStorage.setItem("toRender", "deals");
-    this.setState({ toRender: "deals" });
-  };
-
-  /** Loads the produce page (and stores in local storage to remember after page reload) */
-  loadProducePage = (event) => {
-    localStorage.setItem("toRender", "produce");
-    this.setState({ toRender: "produce" });
-  };
-
-  /** Loads the surplus page (and stores in local storage to remember after page reload) */
-  loadSurplusPage = (event) => {
-    localStorage.setItem("toRender", "surplus");
-    this.setState({ toRender: "surplus" });
-  };
-
-  /** Loads the farms page (and stores in local storage to remember after page reload) */
-  loadFarmsPage = (event) => {
-    localStorage.setItem("toRender", "farms");
-    this.setState({ toRender: "farms" });
-  };
-
-  /** Loads the food banks page (and stores in local storage to remember after page reload) */
-  loadFoodBanksPage = (event) => {
-    localStorage.setItem("toRender", "foodbanks");
-    this.setState({ toRender: "foodbanks" });
-  };
+  /** Loads the page with the provided name (and stores it in local storage to remember post page reload) */
+  loadPage = (name) => {
+    localStorage.setItem("toRender", name);
+    this.setState({ toRender: name });
+  }
 
   /** Logs the user out of the web application (by removing bearer token from local storage) */
-
   logoutHandler = (event) => {
     localStorage.removeItem("AuthToken");
     this.props.history.push("/login");
@@ -212,9 +181,8 @@ class Home extends Component {
     axios
       .get("/user")
       .then((response) => {
-        console.log(this.state);
         this.setState({
-          // user states
+          // User states
           firstName: response.data.userCredentials.firstName,
           lastName: response.data.userCredentials.lastName,
           email: response.data.userCredentials.email,
@@ -222,7 +190,7 @@ class Home extends Component {
           country: response.data.userCredentials.country,
           username: response.data.userCredentials.username,
           profilePicture: response.data.userCredentials.imageUrl,
-          // page state
+          // Page state
           uiLoading: false,
         });
       })
@@ -230,7 +198,7 @@ class Home extends Component {
         if (error.response.status === 403) {
           this.props.history.push("/login");
         }
-        console.log(error);
+        console.error(error);
         this.setState({ errorMsg: "Error in retrieving the data" });
       });
   }
@@ -280,7 +248,7 @@ class Home extends Component {
                 button
                 className={this.isSelected("farms") && classes.selected}
                 key="Farms"
-                onClick={this.loadFarmsPage}
+                onClick={this.loadPage("farms")}
               >
                 <ListItemIcon>
                   <NatureIcon
@@ -290,10 +258,10 @@ class Home extends Component {
                 <ListItemText primary="Farms" />
               </ListItem>
               <ListItem
-                className={this.isSelected("foodbanks") && classes.selected}
                 button
+                className={this.isSelected("foodbanks") && classes.selected}
                 key="Food Banks"
-                onClick={this.loadFoodBanksPage}
+                onClick={this.loadPage("foodbanks")}
               >
                 <ListItemIcon>
                   <BankIcon
@@ -308,7 +276,7 @@ class Home extends Component {
                 button
                 className={this.isSelected("deals") && classes.selected}
                 key="Deals"
-                onClick={this.loadTodoPage}
+                onClick={this.loadPage("deals")}
               >
                 <ListItemIcon>
                   <DealIcon
@@ -321,7 +289,7 @@ class Home extends Component {
                 button
                 className={this.isSelected("surplus") && classes.selected}
                 key="Surplus"
-                onClick={this.loadSurplusPage}
+                onClick={this.loadPage("surplus")}
               >
                 <ListItemIcon>
                   <ChartIcon
@@ -336,7 +304,7 @@ class Home extends Component {
                 button
                 className={this.isSelected("produce") && classes.selected}
                 key="Produce"
-                onClick={this.loadProducePage}
+                onClick={this.loadPage("produce")}
               >
                 <ListItemIcon>
                   <EcoIcon
@@ -351,7 +319,7 @@ class Home extends Component {
                 button
                 className={this.isSelected("account") && classes.selected}
                 key="Account"
-                onClick={this.loadAccountPage}
+                onClick={this.loadPage("account")}
               >
                 <ListItemIcon>
                   <AccountBoxIcon
