@@ -161,8 +161,9 @@ class produce extends Component {
 
 		this.deleteTodoHandler = this.deleteTodoHandler.bind(this);
 		this.handleEditClickOpen = this.handleEditClickOpen.bind(this);
-    this.handleViewOpen = this.handleViewOpen.bind(this);
-    this.handleSearch = this.handleSearch.bind(this);
+		this.handleViewOpen = this.handleViewOpen.bind(this);
+		this.handleSearch = this.handleSearch.bind(this);
+
 	}
 
 	handleChange = (event) => {
@@ -231,11 +232,14 @@ class produce extends Component {
 		});
 	}
 
+	// This function updates the string that the produce array will be searched for.
+	// This string value can contain any produce field (name, weight, interrnal shipment numbers) and will still return
+	// 	the appropriate filtered results.
+
 	handleSearch = event => {
     const { value } = event.target;
     this.setState({ value });
-    console.log("New Value: ", this.state.value)
-	  };
+	};
 
 	render() {
 		const DialogTitle = withStyles(styles)((props) => {
@@ -504,13 +508,13 @@ class produce extends Component {
                         <Grid container spacing={2}
                               alignItem="center">
                                 <Grid item xs={12}>
-									<SearchIcon className={classes.searchIcon}/>
+									
 									<Autocomplete
+										//<SearchIcon className={classes.searchIcon}/>
 										id="produce-name-search"
 										options={data.map((produce) => produce.name)}
-										//getOptionLabel=
 										value={value}
-										onSelect={this.handleSearch}
+										onSelect={this.handleSearch} // grab the name from data element for value
 										fullWidth
 										renderInput={(params) => 
 											<TextField {...params} 
@@ -519,9 +523,7 @@ class produce extends Component {
 												onChange={this.handleSearch}
 											/>}
 										/>
-									
-            
-									
+															
 									<div className={classes.search}>
 									<div className={classes.searchIcon}>
 									<SearchIcon />
