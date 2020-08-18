@@ -505,10 +505,8 @@ class produce extends Component {
                         </Container>
 					</Dialog>
                     <Container maxWidth="lg">
-                        <Grid container spacing={2}
-                              alignItem="center">
+                        <Grid container spacing={2} alignItem="center">
                                 <Grid item xs={12}>
-									
 									<Autocomplete
 										//<SearchIcon className={classes.searchIcon}/>
 										id="produce-name-search"
@@ -543,12 +541,15 @@ class produce extends Component {
 									</div>
 
                                 </Grid>
-								<SearchResults
-									value={value}
-									data={data}
-									renderResults={results => (
-										<div>
-                            				{results.map((produce) => (
+							</Grid>
+							
+							<SearchResults
+								value={value}
+								data={data}
+								renderResults={results => (
+									<div>
+										<Grid container spacing={2} alignItem="center">
+											{results.map((produce) => (
 												<Grid item xs={12}>
 													<Card key={produce.produceId} className={classes.root} variant="outlined">
 														<CardContent>
@@ -601,11 +602,11 @@ class produce extends Component {
 														</CardActions>
 													</Card>
 												</Grid>
-                            				))}
-										</div>
-									)}
-								/>
-							</Grid>		
+											))}
+										</Grid>	
+									</div>
+								)}
+							/>
                     </Container>
 
 					<Dialog 
