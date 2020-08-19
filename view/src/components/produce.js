@@ -239,6 +239,104 @@ class produce extends Component {
     return this.state.value;
   };
 
+
+	// Handles the rendering of filtered produce results into React cards
+	// Return to render jsx? 
+	const handleResultsRender = (results) => {
+		return (
+			<div>
+			{results.map((produce) => (
+			<Grid item xs={12} key={produce.produceId}>
+				<Card className={classes.root} variant="outlined">
+				<CardContent>
+				   	<Typography variant="h5" component="h2">
+					{produce.name}
+					</Typography>
+					<Box
+					display="flex"
+					flexDirection="row"
+					flexWrap="wrap"
+					p={0}
+					m={0}
+					>
+					<Box p={3}>
+						<Typography
+						className={classes.pos}
+						color="textSecondary"
+						>
+						Shipping Temperatures in Reefer (°F):
+						</Typography>
+						<Typography variant="body2" component="p">
+						Maintenance Temperature:{" "}
+						{produce.shippingMaintenanceTemperatureLow} -{" "}
+						{produce.shippingMaintenanceTemperatureHigh}
+						<br />
+						Preset Temperature:{" "}
+						{produce.shippingPresetTemperature}
+						</Typography>
+					</Box>
+					<Box p={3}>
+						<Typography
+						className={classes.pos}
+						color="textSecondary"
+						>
+						Pricing (in USD / lb):
+						</Typography>
+						<Typography variant="body2" component="p">
+						USDA Price: ${produce.price}
+						<br />
+						Average Price Paid by Farmlink: $
+						{produce.pricePaid}
+						</Typography>
+					</Box>
+					<Box p={3}>
+						<Typography
+						className={classes.pos}
+						color="textSecondary"
+						>
+						Internal Statistics:
+						</Typography>
+						<Typography variant="body2" component="p">
+						Amount Moved by FarmLink (lbs):{" "}
+						{produce.amountMoved}
+						</Typography>
+					</Box>
+					</Box>
+				</CardContent>
+				<CardActions>
+					<Button
+					size="small"
+					color="primary"
+					onClick={() => this.handleViewOpen({ produce })}
+					>
+					{" "}
+					View{" "}
+					</Button>
+					<Button
+					size="small"
+					color="primary"
+					onClick={() =>
+						this.handleEditClickOpen({ produce })
+					}
+					>
+					Edit
+					</Button>
+					<Button
+					size="small"
+					color="primary"
+					onClick={() =>
+						this.deleteTodoHandler({ produce })
+					}
+					>
+					Delete
+					</Button>
+				</CardActions>
+				</Card>
+			</Grid>
+			))}
+		</div>
+		)}
+
   render() {
     const DialogTitle = withStyles(styles)((props) => {
       const { children, classes, onClose, ...other } = props;
