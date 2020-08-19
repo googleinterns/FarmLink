@@ -198,8 +198,12 @@ class FarmForm extends Component {
 
   /** Used to update tags in form */
   onTagsChange = (event, values) => {
+<<<<<<< HEAD
     this.setState(
     {
+=======
+    this.setState({
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
       farmTags: values,
     });
   };
@@ -222,7 +226,11 @@ class FarmForm extends Component {
   };
 
   /**
+<<<<<<< HEAD
    * If the form is being opened to edit a farm then load individual farm 
+=======
+   * If the form is being opened to edit a farm then load individual farm
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
    * when the component has mounted
    */
   componentDidMount() {
@@ -253,7 +261,11 @@ class FarmForm extends Component {
           console.error(err);
         });
     }
+<<<<<<< HEAD
   };
+=======
+  }
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
 
   render() {
     const { classes } = this.props;
@@ -316,7 +328,11 @@ class FarmForm extends Component {
         });
     };
 
+<<<<<<< HEAD
     // display loading circle if waiting to load in individual farm data 
+=======
+    // display loading circle if waiting to load in individual farm data
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
     if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>
@@ -526,4 +542,8 @@ class FarmForm extends Component {
   }
 }
 
+<<<<<<< HEAD
 export default withStyles(styles)(FarmForm);
+=======
+export default withStyles(styles)(FarmForm);
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed

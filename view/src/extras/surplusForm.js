@@ -156,7 +156,11 @@ class ProduceForm extends Component {
   };
 
   /**
+<<<<<<< HEAD
    * If the form is being opened to edit a surplus object then 
+=======
+   * If the form is being opened to edit a surplus object then
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
    * load individual surplus object when the component has mounted
    */
   componentDidMount() {
@@ -179,7 +183,11 @@ class ProduceForm extends Component {
       .catch((err) => {
         console.error(err);
       });
+<<<<<<< HEAD
   };
+=======
+  }
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
 
   render() {
     dayjs.extend(relativeTime);
@@ -220,7 +228,11 @@ class ProduceForm extends Component {
       axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
       axios(options)
         .then(() => {
+<<<<<<< HEAD
           // send a success alert
+=======
+          // Send a success alert
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
           const message =
             this.props.buttonType === "Edit" ? " edited!" : " submitted!";
           this.props.alert(
@@ -230,7 +242,11 @@ class ProduceForm extends Component {
           window.location.reload();
         })
         .catch((error) => {
+<<<<<<< HEAD
           // send a failure alter
+=======
+          // Send a failure alter
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
           const message =
             this.props.buttonType === "Edit" ? " edit" : " submit";
           this.props.alert(
@@ -243,7 +259,11 @@ class ProduceForm extends Component {
         });
     };
 
+<<<<<<< HEAD
     // display loading circle if waiting to load in individual farm data 
+=======
+    // Display loading circle if waiting to load in individual farm data
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
     if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>
@@ -405,4 +425,8 @@ class ProduceForm extends Component {
   }
 }
 
+<<<<<<< HEAD
 export default withStyles(styles)(ProduceForm);
+=======
+export default withStyles(styles)(ProduceForm);
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed

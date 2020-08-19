@@ -159,7 +159,11 @@ class ProduceForm extends Component {
         .then((response) => {
           this.props.setProduce(response.data);
           this.setState({
+<<<<<<< HEAD
             // produce states
+=======
+            // Produce states
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
             name: response.data.name,
             produceId: response.data.produceId,
             shippingPresetTemperature: response.data.shippingPresetTemperature,
@@ -170,7 +174,11 @@ class ProduceForm extends Component {
             price: response.data.price,
             pricePaid: response.data.pricePaid,
             amountMoved: response.data.amountMoved,
+<<<<<<< HEAD
             // page state
+=======
+            // Page state
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
             uiLoading: false,
           });
         })
@@ -178,7 +186,11 @@ class ProduceForm extends Component {
           console.error(err);
         });
     }
+<<<<<<< HEAD
   };
+=======
+  }
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
 
   render() {
     dayjs.extend(relativeTime);
@@ -190,9 +202,15 @@ class ProduceForm extends Component {
      * @param event The event being handled
      */
     const handleSubmit = (event) => {
+<<<<<<< HEAD
       // go to the next page of the Stepper (parent object)
       this.props.handleNext();
       // submit the new produce object or update the existing one 
+=======
+      // Go to the next page of the Stepper (parent object)
+      this.props.handleNext();
+      // Submit the new produce object or update the existing one
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
       authMiddleWare(this.props.history);
       event.preventDefault();
       const newProduce = {
@@ -250,7 +268,11 @@ class ProduceForm extends Component {
         });
     };
 
+<<<<<<< HEAD
     // display loading circle if waiting to load in individual produce data 
+=======
+    // Display loading circle if waiting to load in individual produce data
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
     if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>
@@ -447,4 +469,8 @@ class ProduceForm extends Component {
   }
 }
 
+<<<<<<< HEAD
 export default withStyles(styles)(ProduceForm);
+=======
+export default withStyles(styles)(ProduceForm);
+>>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
