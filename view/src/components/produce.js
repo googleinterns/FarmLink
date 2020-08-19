@@ -243,8 +243,8 @@ class produce extends Component {
 	};
 
 	// Handles the rendering of filtered produce results into React cards
-	// Return to render jsx? 
 	handleResultsRender = (results) => {
+		const { classes } = this.props;
 		return (
 			<div>
 			{results.map((produce) => (
@@ -606,12 +606,14 @@ class produce extends Component {
                     <Container maxWidth="lg">
                         <Grid container spacing={2} alignItem="center">
                                 <Grid item xs={12}>
+								<div className={classes.searchIcon}>
+                    				<SearchIcon />
+                  				</div>
 									<Autocomplete
-										//<SearchIcon className={classes.searchIcon}/>
 										id="produce-name-search"
 										options={data.map((produce) => produce.name)}
 										value={value}
-										onSelect={this.handleSearch} // grab the name from data element for value
+										onSelect={this.handleSearch} // receive the name from data element for value
 										fullWidth={true}
 										renderInput={(params) => 
 											<TextField {...params} 
@@ -619,8 +621,7 @@ class produce extends Component {
 												variant="outlined" 
 												onChange={this.handleSearch}
 											/>}
-										/>
-															
+										/>					
 									<div className={classes.search}>
 									<div className={classes.searchIcon}>
 									<SearchIcon />
@@ -635,76 +636,15 @@ class produce extends Component {
 										inputProps={{ 'aria-label': 'search' }}
 										value={this.state.value}
 										onChange={this.handleSearch} 
-										
 									/>
 									</div>
-								    
                                 </Grid>
 							</Grid>
 							
 							<SearchResults
 								value={value}
 								data={data}
-								renderResults={results => (
-									<div>
-										<Grid container spacing={2} alignItem="center">
-											{results.map((produce) => (
-												<Grid item xs={12}>
-													<Card key={produce.produceId} className={classes.root} variant="outlined">
-														<CardContent>
-															<Typography variant="h5" component="h2">
-																{produce.name}
-															</Typography>
-															<Box display="flex" flexDirection="row" flexWrap="wrap" p={0} m={0}>
-																<Box p={3}>
-																	<Typography className={classes.pos} color="textSecondary">
-																		Shipping Temperatures in Reefer (°F): 
-																	</Typography>
-																	<Typography variant="body2" component="p">
-																		Maintenance Temperature: {produce.shippingMaintenanceTemperatureLow} - {produce.shippingMaintenanceTemperatureHigh}
-																		<br />
-																		Preset Temperature: {produce.shippingPresetTemperature}
-																	</Typography>
-																</Box>
-																<Box p={3}>
-																	<Typography className={classes.pos} color="textSecondary">
-																		Pricing (in USD / lb):
-																	</Typography>
-																	<Typography variant="body2" component="p">
-																		USDA Price: ${produce.price}
-																		<br />
-																		Average Price Paid by Farmlink: ${produce.pricePaid}
-																	</Typography>
-																</Box>
-																<Box p={3}>
-																	<Typography className={classes.pos} color="textSecondary">
-																		Internal Statistics:
-																	</Typography>
-																	<Typography variant="body2" component="p">
-																		Amount Moved by FarmLink (lbs): {produce.amountMoved}
-																	</Typography>
-																</Box>
-															</Box> 
-															
-														</CardContent>
-														<CardActions>
-															<Button size="small" color="primary" onClick={() => this.handleViewOpen({ produce })}>
-																{' '}
-																View{' '}
-															</Button>
-															<Button size="small" color="primary" onClick={() => this.handleEditClickOpen({ produce })}>
-																Edit
-															</Button>
-															<Button size="small" color="primary" onClick={() => this.deleteTodoHandler({ produce })}>
-																Delete
-															</Button>
-														</CardActions>
-													</Card>
-												</Grid>
-											))}
-										</Grid>	
-									</div>
-								)}
+								renderResults={this.handleResultsRender}
 							/>
                     </Container>
 
