@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-
 import Address from "../extras/address";
+import CardSkeletons from "../extras/skeleton";
+import CustomTable from "../extras/table";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -17,7 +17,6 @@ import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import Container from "@material-ui/core/Container";
 import CardActions from "@material-ui/core/CardActions";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import CardContent from "@material-ui/core/CardContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
@@ -28,11 +27,13 @@ import Box from "@material-ui/core/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import PropTypes from "prop-types";
 import MaskedInput from "react-text-mask";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
 
 import axios from "axios";
 import dayjs from "dayjs";
@@ -56,22 +57,22 @@ const styles = (theme) => ({
     color: "white",
     textAlign: "center",
     position: "absolute",
-    top: 14,
-    right: 10,
+    top: "14px",
+    right: "10px",
   },
   floatingButton: {
     position: "fixed",
-    bottom: 0,
-    right: 0,
+    bottom: "16px",
+    right: "16px",
   },
   form: {
-    width: "98%",
-    marginLeft: 13,
+    width: "calc(100% - 32px)",
+    marginLeft: "12px",
     marginTop: theme.spacing(3),
   },
   toolbar: theme.mixins.toolbar,
   root: {
-    minWidth: 470,
+    minWidth: "470px",
   },
   bullet: {
     display: "inline-block",
@@ -79,7 +80,7 @@ const styles = (theme) => ({
     transform: "scale(0.8)",
   },
   pos: {
-    marginBottom: 12,
+    marginBottom: "12px",
   },
   uiProgess: {
     position: "fixed",
@@ -138,6 +139,24 @@ const TAG_EXAMPLES = [
   { title: "Great Environmental Rating" },
 ];
 
+/** Place holder for contact table data pulled from database */
+const TABLE_STATE = {
+  columns: [
+    { title: "Role", field: "contactRole" },
+    { title: "Name", field: "contactName" },
+    { title: "Email", field: "contactEmail" },
+    { title: "Phone Number", field: "contactPhone" },
+  ],
+  data: [
+    {
+      contactRole: "Farm Manager",
+      contactName: "Jamie Doe",
+      contactEmail: "jamie@doe.com",
+      contactPhone: "(777)851-1234",
+    },
+  ],
+};
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -191,7 +210,8 @@ class Farms extends Component {
     super(props);
 
     this.state = {
-      // farm states
+      // Farm states
+      farms: "",
       farmName: "",
       farmId: "",
       contactName: "",
@@ -203,12 +223,12 @@ class Farms extends Component {
       location: "",
       locationId: "",
       transportation: false,
-      // page states
+      // Page states
       errors: [],
-      open: false, // used for opening the farm edit/create dialog (form)
+      open: false, //  Used for opening the farm edit/create dialog (form)
       uiLoading: true,
       buttonType: "",
-      viewOpen: false, // used for opening the farm view dialog
+      viewOpen: false, //  Used for opening the farm view dialog
     };
 
     this.onTagsChange = this.onTagsChange.bind(this);
@@ -228,15 +248,10 @@ class Farms extends Component {
     });
   };
 
-  /** Used to uncheck and check the form checkboxes */
-  handleChecked = (name) => (event) => {
-    this.setState({ [name]: event.target.checked });
-  };
-
   /** Used to update tags in form */
   onTagsChange = (event, values) => {
     this.setState({
-      // farm state
+      // Farm state
       farmTags: values,
     });
   };
@@ -247,7 +262,7 @@ class Farms extends Component {
       return;
     }
     this.setState({
-      // farm states
+      // Farm states
       location: newValue.description,
       locationId: newValue.place_id,
     });
@@ -266,9 +281,9 @@ class Farms extends Component {
       .get("/farms")
       .then((response) => {
         this.setState({
-          // farm state
+          // Farm state
           farms: response.data,
-          // page state
+          // Page state
           uiLoading: false,
         });
       })
@@ -288,10 +303,15 @@ class Farms extends Component {
     axios
       .delete(`farms/${farmId}`)
       .then(() => {
+        this.props.alert("success", "Farm successfully deleted!");
         window.location.reload();
       })
       .catch((err) => {
         console.error(err);
+        this.props.alert(
+          "error",
+          "An error occurred when attempting to delete the Farm!"
+        );
       });
   }
 
@@ -302,7 +322,7 @@ class Farms extends Component {
    */
   handleEditClick(data) {
     this.setState({
-      // farm states
+      // Farm states
       farmName: data.farm.farmName,
       farmId: data.farm.farmId,
       contactName: data.farm.contactName,
@@ -314,7 +334,7 @@ class Farms extends Component {
       location: data.farm.location,
       locationId: data.farm.locationId,
       transportation: data.farm.transportation,
-      // page states
+      // Page states
       buttonType: "Edit",
       open: true,
     });
@@ -328,7 +348,7 @@ class Farms extends Component {
    */
   handleViewOpen(data) {
     this.setState({
-      // farm states
+      // Farm states
       farmName: this.state.farmName,
       contactName: this.state.contactName,
       contactEmail: this.state.contactEmail,
@@ -339,7 +359,7 @@ class Farms extends Component {
       location: this.state.location,
       locationId: this.state.locationId,
       transportation: this.state.transportation,
-      // page states
+      // Page states
       viewOpen: true,
     });
   }
@@ -376,19 +396,19 @@ class Farms extends Component {
     /** Set all states to generic value when opening a dialog page */
     const handleAddClick = () => {
       this.setState({
-        // farm states
+        // Farm states
         farmName: "",
         farmId: "",
         contactName: "",
         contactEmail: "",
         contactPhone: "(1  )    -    ",
-        farmTags: "",
+        farmTags: [],
         forklift: false,
         loadingDock: false,
         location: "",
         locationId: "",
         transportation: false,
-        // page states
+        // Page states
         open: true,
       });
     };
@@ -432,31 +452,39 @@ class Farms extends Component {
       axios(options)
         .then(() => {
           this.setState({ open: false });
+          const message =
+            this.state.buttonType === "Edit" ? " edited!" : " submitted!";
+          this.props.alert("success", "Farm has been successfully" + message);
           window.location.reload();
         })
         .catch((error) => {
+          const message =
+            this.state.buttonType === "Edit" ? " edit" : " submit";
+          this.props.alert(
+            "error",
+            "An error has occured when attempting to " +
+              message +
+              " the produce!"
+          );
           this.setState({ open: true, errors: error.response.data });
           console.error(error);
         });
     };
 
     const handleViewClose = () => {
-      // page state
+      // Page state
       this.setState({ viewOpen: false });
     };
 
     const handleDialogClose = (event) => {
-      // page state
+      // Page state
       this.setState({ open: false });
     };
 
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          <div className={classes.toolbar} />
-          {this.state.uiLoading && (
-            <CircularProgress size={150} className={classes.uiProgess} />
-          )}
+          {this.state.uiLoading && <CardSkeletons classes={classes} />}
         </main>
       );
     } else {
@@ -464,14 +492,14 @@ class Farms extends Component {
         <main className={classes.content}>
           <div className={classes.toolbar} />
 
-          <IconButton
-            className={classes.floatingButton}
+          <Fab
             color="primary"
+            className={classes.floatingButton}
             aria-label="Add Farm"
             onClick={handleAddClick}
           >
-            <AddCircleIcon style={{ fontSize: 60 }} />
-          </IconButton>
+            <AddIcon />
+          </Fab>
           <Dialog
             fullScreen
             open={open}
@@ -579,46 +607,61 @@ class Farms extends Component {
                     />
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.loadingDock}
-                          onChange={this.handleChecked("loadingDock")}
-                          value={"loadingDock"}
-                          name="loadingDock"
-                          color="primary"
-                        />
-                      }
-                      label="Loading Doc Present"
-                    />
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel htmlFor="outlined-transportation">
+                        Loading Dock Present
+                      </InputLabel>
+                      <Select
+                        value={this.state.loadingDock}
+                        onChange={this.handleChange}
+                        label="Loading Dock Present"
+                        inputProps={{
+                          name: "loadingDock",
+                          id: "outlined-loadingDock",
+                        }}
+                      >
+                        <MenuItem value={true}>Yes</MenuItem>
+                        <MenuItem value={false}>No</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.forklift}
-                          onChange={this.handleChecked("forklift")}
-                          value={"forklift"}
-                          name="forklift"
-                          color="primary"
-                        />
-                      }
-                      label="Forklift Present"
-                    />
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel htmlFor="outlined-transportation">
+                        Forklift Present
+                      </InputLabel>
+                      <Select
+                        value={this.state.forklift}
+                        onChange={this.handleChange}
+                        label="Forklift Present"
+                        inputProps={{
+                          name: "forklift",
+                          id: "outlined-forklift",
+                        }}
+                      >
+                        <MenuItem value={true}>Yes</MenuItem>
+                        <MenuItem value={false}>No</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.transportation}
-                          onChange={this.handleChecked("transportation")}
-                          value={"transportation"}
-                          name="transportation"
-                          color="primary"
-                        />
-                      }
-                      label="Transportation Present"
-                    />
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel htmlFor="outlined-transportation">
+                        Transportation Present
+                      </InputLabel>
+                      <Select
+                        value={this.state.transportation}
+                        onChange={this.handleChange}
+                        label="Transportation Present"
+                        inputProps={{
+                          name: "transportation",
+                          id: "outlined-transportation",
+                        }}
+                      >
+                        <MenuItem value={true}>Yes</MenuItem>
+                        <MenuItem value={false}>No</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={6}>
                     <Autocomplete
@@ -644,6 +687,9 @@ class Farms extends Component {
                     />
                   </Grid>
                 </Grid>
+                <div className={classes.table}>
+                  <CustomTable title="Farms Contacts" tableState={TABLE_STATE} />
+                </div>
               </form>
             </Container>
           </Dialog>
