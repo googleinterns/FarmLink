@@ -229,11 +229,6 @@ class produce extends Component {
     this.setState({ value });
   };
 
-  handleAutoCompleteSearch = (event) => {
-    const { value } = event.target;
-    this.setState({ value });
-  };
-
   showValue = () => {
     console.log(this.state.value);
     return this.state.value;
@@ -249,7 +244,7 @@ class produce extends Component {
 			<Grid item xs={12} key={produce.produceId}>
 				<Card className={classes.root} variant="outlined">
 				<CardContent>
-				   	<Typography variant="h5" component="h2">
+					<Typography variant="h5" component="h2">
 					{produce.name}
 					</Typography>
 					<Box
@@ -335,7 +330,7 @@ class produce extends Component {
 			</Grid>
 			))}
 		</div>
-		)}
+	)}
 
   render() {
     const DialogTitle = withStyles(styles)((props) => {
