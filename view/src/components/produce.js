@@ -113,6 +113,10 @@ const styles = (theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+	},
+	searchBar: {
+		display: 'flex',
+		marginLeft: '2px'
     },
     inputRoot: {
         color: 'inherit',
@@ -605,42 +609,38 @@ class produce extends Component {
 					</Dialog>
                     <Container maxWidth="lg">
                         <Grid container spacing={2} alignItem="center">
-                                <Grid item xs={12}>
-								<div className={classes.searchIcon}>
-                    				<SearchIcon />
-                  				</div>
-									<Autocomplete
-										id="produce-name-search"
-										options={data.map((produce) => produce.name)}
-										value={value}
-										onSelect={this.handleSearch} // receive the name from data element for value
-										fullWidth={true}
-										renderInput={(params) => 
-											<TextField {...params} 
-												label="Search by produce name" 
-												variant="outlined" 
-												onChange={this.handleSearch}
-											/>}
-										/>					
+                                <Grid item xs={0.10}>
 									<div className={classes.search}>
-									<div className={classes.searchIcon}>
-									<SearchIcon />
-									</div>
-									<InputBase
-										fullWidth={true}
-										placeholder="Search…"
-										classes={{
-											root: classes.inputRoot,
-											input: classes.inputInput,
-										}}
-										inputProps={{ 'aria-label': 'search' }}
-										value={this.state.value}
-										onChange={this.handleSearch} 
-									/>
-									</div>
+										<div className={classes.searchIcon}>
+											<SearchIcon />
+										</div>
+										<div className={classes.searchBar}>
+											<Autocomplete
+												id="produce-name-search"
+												options={data.map((produce) => produce.name)}
+												value={value}
+												onSelect={this.handleSearch} // receive the name from data element for value
+												fullWidth={true}
+												renderInput={(params) => 
+													<TextField {...params} 
+														label="Search by produce name" 
+														variant="outlined" 
+														onChange={this.handleSearch}
+														InputProps={{
+															startAdornment: (
+															<InputAdornment>
+																<IconButton>
+																<SearchIcon />
+																</IconButton>
+															</InputAdornment>
+															)
+														}}
+													/>}
+											/>
+										</div>	
+									</div>								
                                 </Grid>
 							</Grid>
-							
 							<SearchResults
 								value={value}
 								data={data}
