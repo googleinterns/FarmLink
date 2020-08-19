@@ -18,8 +18,8 @@ import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 
-/** 
- * Adds icons to all of the actions in the table. This const connects
+/**
+ * Adds icons to all of the actions in the table. This map connects
  * icons to certain material-table actions (forwardRef is used to get
  * actions from children of the material-table class such as Add, Check, etc)
  * */
@@ -66,40 +66,34 @@ export default function CustomTable(props) {
         // Updates the table data after user adds row to table
         onRowAdd: (newData) =>
           new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              setState((prevState) => {
-                const data = [...prevState.data];
-                data.push(newData);
-                return { ...prevState, data };
-              });
-            }, 600);
+            resolve();
+            setState((prevState) => {
+              const data = [...prevState.data];
+              data.push(newData);
+              return { ...prevState, data };
+            });
           }),
         // Updates the table data after user edits the table
         onRowUpdate: (newData, oldData) =>
           new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              if (oldData) {
-                setState((prevState) => {
-                  const data = [...prevState.data];
-                  data[data.indexOf(oldData)] = newData;
-                  return { ...prevState, data };
-                });
-              }
-            }, 600);
+            resolve();
+            if (oldData) {
+              setState((prevState) => {
+                const data = [...prevState.data];
+                data[data.indexOf(oldData)] = newData;
+                return { ...prevState, data };
+              });
+            }
           }),
         // Updates the table data after the user deletes a row
         onRowDelete: (oldData) =>
           new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-              setState((prevState) => {
-                const data = [...prevState.data];
-                data.splice(data.indexOf(oldData), 1);
-                return { ...prevState, data };
-              });
-            }, 600);
+            resolve();
+            setState((prevState) => {
+              const data = [...prevState.data];
+              data.splice(data.indexOf(oldData), 1);
+              return { ...prevState, data };
+            });
           }),
       }}
     />
