@@ -688,7 +688,10 @@ class Farms extends Component {
                   </Grid>
                 </Grid>
                 <div className={classes.table}>
-                  <CustomTable title="Farms Contacts" tableState={TABLE_STATE} />
+                  <CustomTable
+                    title="Farms Contacts"
+                    tableState={TABLE_STATE}
+                  />
                 </div>
               </form>
             </Container>
