@@ -425,7 +425,7 @@ class Surplus extends Component {
             <Typography className={(classes.instructions, classes.formText)}>
               Please select a Surplus Object that you would like to pair with a
               Food Bank. If you would like to create a new Surplus Object, press
-              the icon in the bottom right.
+              addition icon.
             </Typography>
           )}
           <div
