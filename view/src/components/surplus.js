@@ -55,7 +55,7 @@ const styles = (theme) => ({
     right: "16px",
   },
   form: {
-    width: "98%",
+    width: "calc(100% - 32px)",
     marginLeft: "12px",
     marginTop: theme.spacing(3),
   },
@@ -137,8 +137,8 @@ const tableData = {
   data: [
     {
       contactRole: "Farm Manager",
-      contactName: "Jane Doe",
-      contactEmail: "jane@doe.com",
+      contactName: "Jamie Doe",
+      contactEmail: "jamie@doe.com",
       contactPhone: "(777)851-1234",
     },
   ],
@@ -158,7 +158,7 @@ class Surplus extends Component {
     super(props);
 
     this.state = {
-      // surplus state
+      // Surplus state
       surplusObjects: "",
       surplusId: "",
       produceId: "",
@@ -172,14 +172,14 @@ class Surplus extends Component {
       cost: "",
       totalQuantityAvailable: "",
       packagingType: "",
-      // page state
+      // Page state
       errors: [],
-      open: false, // use to open the edit / add dialog (form)
+      open: false, //  Used to open the edit / add dialog (form)
       uiLoading: true,
       buttonType: "",
-      viewOpen: false,
+      viewOpen: false, //  Used to open the view dialog
       selectedCard: "",
-      reloadCards: false, // used to open the view dialgo
+      reloadCards: false,
     };
 
     this.handleDelete = this.handleDelete.bind(this);
@@ -205,14 +205,15 @@ class Surplus extends Component {
    * @param value New value for the state
    */
   handleAsyncChange = (name, value) => {
-    console.error(name);
-    console.error(value);
     this.setState({
       [name]: value,
     });
   };
 
-  /** Sets states to values so that cards can be reloaded and calls function to reload cards */
+  /**
+   * Sets states to values so that cards can be reloaded and calls
+   * function to reload cards
+   */
   reFetch = () => {
     this.setState({
       uiLoading: true,
@@ -242,10 +243,11 @@ class Surplus extends Component {
       })
       .catch((err) => {
         console.error(err);
+        this.props.alert("error", "Error reloading in the surplus cards!");
       });
   };
 
-  /** Load in all of the current food banks when the component has mounted */
+  /** Load in all of the current surplus when the component has mounted */
   componentDidMount() {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
@@ -258,6 +260,7 @@ class Surplus extends Component {
       })
       .catch((err) => {
         console.error(err);
+        this.props.alert("error", "Error loading in the surplus!");
       });
   }
 
@@ -274,7 +277,6 @@ class Surplus extends Component {
     axios
       .delete(`surplus/${surplusId}`)
       .then(() => {
-        //window.location.reload();
         this.reFetch();
         this.props.alert("success", "Surplus successfully deleted!");
       })
@@ -299,7 +301,7 @@ class Surplus extends Component {
    */
   handleEditClick(data) {
     this.setState({
-      // surplus states
+      // Surplus states
       surplusId: data.surplus.surplusId,
       produceId: data.surplus.produceId,
       produceName: data.surplus.produceName,
@@ -312,7 +314,7 @@ class Surplus extends Component {
       cost: data.surplus.cost,
       totalQuantityAvailable: data.surplus.totalQuantityAvailable,
       packagingType: data.surplus.packagingType,
-      // page states
+      // Page states
       buttonType: "Edit",
       open: true,
     });
@@ -326,7 +328,7 @@ class Surplus extends Component {
    */
   handleViewOpen(data) {
     this.setState({
-      // surplus states
+      // Surplus states
       surplusId: data.surplus.surplusId,
       produceId: data.surplus.produceId,
       produceName: data.surplus.produceName,
@@ -339,7 +341,7 @@ class Surplus extends Component {
       cost: data.surplus.cost,
       totalQuantityAvailable: data.surplus.totalQuantityAvailable,
       packagingType: data.surplus.packagingType,
-      // page state
+      // Page state
       viewOpen: true,
     });
   }
@@ -376,7 +378,7 @@ class Surplus extends Component {
     /** Set all states to generic value when opening a dialog page */
     const handleClickOpen = () => {
       this.setState({
-        // surplus states
+        // Surplus states
         surplusId: "",
         produceId: "",
         produceName: "",
@@ -389,19 +391,19 @@ class Surplus extends Component {
         cost: "",
         totalQuantityAvailable: "",
         packagingType: "",
-        // page states
+        // Page states
         buttonType: "",
         open: true,
       });
     };
 
     const handleViewClose = () => {
-      // page state
+      // Page state
       this.setState({ viewOpen: false });
     };
 
     const handleDialogClose = (event) => {
-      // page state
+      // Page state
       this.setState({ open: false });
     };
 
@@ -409,22 +411,26 @@ class Surplus extends Component {
       return (
         <main className={classes.content}>
           {this.state.uiLoading && (
-            <CardSkeletons classes={classes} noPadding={!this.props.main} />
+            <CardSkeletons
+              classes={classes}
+              noPadding={this.props.inDealStepper}
+            />
           )}
         </main>
       );
     } else {
       return (
         <main className={classes.content}>
-          {/* Only show if it is not the main page */}
-          {!this.props.main && (
+          {this.props.inDealStepper && (
             <Typography className={(classes.instructions, classes.formText)}>
               Please select a Surplus Object that you would like to pair with a
               Food Bank. If you would like to create a new Surplus Object, press
               the icon in the bottom right.
             </Typography>
           )}
-          <div className={this.props.main ? classes.toolbar : undefined} />
+          <div
+            className={!this.props.inDealStepper ? classes.toolbar : undefined}
+          />
           <Fab
             color="primary"
             className={classes.floatingButton}
@@ -516,8 +522,7 @@ class Surplus extends Component {
                             Logistics:
                           </Typography>
                           <Typography variant="body2" component="p">
-                            Origin: {surplus.originFarmName} (link with card +
-                            info)
+                            Origin: {surplus.originFarmName}
                             <br />
                             Packing Type: {surplus.packagingType}
                             <br />
@@ -543,8 +548,7 @@ class Surplus extends Component {
                       </Box>
                     </CardContent>
                     <CardActions>
-                      {/* Only show if it is main page */}
-                      {this.props.main && (
+                      {!this.props.inDealStepper && (
                         <Button
                           size="small"
                           color="primary"
@@ -553,7 +557,7 @@ class Surplus extends Component {
                           View
                         </Button>
                       )}
-                      {this.props.main && (
+                      {!this.props.inDealStepper && (
                         <Button
                           size="small"
                           color="primary"
@@ -562,7 +566,7 @@ class Surplus extends Component {
                           Edit
                         </Button>
                       )}
-                      {this.props.main && (
+                      {!this.props.inDealStepper && (
                         <Button
                           size="small"
                           color="primary"
@@ -571,8 +575,7 @@ class Surplus extends Component {
                           Delete
                         </Button>
                       )}
-                      {/* Only show if it is not the main page */}
-                      {!this.props.main && (
+                      {this.props.inDealStepper && (
                         <Button
                           size="small"
                           color="primary"
