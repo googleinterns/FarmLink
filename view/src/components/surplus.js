@@ -503,7 +503,8 @@ class Surplus extends Component {
             classes={{ paperFullWidth: classes.dialogStyle }}
           >
             <DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-              {this.state.totalQuantityAvailable} lbs of {this.state.produceName} from
+              {this.state.totalQuantityAvailable} lbs of{" "}
+              {this.state.produceName} from
               {this.state.originFarmName}
             </DialogTitle>
             <DialogContent dividers>
