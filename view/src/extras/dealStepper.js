@@ -54,16 +54,13 @@ export default function HorizontalLinearStepper(props) {
 
   /** Sets the last step (so formatting can change on last step) */
   const isLastStep = (step) => {
-    return step === 2;
+    return step === steps.length - 1;
   };
 
   /** Moves to the next step (page) in the Stepper */
   const handleNext = () => {
-    // Confirm that selected (needs to be connected to child)
-    if (false) {
-      props.alert("warning", "Please select a Surplus Object to continue.");
-      return;
-    }
+    // ADD AN IF STATEMENT TO ENSURE THAT SURPLUS CARD IS SELECTED BEFORE
+    // MOVING ON
 
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -109,7 +106,7 @@ export default function HorizontalLinearStepper(props) {
           onClick={handleNext}
           className={classes.button}
         >
-          {activeStep === steps.length - 1 ? "Finish" : "Next"}
+          {isLastStep(activeStep) ? "Finish" : "Next"}
         </Button>
       </div>
       <div>
