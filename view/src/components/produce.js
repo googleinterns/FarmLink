@@ -154,8 +154,8 @@ class Produce extends Component {
       viewOpen: false,
     };
 
-    this.deleteTodoHandler = this.deleteTodoHandler.bind(this);
-    this.handleEditClickOpen = this.handleEditClickOpen.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
+    this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.handleResultsRender = this.handleResultsRender.bind(this);
@@ -336,14 +336,14 @@ class Produce extends Component {
                 <Button
                   size="small"
                   color="primary"
-                  onClick={() => this.handleEditClickOpen({ produce })}
+                  onClick={() => this.handleEditClick({ produce })}
                 >
                   Edit
                 </Button>
                 <Button
                   size="small"
                   color="primary"
-                  onClick={() => this.deleteTodoHandler({ produce })}
+                  onClick={() => this.handleDelete({ produce })}
                 >
                   Delete
                 </Button>
@@ -696,11 +696,15 @@ class Produce extends Component {
                 />
               </Grid>
             </Grid>
-            <SearchResults
-              value={value}
-              data={data}
-              renderResults={this.handleResultsRender}
-            />
+            <Grid container spacing={2} alignItem="center">
+              <Grid item xs={12}>
+                <SearchResults
+                  value={value}
+                  data={data}
+                  renderResults={this.handleResultsRender}
+                />
+              </Grid>
+            </Grid>
           </Container>
           <Dialog
             onClose={handleViewClose}
