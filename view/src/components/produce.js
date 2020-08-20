@@ -348,21 +348,21 @@ class Produce extends Component {
         .then(() => {
           // Page state
           this.setState({ open: false });
-          const message =
+          const alert =
             this.state.buttonType === "Edit" ? " edited!" : " submitted!";
           this.props.alert(
             "success",
-            "Produce has been successfully" + message
+            "Produce has been successfully" + alert
           );
           window.location.reload();
         })
         .catch((error) => {
-          const message =
+          const alert =
             this.state.buttonType === "Edit" ? " edit" : " submit";
           this.props.alert(
             "error",
             "An error has occured when attempting to " +
-              message +
+              alert +
               " the produce!"
           );
           // Page states
