@@ -452,19 +452,16 @@ class Farms extends Component {
       axios(options)
         .then(() => {
           this.setState({ open: false });
-          const message =
+          const alert =
             this.state.buttonType === "Edit" ? " edited!" : " submitted!";
-          this.props.alert("success", "Farm has been successfully" + message);
+          this.props.alert("success", "Farm has been successfully" + alert);
           window.location.reload();
         })
         .catch((error) => {
-          const message =
-            this.state.buttonType === "Edit" ? " edit" : " submit";
+          const alert = this.state.buttonType === "Edit" ? " edit" : " submit";
           this.props.alert(
             "error",
-            "An error has occured when attempting to " +
-              message +
-              " the produce!"
+            "An error has occured when attempting to " + alert + " the produce!"
           );
           this.setState({ open: true, errors: error.response.data });
           console.error(error);
