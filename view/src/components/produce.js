@@ -223,8 +223,9 @@ class produce extends Component {
   }
 
   // This function updates the string that the produce array will be searched for.
-  // This string value can contain any produce field (name, weight, interrnal shipment numbers) and will still return
-  // 	the appropriate filtered results.
+  // This string value can contain any produce field (name, weight, internal
+  // shipment numbers) and will still return
+  // the appropriate filtered results.
 
   handleSearch = (event) => {
     const { value } = event.target;
@@ -247,10 +248,10 @@ class produce extends Component {
                   display="flex"
                   flexDirection="row"
                   flexWrap="wrap"
-                  p={0}
-                  m={0}
+                  padding={0}
+                  margin={0}
                 >
-                  <Box p={3}>
+                  <Box padding={3}>
                     <Typography className={classes.pos} color="textSecondary">
                       Shipping Temperatures in Reefer (°F):
                     </Typography>
@@ -262,7 +263,7 @@ class produce extends Component {
                       Preset Temperature: {produce.shippingPresetTemperature}
                     </Typography>
                   </Box>
-                  <Box p={3}>
+                  <Box padding={3}>
                     <Typography className={classes.pos} color="textSecondary">
                       Pricing (in USD / lb):
                     </Typography>
@@ -272,7 +273,7 @@ class produce extends Component {
                       Average Price Paid by Farmlink: ${produce.pricePaid}
                     </Typography>
                   </Box>
-                  <Box p={3}>
+                  <Box padding={3}>
                     <Typography className={classes.pos} color="textSecondary">
                       Internal Statistics:
                     </Typography>
@@ -619,7 +620,7 @@ class produce extends Component {
                   id="produce-name-search"
                   options={data.map((produce) => produce.name)}
                   value={value}
-                  onSelect={this.handleSearch} // receive the name from data element for value
+                  onSelect={this.handleSearch} // Receive the name from data element for value
                   fullWidth={true}
                   renderInput={(params) => (
                     <TextField
@@ -665,10 +666,10 @@ class produce extends Component {
                 display="flex"
                 flexDirection="row"
                 flexWrap="wrap"
-                p={0}
-                m={0}
+                padding={0}
+                margin={0}
               >
-                <Box p={3}>
+                <Box padding={3}>
                   <Typography className={classes.pos} color="textSecondary">
                     Shipping Temperatures in Reefer (°F):
                   </Typography>
@@ -680,7 +681,7 @@ class produce extends Component {
                     Preset Temperature: {this.state.shippingPresetTemperature}
                   </Typography>
                 </Box>
-                <Box p={3}>
+                <Box padding={3}>
                   <Typography className={classes.pos} color="textSecondary">
                     Pricing (in USD / lb):
                   </Typography>
@@ -690,7 +691,7 @@ class produce extends Component {
                     Average Price Paid by Farmlink: ${this.state.pricePaid}
                   </Typography>
                 </Box>
-                <Box p={3}>
+                <Box padding={3}>
                   <Typography className={classes.pos} color="textSecondary">
                     Internal Statistics:
                   </Typography>
