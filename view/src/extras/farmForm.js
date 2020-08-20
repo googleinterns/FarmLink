@@ -198,8 +198,7 @@ class FarmForm extends Component {
 
   /** Used to update tags in form */
   onTagsChange = (event, values) => {
-    this.setState(
-    {
+    this.setState({
       farmTags: values,
     });
   };
@@ -222,7 +221,7 @@ class FarmForm extends Component {
   };
 
   /**
-   * If the form is being opened to edit a farm then load individual farm 
+   * If the form is being opened to edit a farm then load individual farm
    * when the component has mounted
    */
   componentDidMount() {
@@ -253,7 +252,7 @@ class FarmForm extends Component {
           console.error(err);
         });
     }
-  };
+  }
 
   render() {
     const { classes } = this.props;
@@ -316,7 +315,7 @@ class FarmForm extends Component {
         });
     };
 
-    // display loading circle if waiting to load in individual farm data 
+    // display loading circle if waiting to load in individual farm data
     if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>

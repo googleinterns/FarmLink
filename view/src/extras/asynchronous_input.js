@@ -8,10 +8,10 @@ import { authMiddleWare } from "../util/auth";
 
 /**
  * Creates an asynchronous input that will query database for options
- * when it is opened by the user (to avoid loading on page reload). 
- * @param props Properties passed from parent that determine where the 
- *              data should come from, how to update the input state in the 
- *              parent, and other settings of the input 
+ * when it is opened by the user (to avoid loading on page reload).
+ * @param props Properties passed from parent that determine where the
+ *              data should come from, how to update the input state in the
+ *              parent, and other settings of the input
  */
 export default function AsynchronousInput(props) {
   // whether or not the input is open
@@ -25,7 +25,7 @@ export default function AsynchronousInput(props) {
   const getAuth = () => {
     authMiddleWare(props.history);
     return localStorage.getItem("AuthToken");
-  }
+  };
 
   /** Asynchronously loads in the possible responses from props.target path */
   React.useEffect(() => {
