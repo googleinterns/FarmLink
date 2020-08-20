@@ -174,7 +174,7 @@ class Surplus extends Component {
       packagingType: "",
       // Page state
       errors: [],
-      open: false, //  Used to open the edit / add dialog (form)
+      open: false,  //  Used to open the edit / add dialog (form)
       uiLoading: true,
       buttonType: "",
       viewOpen: false, //  Used to open the view dialog
