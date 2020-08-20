@@ -157,10 +157,14 @@ class ProduceForm extends Component {
 
   /**
 <<<<<<< HEAD
+<<<<<<< HEAD
    * If the form is being opened to edit a surplus object then 
 =======
    * If the form is being opened to edit a surplus object then
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+   * If the form is being opened to edit a surplus object then
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e
    * load individual surplus object when the component has mounted
    */
   componentDidMount() {
@@ -184,10 +188,14 @@ class ProduceForm extends Component {
         console.error(err);
       });
 <<<<<<< HEAD
+<<<<<<< HEAD
   };
 =======
   }
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+  }
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e
 
   render() {
     dayjs.extend(relativeTime);
@@ -229,10 +237,14 @@ class ProduceForm extends Component {
       axios(options)
         .then(() => {
 <<<<<<< HEAD
+<<<<<<< HEAD
           // send a success alert
 =======
           // Send a success alert
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+          // Send a success alert
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e
           const message =
             this.props.buttonType === "Edit" ? " edited!" : " submitted!";
           this.props.alert(
@@ -243,10 +255,14 @@ class ProduceForm extends Component {
         })
         .catch((error) => {
 <<<<<<< HEAD
+<<<<<<< HEAD
           // send a failure alter
 =======
           // Send a failure alter
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+          // Send a failure alter
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e
           const message =
             this.props.buttonType === "Edit" ? " edit" : " submit";
           this.props.alert(
@@ -260,10 +276,14 @@ class ProduceForm extends Component {
     };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     // display loading circle if waiting to load in individual farm data 
 =======
     // Display loading circle if waiting to load in individual farm data
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+    // Display loading circle if waiting to load in individual farm data
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e
     if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>
@@ -426,7 +446,11 @@ class ProduceForm extends Component {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 export default withStyles(styles)(ProduceForm);
 =======
 export default withStyles(styles)(ProduceForm);
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+export default withStyles(styles)(ProduceForm);
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e

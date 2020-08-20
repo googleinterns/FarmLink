@@ -59,10 +59,14 @@ export default function SurplusStepper(props) {
             handleNext={handleNext}
             steps={steps}
 <<<<<<< HEAD
+<<<<<<< HEAD
             // props needed for the forms 
 =======
             // props needed for the forms
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+            // props needed for the forms
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e
             setFarm={setCurrentFarm}
             alert={props.alert}
             buttonType={props.buttonType}
@@ -73,10 +77,14 @@ export default function SurplusStepper(props) {
         return (
           <ProduceForm
 <<<<<<< HEAD
+<<<<<<< HEAD
           // props needed for the Stepper
 =======
             // props needed for the Stepper
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+            // props needed for the Stepper
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e
             activeStep={activeStep}
             handleBack={handleBack}
             isStepOptional={isStepOptional}
@@ -84,10 +92,14 @@ export default function SurplusStepper(props) {
             handleNext={handleNext}
             steps={steps}
 <<<<<<< HEAD
+<<<<<<< HEAD
             // props needed for the forms 
 =======
             // props needed for the forms
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+            // props needed for the forms
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e
             setProduce={setCurrentProduce}
             alert={props.alert}
             buttonType={props.buttonType}
@@ -228,7 +240,11 @@ export default function SurplusStepper(props) {
     </div>
   );
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 =======
 }
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+}
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e

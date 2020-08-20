@@ -160,10 +160,14 @@ class ProduceForm extends Component {
           this.props.setProduce(response.data);
           this.setState({
 <<<<<<< HEAD
+<<<<<<< HEAD
             // produce states
 =======
             // Produce states
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+            // Produce states
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e
             name: response.data.name,
             produceId: response.data.produceId,
             shippingPresetTemperature: response.data.shippingPresetTemperature,
@@ -175,10 +179,14 @@ class ProduceForm extends Component {
             pricePaid: response.data.pricePaid,
             amountMoved: response.data.amountMoved,
 <<<<<<< HEAD
+<<<<<<< HEAD
             // page state
 =======
             // Page state
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+            // Page state
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e
             uiLoading: false,
           });
         })
@@ -187,10 +195,14 @@ class ProduceForm extends Component {
         });
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
   };
 =======
   }
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+  }
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e
 
   render() {
     dayjs.extend(relativeTime);
@@ -203,6 +215,7 @@ class ProduceForm extends Component {
      */
     const handleSubmit = (event) => {
 <<<<<<< HEAD
+<<<<<<< HEAD
       // go to the next page of the Stepper (parent object)
       this.props.handleNext();
       // submit the new produce object or update the existing one 
@@ -211,6 +224,11 @@ class ProduceForm extends Component {
       this.props.handleNext();
       // Submit the new produce object or update the existing one
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+      // Go to the next page of the Stepper (parent object)
+      this.props.handleNext();
+      // Submit the new produce object or update the existing one
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e
       authMiddleWare(this.props.history);
       event.preventDefault();
       const newProduce = {
@@ -269,10 +287,14 @@ class ProduceForm extends Component {
     };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     // display loading circle if waiting to load in individual produce data 
 =======
     // Display loading circle if waiting to load in individual produce data
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+    // Display loading circle if waiting to load in individual produce data
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e
     if (this.state.uiLoading === true && this.props.buttonType === "Edit") {
       return (
         <main className={classes.content}>
@@ -470,7 +492,11 @@ class ProduceForm extends Component {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 export default withStyles(styles)(ProduceForm);
 =======
 export default withStyles(styles)(ProduceForm);
 >>>>>>> d7aa28ac075b414b0c0cf3e6ae4caf3f7fd355ed
+=======
+export default withStyles(styles)(ProduceForm);
+>>>>>>> 44d6f0ca38844a8d7316d025f0228e44e36a8e2e
