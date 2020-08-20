@@ -19,7 +19,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import CardContent from "@material-ui/core/CardContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
-import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
@@ -72,7 +71,7 @@ const styles = (theme) => ({
   pos: {
     marginBottom: 12,
   },
-  uiProgess: {
+  uiProgress: {
     position: "fixed",
     zIndex: "1000",
     height: "31px",
@@ -80,7 +79,7 @@ const styles = (theme) => ({
     left: "50%",
     top: "35%",
   },
-  dialogeStyle: {
+  dialogStyle: {
     maxWidth: "50%",
   },
   viewRoot: {
@@ -122,12 +121,23 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-class produce extends Component {
+/**
+ * This class represents a Produce component, which is a sub-page of the
+ * home page where produce objects are visualized, created, updated, edited,
+ * and deleted.
+ */
+class Produce extends Component {
   constructor(props) {
     super(props);
 
+    // this.data will store the JSON array response from the get request to our specificed database
+    // this.value will store the string query that the user enters into the search bar or selects from the Material-UI autocomplete suggestions
+    // the variable names "data" and "value" are required to have these names in order for the SearchResults library to use their information
+
     this.state = {
+      // states of the produce component
       data: "",
+      value: "",
       name: "",
       produceId: "",
       shippingPresetTemperature: "",
@@ -136,11 +146,10 @@ class produce extends Component {
       price: "",
       pricePaid: "",
       amountMoved: "",
+      // states of the page components (dialogue, loading, etc.)
       errors: [],
       open: false,
       uiLoading: true,
-      isFiltering: false,
-      value: "",
       buttonType: "",
       viewOpen: false,
     };
@@ -152,16 +161,26 @@ class produce extends Component {
     this.handleResultsRender = this.handleResultsRender.bind(this);
   }
 
+  /**
+   * Given an event, this function updates a state (the target of the event)
+   * with a new value
+   * @param event The event that is attempting to update a state
+   */
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
     });
   };
 
-  componentWillMount = () => {
+  /** Returns the authentication token stored in local storage */
+  getAuth = () => {
     authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
+    return localStorage.getItem("AuthToken");
+  };
+
+  /** Load in all of the current todos when the component has mounted */
+  componentDidMount() {
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
       .get("/produce")
       .then((response) => {
@@ -171,14 +190,17 @@ class produce extends Component {
         });
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
-  };
+  }
 
-  deleteTodoHandler(data) {
-    authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
+  /**
+   * Takes a produce object as an input and deletes the given produce
+   * object from the database
+   * @param data A produce object
+   */
+  handleDelete(data) {
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     let produceId = data.produce.produceId;
     axios
       .delete(`produce/${produceId}`)
@@ -186,12 +208,18 @@ class produce extends Component {
         window.location.reload();
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   }
 
-  handleEditClickOpen(data) {
+  /**
+   * Takes a produce object as an input and opens a dialog page to
+   * allow the user to update the attributes of the produce object
+   * @param data A produce object
+   */
+  handleEditClick(data) {
     this.setState({
+      // produce states
       name: data.produce.name,
       produceId: data.produce.produceId,
       shippingPresetTemperature: data.produce.shippingPresetTemperature,
@@ -202,13 +230,21 @@ class produce extends Component {
       amountMoved: data.produce.amountMoved,
       price: data.produce.price,
       pricePaid: data.produce.pricePaid,
+      // page states
       buttonType: "Edit",
       open: true,
     });
   }
 
+  /**
+   * Takes a produce object as an input and opens a popup with all the
+   * information about the produce (currently not being used -> will be
+   * updated to show augmented information)
+   * @param data A produce object
+   */
   handleViewOpen(data) {
     this.setState({
+      // produce states
       name: data.produce.name,
       shippingPresetTemperature: data.produce.shippingPresetTemperature,
       shippingMaintenanceTemperatureLow:
@@ -218,6 +254,7 @@ class produce extends Component {
       amountMoved: data.produce.amountMoved,
       price: data.produce.price,
       pricePaid: data.produce.pricePaid,
+      // page state
       viewOpen: true,
     });
   }
@@ -226,10 +263,14 @@ class produce extends Component {
   // This string value can contain any produce field (name, weight, internal
   // shipment numbers) and will still return
   // the appropriate filtered results.
-
   handleSearch = (event) => {
     const { value } = event.target;
     this.setState({ value });
+  };
+
+  showValue = () => {
+    console.log(this.state.value);
+    return this.state.value;
   };
 
   // Handles the rendering of filtered produce results into React cards
@@ -248,8 +289,8 @@ class produce extends Component {
                   display="flex"
                   flexDirection="row"
                   flexWrap="wrap"
-                  padding={0}
-                  margin={0}
+                  p={0}
+                  m={0}
                 >
                   <Box padding={3}>
                     <Typography className={classes.pos} color="textSecondary">
@@ -344,8 +385,10 @@ class produce extends Component {
     const { open, errors, viewOpen } = this.state;
     const { data, value } = this.state;
 
-    const handleClickOpen = () => {
+    /** Set states related to dialogue to generic value when opening */
+    const handleAddClick = () => {
       this.setState({
+        // produce states
         name: "",
         produceId: "",
         shippingPresetTemperature: 0,
@@ -354,16 +397,22 @@ class produce extends Component {
         price: "",
         pricePaid: "",
         amountMoved: "",
+        // page states
         buttonType: "",
         open: true,
         render: true,
       });
     };
 
+    /**
+     * Either updates or submits a new produce object to the data base
+     * @param event The event being handled
+     */
     const handleSubmit = (event) => {
       authMiddleWare(this.props.history);
       event.preventDefault();
       const newProduce = {
+        // farm states
         name: this.state.name,
         shippingPresetTemperature: parseFloat(
           this.state.shippingPresetTemperature
@@ -396,20 +445,23 @@ class produce extends Component {
       axios.defaults.headers.common = { Authorization: `${authToken}` };
       axios(options)
         .then(() => {
+          // page state
           this.setState({ open: false });
           window.location.reload();
         })
         .catch((error) => {
+          // page states
           this.setState({ open: true, errors: error.response.data });
-          console.log(newProduce);
         });
     };
 
     const handleViewClose = () => {
+      // page state (for view modal)
       this.setState({ viewOpen: false });
     };
 
-    const handleClose = (event) => {
+    const handleDialogClose = (event) => {
+      // page state (for dialog)
       this.setState({ open: false });
     };
 
@@ -418,7 +470,7 @@ class produce extends Component {
         <main className={classes.content}>
           <div className={classes.toolbar} />
           {this.state.uiLoading && (
-            <CircularProgress size={150} className={classes.uiProgess} />
+            <CircularProgress size={150} className={classes.uiProgress} />
           )}
         </main>
       );
@@ -431,14 +483,14 @@ class produce extends Component {
             className={classes.floatingButton}
             color="primary"
             aria-label="Add Produce"
-            onClick={handleClickOpen}
+            onClick={handleAddClick}
           >
             <AddCircleIcon style={{ fontSize: 60 }} />
           </IconButton>
           <Dialog
             fullScreen
             open={open}
-            onClose={handleClose}
+            onClose={handleDialogClose}
             TransitionComponent={Transition}
           >
             <AppBar className={classes.appBar}>
@@ -446,7 +498,7 @@ class produce extends Component {
                 <IconButton
                   edge="start"
                   color="inherit"
-                  onClick={handleClose}
+                  onClick={handleDialogClose}
                   aria-label="close"
                 >
                   <CloseIcon />
@@ -655,10 +707,9 @@ class produce extends Component {
             aria-labelledby="customized-dialog-title"
             open={viewOpen}
             fullWidth
-            classes={{ paperFullWidth: classes.dialogeStyle }}
+            classes={{ paperFullWidth: classes.dialogStyle }}
           >
             <DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-              Stone Fruits
               {this.state.name}
             </DialogTitle>
             <DialogContent dividers>
@@ -674,15 +725,6 @@ class produce extends Component {
                     Shipping Temperatures in Reefer (°F):
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Maintenance Temperature:{" "}
-                    {this.state.shippingMaintenanceTemperatureLow} -{" "}
-                    {this.state.shippingMaintenanceTemperatureLow}
-                    <br />
-                    Preset Temperature: {this.state.shippingPresetTemperature}
-                  </Typography>
-                </Box>
-                <Box padding={3}>
-                  <Typography className={classes.pos} color="textSecondary">
                     Pricing (in USD / lb):
                   </Typography>
                   <Typography variant="body2" component="p">
@@ -708,4 +750,4 @@ class produce extends Component {
   }
 }
 
-export default withStyles(styles)(produce);
+export default withStyles(styles)(Produce);
