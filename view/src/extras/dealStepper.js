@@ -59,8 +59,8 @@ export default function HorizontalLinearStepper(props) {
 
   /** Moves to the next step (page) in the Stepper */
   const handleNext = () => {
-    // ADD AN IF STATEMENT TO ENSURE THAT SURPLUS CARD IS SELECTED BEFORE
-    // MOVING ON
+    // TODO(ahojel): add an if statement to ensure a card is selected before
+    //               moving onto the next page in the stepper
 
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
