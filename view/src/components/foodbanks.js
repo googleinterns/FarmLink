@@ -1,12 +1,12 @@
 import React, { Component } from "react";
+
 import Address from "../extras/address";
-import CardSkeletons from "../extras/skeleton";
-import CustomTable from "../extras/table";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -17,28 +17,35 @@ import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import Container from "@material-ui/core/Container";
 import CardActions from "@material-ui/core/CardActions";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import CardContent from "@material-ui/core/CardContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import InputBase from "@material-ui/core/InputBase";
 import Chip from "@material-ui/core/Chip";
 import SearchIcon from "@material-ui/icons/Search";
+import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import PropTypes from "prop-types";
 import MaskedInput from "react-text-mask";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
 
 import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { authMiddleWare } from "../util/auth";
+
+const TAG_EXAMPLES = [
+  { title: "High Food Insecurity" },
+  { title: "Major City" },
+];
 
 const styles = (theme) => ({
   content: {
@@ -62,8 +69,8 @@ const styles = (theme) => ({
   },
   floatingButton: {
     position: "fixed",
-    bottom: "16px",
-    right: "16px",
+    bottom: "0px",
+    right: "0px",
   },
   form: {
     width: "calc(100% - 32px)",
@@ -94,7 +101,7 @@ const styles = (theme) => ({
     maxWidth: "50%",
   },
   viewRoot: {
-    margin: 0,
+    margin: "0px",
     padding: theme.spacing(2),
   },
   closeButton: {
@@ -106,7 +113,7 @@ const styles = (theme) => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    marginLeft: 0,
+    marginLeft: "0px",
     width: "100%",
   },
   searchIcon: {
@@ -129,40 +136,17 @@ const styles = (theme) => ({
   chip: {
     margin: "4px",
   },
-  farmLocation: {
+  foodbankLocation: {
     maxWidth: "280px",
   },
 });
-
-const TAG_EXAMPLES = [
-  { title: "Black Owned" },
-  { title: "Great Environmental Rating" },
-];
-
-/** Place holder for contact table data pulled from database */
-const TABLE_STATE = {
-  columns: [
-    { title: "Role", field: "contactRole" },
-    { title: "Name", field: "contactName" },
-    { title: "Email", field: "contactEmail" },
-    { title: "Phone Number", field: "contactPhone" },
-  ],
-  data: [
-    {
-      contactRole: "Farm Manager",
-      contactName: "Jamie Doe",
-      contactEmail: "jamie@doe.com",
-      contactPhone: "(777)851-1234",
-    },
-  ],
-};
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 /**
- * This function sets up the mask used for the phone input of (***) ***-****
+ * Sets up the mask used for the phone input of (***) ***-****
  * where * represents a digit
  */
 function TextMaskCustom(props) {
@@ -201,37 +185,39 @@ TextMaskCustom.propTypes = {
 };
 
 /**
- * This class represents a Farm component, which is a sub-page of the
- * home page where farm objects are visualized, created, updated, edited,
+ * Represents a Food Bank component, which is a sub-page of the
+ * home page where food bank objects are visualized, created, updated, edited,
  * and deleted.
  */
-class Farms extends Component {
+class Foodbank extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      // Farm states
-      farms: "",
-      farmName: "",
-      farmId: "",
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "(1  )    -    ",
-      farmTags: [],
-      forklift: false,
-      loadingDock: false,
+      // food bank states
+      foodbanks: "",
+      foodbankName: "",
       location: "",
       locationId: "",
-      transportation: false,
-      // Page states
+      hours: "",
+      foodbankId: "",
+      contactPhone: "(1  )    -    ",
+      contactName: "",
+      contactEmail: "",
+      forklift: false,
+      pallet: false,
+      loadingDock: false,
+      maxLoadSize: "",
+      refrigerationSpaceAvailable: "",
+      foodbankTags: [],
+      // page states
       errors: [],
-      open: false, //  Used for opening the farm edit/create dialog (form)
+      open: false, // used for opening food banks edit/create dialog (form)
       uiLoading: true,
       buttonType: "",
-      viewOpen: false, //  Used for opening the farm view dialog
+      viewOpen: false, // used for opening food banks view dialog
     };
 
-    this.onTagsChange = this.onTagsChange.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
@@ -248,10 +234,15 @@ class Farms extends Component {
     });
   };
 
+  /** Used to uncheck and check the form checkboxes */
+  handleChecked = (name) => (event) => {
+    this.setState({ [name]: event.target.checked });
+  };
+
   /** Used to update tags in form */
   onTagsChange = (event, values) => {
     this.setState({
-      // Farm state
+      // food bank state
       farmTags: values,
     });
   };
@@ -262,7 +253,6 @@ class Farms extends Component {
       return;
     }
     this.setState({
-      // Farm states
       location: newValue.description,
       locationId: newValue.place_id,
     });
@@ -274,16 +264,14 @@ class Farms extends Component {
     return localStorage.getItem("AuthToken");
   };
 
-  /** Load in all of the current todos when the component has mounted */
+  /** Load in all of the current food banks when the component has mounted */
   componentDidMount() {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
-      .get("/farms")
+      .get("/foodbanks")
       .then((response) => {
         this.setState({
-          // Farm state
-          farms: response.data,
-          // Page state
+          foodbanks: response.data,
           uiLoading: false,
         });
       })
@@ -293,73 +281,76 @@ class Farms extends Component {
   }
 
   /**
-   * Takes a farm object as an input and deletes the given farm
+   * Takes a food bank object as an input and deletes the given food bank
    * object from the database
-   * @param data A farm object
+   * @param data A food bank object
    */
   handleDelete(data) {
-    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
-    let farmId = data.farm.farmId;
+    authMiddleWare(this.props.history);
+    const authToken = localStorage.getItem("AuthToken");
+    axios.defaults.headers.common = { Authorization: `${authToken}` };
+    let foodbankId = data.foodbank.foodbankId;
     axios
-      .delete(`farms/${farmId}`)
+      .delete(`foodbanks/${foodbankId}`)
       .then(() => {
-        this.props.alert("success", "Farm successfully deleted!");
         window.location.reload();
       })
       .catch((err) => {
         console.error(err);
-        this.props.alert(
-          "error",
-          "An error occurred when attempting to delete the Farm!"
-        );
       });
   }
 
   /**
-   * Takes a farm object as an input and opens a dialog page to
-   * allow the user to update the attributes of the farm object
-   * @param data A farm object
+   * Takes a food bank object as an input and opens a dialog page to
+   * allow the user to update the attributes of the food bank object
+   * @param data A food bank object
    */
   handleEditClick(data) {
     this.setState({
-      // Farm states
-      farmName: data.farm.farmName,
-      farmId: data.farm.farmId,
-      contactName: data.farm.contactName,
-      contactEmail: data.farm.contactEmail,
-      contactPhone: data.farm.contactPhone,
-      farmTags: data.farm.farmTags,
-      forklift: data.farm.forklift,
-      loadingDock: data.farm.loadingDock,
-      location: data.farm.location,
-      locationId: data.farm.locationId,
-      transportation: data.farm.transportation,
-      // Page states
+      // food bank states
+      foodbankName: data.foodbank.foodbankName,
+      location: data.foodbank.location,
+      locationId: data.foodbank.locationId,
+      hours: data.foodbank.hours,
+      foodbankId: data.foodbank.foodbankId,
+      contactPhone: data.foodbank.contactPhone,
+      contactName: data.foodbank.contactName,
+      contactEmail: data.foodbank.contactEmail,
+      forklift: data.foodbank.forklift,
+      pallet: data.foodbank.pallet,
+      loadingDock: data.foodbank.loadingDock,
+      maxLoadSize: data.foodbank.maxLoadSize,
+      refrigerationSpaceAvailable: data.foodbank.refrigerationSpaceAvailable,
+      foodbankTags: data.foodbank.foodbankTags,
+      // page states
       buttonType: "Edit",
       open: true,
     });
   }
 
   /**
-   * Takes a farm object as an input and opens a popup with all the
-   * information about the farm (currently not being used -> will be
+   * Takes a food bank object as an input and opens a popup with all the
+   * information about the food bank (currently not being used -> will be
    * updated to show augmented information)
-   * @param data A farm object
+   * @param data A food bank object
    */
   handleViewOpen(data) {
     this.setState({
-      // Farm states
-      farmName: this.state.farmName,
-      contactName: this.state.contactName,
-      contactEmail: this.state.contactEmail,
-      contactPhone: this.state.contactPhone,
-      farmTags: this.state.farmTags,
-      forklift: this.state.forklift,
-      loadingDock: this.state.loadingDock,
-      location: this.state.location,
-      locationId: this.state.locationId,
-      transportation: this.state.transportation,
-      // Page states
+      // food bank states
+      foodbankName: data.foodbank.foodbankName,
+      location: data.foodbank.location,
+      locationId: data.foodbank.locationId,
+      hours: data.foodbank.hours,
+      contactPhone: data.foodbank.contactPhone,
+      contactName: data.foodbank.contactName,
+      contactEmail: data.foodbank.contactEmail,
+      forklift: data.foodbank.forklift,
+      pallet: data.foodbank.pallet,
+      loadingDock: data.foodbank.loadingDock,
+      maxLoadSize: data.foodbank.maxLoadSize,
+      refrigerationSpaceAvailable: data.foodbank.refrigerationSpaceAvailable,
+      foodbankTags: data.foodbank.foodbankTags,
+      // page states
       viewOpen: true,
     });
   }
@@ -396,92 +387,97 @@ class Farms extends Component {
     /** Set all states to generic value when opening a dialog page */
     const handleAddClick = () => {
       this.setState({
-        // Farm states
-        farmName: "",
-        farmId: "",
-        contactName: "",
-        contactEmail: "",
-        contactPhone: "(1  )    -    ",
-        farmTags: [],
-        forklift: false,
-        loadingDock: false,
+        // food bank states
+        foodbankName: "",
         location: "",
         locationId: "",
-        transportation: false,
-        // Page states
+        hours: "",
+        foodbankId: "",
+        contactPhone: "(1  )    -    ",
+        contactName: "",
+        contactEmail: "",
+        forklift: false,
+        pallet: false,
+        loadingDock: false,
+        maxLoadSize: "",
+        refrigerationSpaceAvailable: "",
+        foodbankTags: [],
+        // page state
         open: true,
       });
     };
 
     /**
-     * Either updates or submits a new farm object to the data base
+     * Either updates or submits a new food bank object to the data base
      * @param event The event being handled
      */
     const handleSubmit = (event) => {
       authMiddleWare(this.props.history);
       event.preventDefault();
-      const newFarm = {
-        // farm states
-        farmName: this.state.farmName,
-        contactName: this.state.contactName,
-        contactEmail: this.state.contactEmail,
-        contactPhone: this.state.contactPhone,
-        farmTags: this.state.farmTags,
-        forklift: this.state.forklift,
-        loadingDock: this.state.loadingDock,
+      const newFoodBank = {
+        // food bank states
+        foodbankName: this.state.foodbankName,
         location: this.state.location,
         locationId: this.state.locationId,
-        transportation: this.state.transportation,
+        hours: this.state.hours,
+        contactPhone: this.state.contactPhone,
+        contactName: this.state.contactName,
+        contactEmail: this.state.contactEmail,
+        forklift: this.state.forklift,
+        pallet: this.state.pallet,
+        loadingDock: this.state.loadingDock,
+        maxLoadSize: parseFloat(this.state.maxLoadSize),
+        refrigerationSpaceAvailable: parseFloat(
+          this.state.refrigerationSpaceAvailable
+        ),
+        foodbankTags: this.state.foodbankTags,
       };
       let options = {};
       if (this.state.buttonType === "Edit") {
         options = {
-          url: `/farms/${this.state.farmId}`,
+          url: `/foodbanks/${this.state.foodbankId}`,
           method: "put",
-          data: newFarm,
+          data: newFoodBank,
         };
       } else {
         options = {
-          url: "/farms",
+          url: "/foodbanks",
           method: "post",
-          data: newFarm,
+          data: newFoodBank,
         };
       }
       const authToken = localStorage.getItem("AuthToken");
       axios.defaults.headers.common = { Authorization: `${authToken}` };
       axios(options)
         .then(() => {
+          // page state
           this.setState({ open: false });
-          const alert =
-            this.state.buttonType === "Edit" ? " edited!" : " submitted!";
-          this.props.alert("success", "Farm has been successfully" + alert);
           window.location.reload();
         })
         .catch((error) => {
-          const alert = this.state.buttonType === "Edit" ? " edit" : " submit";
-          this.props.alert(
-            "error",
-            "An error has occured when attempting to " + alert + " the produce!"
-          );
+          // page state
           this.setState({ open: true, errors: error.response.data });
           console.error(error);
         });
     };
 
     const handleViewClose = () => {
-      // Page state
+      // page state
       this.setState({ viewOpen: false });
     };
 
     const handleDialogClose = (event) => {
-      // Page state
+      // page state
       this.setState({ open: false });
     };
 
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          {this.state.uiLoading && <CardSkeletons classes={classes} />}
+          <div className={classes.toolbar} />
+          {this.state.uiLoading && (
+            <CircularProgress size={150} className={classes.uiProgess} />
+          )}
         </main>
       );
     } else {
@@ -489,14 +485,14 @@ class Farms extends Component {
         <main className={classes.content}>
           <div className={classes.toolbar} />
 
-          <Fab
-            color="primary"
+          <IconButton
             className={classes.floatingButton}
-            aria-label="Add Farm"
+            color="primary"
+            aria-label="Add Food Bank"
             onClick={handleAddClick}
           >
-            <AddIcon />
-          </Fab>
+            <AddCircleIcon style={{ fontSize: 60 }} />
+          </IconButton>
           <Dialog
             fullScreen
             open={open}
@@ -515,8 +511,8 @@ class Farms extends Component {
                 </IconButton>
                 <Typography variant="h6" className={classes.title}>
                   {this.state.buttonType === "Edit"
-                    ? "Edit Farm"
-                    : "Create a new Farm"}
+                    ? "Edit Food Bank"
+                    : "Create a new Food Bank"}
                 </Typography>
                 <Button
                   autoFocus
@@ -530,20 +526,20 @@ class Farms extends Component {
             </AppBar>
             <Container maxWidth="lg">
               <form className={classes.form} noValidate>
-                <Grid container spacing={4} allignItems="center">
+                <Grid container spacing={4} alignItems="center">
                   <Grid item xs={6}>
                     <TextField
                       variant="outlined"
                       required
                       fullWidth
-                      id="farmName"
-                      label="Farm Name"
-                      name="farmName"
+                      id="foodbankName"
+                      label="Food Bank Name"
+                      name="foodbankName"
                       type="text"
-                      autoComplete="farmName"
-                      helperText={errors.farmName}
-                      value={this.state.farmName}
-                      error={errors.farmName ? true : false}
+                      autoComplete="foodbankName"
+                      helperText={errors.foodbankName}
+                      value={this.state.foodbankName}
+                      error={errors.foodbankName ? true : false}
                       onChange={this.handleChange}
                     />
                   </Grid>
@@ -552,6 +548,7 @@ class Farms extends Component {
                       handleLocation={this.handleLocation}
                       location={this.state.location}
                     />
+                    {/* can we get the hours from the location query? */}
                   </Grid>
                   <Grid item xs={3}>
                     <TextField
@@ -576,13 +573,12 @@ class Farms extends Component {
                       </InputLabel>
                       <OutlinedInput
                         label="Point of Contact - Phone"
+                        value={this.state.contactPhone}
                         onChange={this.handleChange}
+                        helperText={errors.contactPhone}
+                        error={errors.contactPhone ? true : false}
                         name="contactPhone"
                         id="contactPhone"
-                        autoComplete="contactName"
-                        helperText={errors.contactPhone}
-                        value={this.state.contactPhone}
-                        error={errors.contactPhone ? true : false}
                         inputComponent={TextMaskCustom}
                       />
                     </FormControl>
@@ -604,69 +600,100 @@ class Farms extends Component {
                     />
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControl variant="outlined" fullWidth>
-                      <InputLabel htmlFor="outlined-transportation">
-                        Loading Dock Present
-                      </InputLabel>
-                      <Select
-                        value={this.state.loadingDock}
-                        onChange={this.handleChange}
-                        label="Loading Dock Present"
-                        inputProps={{
-                          name: "loadingDock",
-                          id: "outlined-loadingDock",
-                        }}
-                      >
-                        <MenuItem value={true}>Yes</MenuItem>
-                        <MenuItem value={false}>No</MenuItem>
-                      </Select>
-                    </FormControl>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={this.state.loadingDock}
+                          onChange={this.handleChecked("loadingDock")}
+                          value={"loadingDock"}
+                          name="loadingDock"
+                          color="primary"
+                        />
+                      }
+                      label="Loading Doc Present"
+                    />
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControl variant="outlined" fullWidth>
-                      <InputLabel htmlFor="outlined-transportation">
-                        Forklift Present
-                      </InputLabel>
-                      <Select
-                        value={this.state.forklift}
-                        onChange={this.handleChange}
-                        label="Forklift Present"
-                        inputProps={{
-                          name: "forklift",
-                          id: "outlined-forklift",
-                        }}
-                      >
-                        <MenuItem value={true}>Yes</MenuItem>
-                        <MenuItem value={false}>No</MenuItem>
-                      </Select>
-                    </FormControl>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={this.state.forklift}
+                          onChange={this.handleChecked("forklift")}
+                          value={"forklift"}
+                          name="forklift"
+                          color="primary"
+                        />
+                      }
+                      label="Forklift Present"
+                    />
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControl variant="outlined" fullWidth>
-                      <InputLabel htmlFor="outlined-transportation">
-                        Transportation Present
-                      </InputLabel>
-                      <Select
-                        value={this.state.transportation}
-                        onChange={this.handleChange}
-                        label="Transportation Present"
-                        inputProps={{
-                          name: "transportation",
-                          id: "outlined-transportation",
-                        }}
-                      >
-                        <MenuItem value={true}>Yes</MenuItem>
-                        <MenuItem value={false}>No</MenuItem>
-                      </Select>
-                    </FormControl>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={this.state.pallet}
+                          onChange={this.handleChecked("pallet")}
+                          value={"pallet"}
+                          name="pallet"
+                          color="primary"
+                        />
+                      }
+                      label="Pallet Present"
+                    />
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={3}>
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="maxLoadSize"
+                      label="Max Load Size"
+                      name="maxLoadSize"
+                      type="number"
+                      autoComplete="maxLoadSize"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            pallets
+                          </InputAdornment>
+                        ),
+                      }}
+                      helperText={errors.maxLoadSize}
+                      value={this.state.maxLoadSize}
+                      error={errors.maxLoadSize ? true : false}
+                      onChange={this.handleChange}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="refrigerationSpaceAvailable"
+                      label="Refrigeration Space Available"
+                      name="refrigerationSpaceAvailable"
+                      type="number"
+                      autoComplete="refrigerationSpaceAvailable"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            pallets
+                          </InputAdornment>
+                        ),
+                      }}
+                      helperText={errors.refrigerationSpaceAvailable}
+                      value={this.state.refrigerationSpaceAvailable}
+                      error={errors.refrigerationSpaceAvailable ? true : false}
+                      onChange={this.handleChange}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
                     <Autocomplete
                       multiple
-                      id="farmTags"
+                      id="tags-filled"
                       onChange={this.onTagsChange}
-                      options={TAG_EXAMPLES.map((option) => option.title)} // need to create aggregated tags array
-                      defaultValue={this.state.farmTags}
+                      options={TAG_EXAMPLES.map((option) => option.title)}
+                      defaultValue={[this.state.foodbankTags]}
                       freeSolo
                       renderTags={(value, getTagProps) =>
                         value.map((option, index) => (
@@ -677,19 +704,13 @@ class Farms extends Component {
                         <TextField
                           {...params}
                           variant="outlined"
-                          label="Farm Tags"
+                          label="Food Bank Tags"
                           placeholder="tags..."
                         />
                       )}
                     />
                   </Grid>
                 </Grid>
-                <div className={classes.table}>
-                  <CustomTable
-                    title="Farms Contacts"
-                    tableState={TABLE_STATE}
-                  />
-                </div>
               </form>
             </Container>
           </Dialog>
@@ -711,20 +732,23 @@ class Farms extends Component {
                   />
                 </div>
               </Grid>
-              {this.state.farms.map((farm) => (
+              {this.state.foodbanks.map((foodbank) => (
                 <Grid item xs={12}>
                   <Card className={classes.root} variant="outlined">
                     <CardContent>
                       <Typography variant="h5" component="h2">
-                        {farm.farmName}
+                        {foodbank.foodbankName}
                       </Typography>
-                      {farm.farmTags.map((tag) => (
-                        <Chip
-                          className={classes.chip}
-                          label={tag}
-                          size="small"
-                        />
-                      ))}
+                      <Chip
+                        className={classes.chip}
+                        label="High Food Insecurity"
+                        size="small"
+                      />
+                      <Chip
+                        className={classes.chip}
+                        label="Major City"
+                        size="small"
+                      />
                       <Box
                         display="flex"
                         flexDirection="row"
@@ -742,9 +766,14 @@ class Farms extends Component {
                           <Typography
                             variant="body2"
                             component="p"
-                            className={classes.farmLocation}
+                            className={classes.foodbankLocation}
                           >
-                            Location of Farm: {farm.location}
+                            Location of Food Bank: {foodbank.location}
+                            <br />
+                            Refrigeration Space (in pallets):
+                            {foodbank.refrigerationSpaceAvailable}
+                            <br />
+                            Max Load Size (in pallets): {foodbank.maxLoadSize}
                           </Typography>
                         </Box>
                         <Box p={3}>
@@ -755,11 +784,11 @@ class Farms extends Component {
                             Point of Contact:
                           </Typography>
                           <Typography variant="body2" component="p">
-                            Name: {farm.contactName}
+                            Name: {foodbank.contactName}
                             <br />
-                            Phone: {farm.contactPhone}
+                            Phone: {foodbank.contactPhone}
                             <br />
-                            Email: {farm.contactEmail}
+                            Email: {foodbank.contactEmail}
                           </Typography>
                         </Box>
                         <Box p={3}>
@@ -770,28 +799,50 @@ class Farms extends Component {
                             Logistics:
                           </Typography>
                           <Typography variant="body2" component="p">
-                            Have Transportation Means:
-                            {farm.transportation ? "yes" : "no"}
+                            Forklift: {foodbank.forklift ? "yes" : "no"}
                             <br />
-                            Loading Dock: {farm.loadingDock ? "yes" : "no"}
+                            Pallet: {foodbank.pallet ? "yes" : "no"}
                             <br />
-                            Forklift: {farm.forklift ? "yes" : "no"}
+                            Loading Dock: {foodbank.loadingDock ? "yes" : "no"}
                           </Typography>
                         </Box>
+                        {/* --> this will be implemented when we get hours from Place API <--
+                        <Box p={3}>
+                          <Typography
+                            className={classes.pos}
+                            color="textSecondary"
+                          >
+                            Hours of Operation:
+                          </Typography>
+                          <Typography variant="body2" component="p">
+                            Monday-Friday: 9am - 5pm
+                            <br />
+                            Saturday: 10am - 4pm
+                            <br />
+                            Sunday: closed
+                          </Typography>
+                        </Box> */}
                       </Box>
                     </CardContent>
                     <CardActions>
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.handleEditClick({ farm })}
+                        onClick={() => this.handleViewOpen({ foodbank })}
+                      >
+                        View
+                      </Button>
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => this.handleEditClick({ foodbank })}
                       >
                         Edit
                       </Button>
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.handleDelete({ farm })}
+                        onClick={() => this.handleDelete({ foodbank })}
                       >
                         Delete
                       </Button>
@@ -810,9 +861,15 @@ class Farms extends Component {
             classes={{ paperFullWidth: classes.dialogStyle }}
           >
             <DialogTitle id="customized-dialog-title" onClose={handleViewClose}>
-              {this.state.farmName}
+              {this.state.foodbankName}
             </DialogTitle>
             <DialogContent dividers>
+              <Chip
+                className={classes.chip}
+                label="High Food Insecurity"
+                size="small"
+              />
+              <Chip className={classes.chip} label="Major City" size="small" />
               <Box
                 display="flex"
                 flexDirection="row"
@@ -825,7 +882,12 @@ class Farms extends Component {
                     Details:
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Location of Farm: {this.state.location}
+                    Location of Food Bank: {this.state.location}
+                    <br />
+                    Refrigeration Space (in pallets):
+                    {this.state.refrigerationSpaceAvailable}
+                    <br />
+                    Max Load Size (in pallets): {this.state.maxLoadSize}
                   </Typography>
                 </Box>
                 <Box p={3}>
@@ -845,12 +907,11 @@ class Farms extends Component {
                     Logistics:
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Have Transportation Means:
-                    {this.state.transportation ? "yes" : "no"}
+                    Forklift: {this.state.forklift ? "yes" : "no"}
+                    <br />
+                    Pallet: {this.state.pallet ? "yes" : "no"}
                     <br />
                     Loading Dock: {this.state.loadingDock ? "yes" : "no"}
-                    <br />
-                    Forklift: {this.state.forklift ? "yes" : "no"}
                   </Typography>
                 </Box>
               </Box>
@@ -862,4 +923,4 @@ class Farms extends Component {
   }
 }
 
-export default withStyles(styles)(Farms);
+export default withStyles(styles)(Foodbank);
