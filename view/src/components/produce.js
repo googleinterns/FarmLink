@@ -19,11 +19,11 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import CardContent from "@material-ui/core/CardContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
-import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
-
+import SearchResults from "react-filter-search";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -71,7 +71,7 @@ const styles = (theme) => ({
   pos: {
     marginBottom: 12,
   },
-  uiProgess: {
+  uiProgress: {
     position: "fixed",
     zIndex: "1000",
     height: "31px",
@@ -130,9 +130,15 @@ class Produce extends Component {
   constructor(props) {
     super(props);
 
+    // this.data: JSON array response from the get request to the database
+    // this.value: string search query from search bar or autocomplete
+    // variable names "data" and "value" cannot be renamed:
+    //  the SearchResults library requires them
+
     this.state = {
       // states of the produce component
-      produceObjects: "",
+      data: "",
+      value: "",
       name: "",
       produceId: "",
       shippingPresetTemperature: "",
@@ -152,6 +158,8 @@ class Produce extends Component {
     this.handleDelete = this.handleDelete.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+    this.handleResultsRender = this.handleResultsRender.bind(this);
   }
 
   /**
@@ -178,7 +186,7 @@ class Produce extends Component {
       .get("/produce")
       .then((response) => {
         this.setState({
-          produceObjects: response.data,
+          data: response.data,
           uiLoading: false,
         });
       })
@@ -252,6 +260,103 @@ class Produce extends Component {
     });
   }
 
+  // This function updates the string that the produce array will be searched for.
+  // This string value can contain any produce field (name, weight, internal
+  // shipment numbers) and will still return
+  // the appropriate filtered results.
+  handleSearch = (event) => {
+    const { value } = event.target;
+    this.setState({ value });
+  };
+
+  showValue = () => {
+    return this.state.value;
+  };
+
+  // Handles the rendering of filtered produce results into React cards
+  handleResultsRender = (results) => {
+    const { classes } = this.props;
+    return (
+      <div>
+        <Grid container spacing={2} alignItem="center">
+          {results.map((produce) => (
+            <Grid item xs={12} key={produce.produceId}>
+              <Card className={classes.root} variant="outlined">
+                <CardContent>
+                  <Typography variant="h5" component="h2">
+                    {produce.name}
+                  </Typography>
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    flexWrap="wrap"
+                    padding={0}
+                    margin={0}
+                  >
+                    <Box padding={3}>
+                      <Typography className={classes.pos} color="textSecondary">
+                        Shipping Temperatures in Reefer (°F):
+                      </Typography>
+                      <Typography variant="body2" component="p">
+                        Maintenance Temperature:{" "}
+                        {produce.shippingMaintenanceTemperatureLow} -{" "}
+                        {produce.shippingMaintenanceTemperatureHigh}
+                        <br />
+                        Preset Temperature: {produce.shippingPresetTemperature}
+                      </Typography>
+                    </Box>
+                    <Box padding={3}>
+                      <Typography className={classes.pos} color="textSecondary">
+                        Pricing (in USD / lb):
+                      </Typography>
+                      <Typography variant="body2" component="p">
+                        USDA Price: ${produce.price}
+                        <br />
+                        Average Price Paid by Farmlink: ${produce.pricePaid}
+                      </Typography>
+                    </Box>
+                    <Box padding={3}>
+                      <Typography className={classes.pos} color="textSecondary">
+                        Internal Statistics:
+                      </Typography>
+                      <Typography variant="body2" component="p">
+                        Amount Moved by FarmLink (lbs): {produce.amountMoved}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+                <CardActions>
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => this.handleViewOpen({ produce })}
+                  >
+                    {" "}
+                    View{" "}
+                  </Button>
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => this.handleEditClick({ produce })}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => this.handleDelete({ produce })}
+                  >
+                    Delete
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </div>
+    );
+  };
+
   render() {
     const DialogTitle = withStyles(styles)((props) => {
       const { children, classes, onClose, ...other } = props;
@@ -280,6 +385,7 @@ class Produce extends Component {
     dayjs.extend(relativeTime);
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
+    const { data, value } = this.state;
 
     /** Set states related to dialogue to generic value when opening */
     const handleAddClick = () => {
@@ -296,6 +402,7 @@ class Produce extends Component {
         // page states
         buttonType: "",
         open: true,
+        render: true,
       });
     };
 
@@ -365,7 +472,7 @@ class Produce extends Component {
         <main className={classes.content}>
           <div className={classes.toolbar} />
           {this.state.uiLoading && (
-            <CircularProgress size={150} className={classes.uiProgess} />
+            <CircularProgress size={150} className={classes.uiProgress} />
           )}
         </main>
       );
@@ -563,107 +670,40 @@ class Produce extends Component {
           <Container maxWidth="lg">
             <Grid container spacing={2} alignItem="center">
               <Grid item xs={12}>
-                <div className={classes.search}>
-                  <div className={classes.searchIcon}>
-                    <SearchIcon />
-                  </div>
-                  <InputBase
-                    fullWidth={true}
-                    placeholder="Search…"
-                    classes={{
-                      root: classes.inputRoot,
-                      input: classes.inputInput,
-                    }}
-                    inputProps={{ "aria-label": "search" }}
-                  />
-                </div>
+                <Autocomplete
+                  id="produce-name-search"
+                  options={data.map((produce) => produce.name)}
+                  value={value}
+                  onSelect={this.handleSearch} // Receive the name from data element for value
+                  fullWidth={true}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Search by produce name"
+                      variant="outlined"
+                      onChange={this.handleSearch}
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <>
+                            <InputAdornment position="start">
+                              <SearchIcon />
+                            </InputAdornment>
+                            {params.InputProps.startAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                />
               </Grid>
-              {this.state.produceObjects.map((produce) => (
-                <Grid item xs={12}>
-                  <Card className={classes.root} variant="outlined">
-                    <CardContent>
-                      <Typography variant="h5" component="h2">
-                        {produce.name}
-                      </Typography>
-                      <Box
-                        display="flex"
-                        flexDirection="row"
-                        flexWrap="wrap"
-                        p={0}
-                        m={0}
-                      >
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Shipping Temperatures in Reefer (°F):
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Maintenance Temperature:
-                            {produce.shippingMaintenanceTemperatureLow} -
-                            {produce.shippingMaintenanceTemperatureHigh}
-                            <br />
-                            Preset Temperature:
-                            {produce.shippingPresetTemperature}
-                          </Typography>
-                        </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Pricing (in USD / lb):
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            USDA Price: ${produce.price}
-                            <br />
-                            Average Price Paid by Farmlink: ${produce.pricePaid}
-                          </Typography>
-                        </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Internal Statistics:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Amount Moved by FarmLink (lbs):
-                            {produce.amountMoved}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                    <CardActions>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleViewOpen({ produce })}
-                      >
-                        View
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleEditClick({ produce })}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleDelete({ produce })}
-                      >
-                        Delete
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
             </Grid>
+            <SearchResults
+              value={value}
+              data={data}
+              renderResults={this.handleResultsRender}
+            />
           </Container>
-
           <Dialog
             onClose={handleViewClose}
             aria-labelledby="customized-dialog-title"
@@ -679,23 +719,14 @@ class Produce extends Component {
                 display="flex"
                 flexDirection="row"
                 flexWrap="wrap"
-                p={0}
-                m={0}
+                padding={0}
+                margin={0}
               >
-                <Box p={3}>
+                <Box padding={3}>
                   <Typography className={classes.pos} color="textSecondary">
                     Shipping Temperatures in Reefer (°F):
                   </Typography>
                   <Typography variant="body2" component="p">
-                    Maintenance Temperature:
-                    {this.state.shippingMaintenanceTemperatureLow} -
-                    {this.state.shippingMaintenanceTemperatureHigh}
-                    <br />
-                    Preset Temperature: {this.state.shippingPresetTemperature}
-                  </Typography>
-                </Box>
-                <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
                     Pricing (in USD / lb):
                   </Typography>
                   <Typography variant="body2" component="p">
@@ -704,7 +735,7 @@ class Produce extends Component {
                     Average Price Paid by Farmlink: ${this.state.pricePaid}
                   </Typography>
                 </Box>
-                <Box p={3}>
+                <Box padding={3}>
                   <Typography className={classes.pos} color="textSecondary">
                     Internal Statistics:
                   </Typography>
