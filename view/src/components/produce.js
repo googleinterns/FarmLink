@@ -1,10 +1,10 @@
 import React, { Component } from "react";
+import CardSkeletons from "../extras/skeleton";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -15,13 +15,13 @@ import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import Container from "@material-ui/core/Container";
 import CardActions from "@material-ui/core/CardActions";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import CardContent from "@material-ui/core/CardContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
+import Fab from "@material-ui/core/Fab";
 import SearchResults from "react-filter-search";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import axios from "axios";
@@ -46,22 +46,22 @@ const styles = (theme) => ({
     color: "white",
     textAlign: "center",
     position: "absolute",
-    top: 14,
-    right: 10,
+    top: "14px",
+    right: "10px",
   },
   floatingButton: {
     position: "fixed",
-    bottom: 0,
-    right: 0,
+    bottom: "16px",
+    right: "16px",
   },
   form: {
-    width: "98%",
-    marginLeft: 13,
+    width: "calc(100% - 32px)",
+    marginLeft: "12px",
     marginTop: theme.spacing(3),
   },
   toolbar: theme.mixins.toolbar,
   root: {
-    minWidth: 470,
+    minWidth: "470px",
   },
   bullet: {
     display: "inline-block",
@@ -136,7 +136,7 @@ class Produce extends Component {
     //  the SearchResults library requires them
 
     this.state = {
-      // states of the produce component
+      // States of the produce component
       data: "",
       value: "",
       name: "",
@@ -147,7 +147,7 @@ class Produce extends Component {
       price: "",
       pricePaid: "",
       amountMoved: "",
-      // states of the page components (dialogue, loading, etc.)
+      // Page states
       errors: [],
       open: false,
       uiLoading: true,
@@ -207,9 +207,15 @@ class Produce extends Component {
       .delete(`produce/${produceId}`)
       .then(() => {
         window.location.reload();
+        this.props.alert("success", "Produce successfully deleted!");
       })
       .catch((err) => {
         console.error(err);
+        console.log(err);
+        this.props.alert(
+          "error",
+          "An error occurred when attempting to delete the Produce!"
+        );
       });
   }
 
@@ -220,7 +226,7 @@ class Produce extends Component {
    */
   handleEditClick(data) {
     this.setState({
-      // produce states
+      // Produce states
       name: data.produce.name,
       produceId: data.produce.produceId,
       shippingPresetTemperature: data.produce.shippingPresetTemperature,
@@ -231,7 +237,7 @@ class Produce extends Component {
       amountMoved: data.produce.amountMoved,
       price: data.produce.price,
       pricePaid: data.produce.pricePaid,
-      // page states
+      // Page states
       buttonType: "Edit",
       open: true,
     });
@@ -245,7 +251,7 @@ class Produce extends Component {
    */
   handleViewOpen(data) {
     this.setState({
-      // produce states
+      // Produce states
       name: data.produce.name,
       shippingPresetTemperature: data.produce.shippingPresetTemperature,
       shippingMaintenanceTemperatureLow:
@@ -255,7 +261,7 @@ class Produce extends Component {
       amountMoved: data.produce.amountMoved,
       price: data.produce.price,
       pricePaid: data.produce.pricePaid,
-      // page state
+      // Page state
       viewOpen: true,
     });
   }
@@ -390,7 +396,7 @@ class Produce extends Component {
     /** Set states related to dialogue to generic value when opening */
     const handleAddClick = () => {
       this.setState({
-        // produce states
+        // Produce states
         name: "",
         produceId: "",
         shippingPresetTemperature: 0,
@@ -399,7 +405,7 @@ class Produce extends Component {
         price: "",
         pricePaid: "",
         amountMoved: "",
-        // page states
+        // Page states
         buttonType: "",
         open: true,
         render: true,
@@ -414,7 +420,7 @@ class Produce extends Component {
       authMiddleWare(this.props.history);
       event.preventDefault();
       const newProduce = {
-        // farm states
+        // Farm states
         name: this.state.name,
         shippingPresetTemperature: parseFloat(
           this.state.shippingPresetTemperature
@@ -447,33 +453,44 @@ class Produce extends Component {
       axios.defaults.headers.common = { Authorization: `${authToken}` };
       axios(options)
         .then(() => {
-          // page state
+          // Page state
           this.setState({ open: false });
+          const action =
+            this.state.buttonType === "Edit" ? " edited!" : " submitted!";
+          this.props.alert(
+            "success",
+            "Produce has been successfully" + action
+          );
           window.location.reload();
         })
         .catch((error) => {
-          // page states
+          const action =
+            this.state.buttonType === "Edit" ? " edit" : " submit";
+          this.props.alert(
+            "error",
+            "An error has occured when attempting to " +
+              action +
+              " the produce!"
+          );
+          // Page states
           this.setState({ open: true, errors: error.response.data });
         });
     };
 
     const handleViewClose = () => {
-      // page state (for view modal)
+      // Page state (for view modal)
       this.setState({ viewOpen: false });
     };
 
     const handleDialogClose = (event) => {
-      // page state (for dialog)
+      // Page state (for dialog)
       this.setState({ open: false });
     };
 
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          <div className={classes.toolbar} />
-          {this.state.uiLoading && (
-            <CircularProgress size={150} className={classes.uiProgress} />
-          )}
+          {this.state.uiLoading && <CardSkeletons classes={classes} />}
         </main>
       );
     } else {
@@ -481,14 +498,14 @@ class Produce extends Component {
         <main className={classes.content}>
           <div className={classes.toolbar} />
 
-          <IconButton
-            className={classes.floatingButton}
+          <Fab
             color="primary"
+            className={classes.floatingButton}
             aria-label="Add Produce"
             onClick={handleAddClick}
           >
-            <AddCircleIcon style={{ fontSize: 60 }} />
-          </IconButton>
+            <AddIcon />
+          </Fab>
           <Dialog
             fullScreen
             open={open}
