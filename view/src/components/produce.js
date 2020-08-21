@@ -130,9 +130,10 @@ class Produce extends Component {
   constructor(props) {
     super(props);
 
-    // this.data will store the JSON array response from the get request to our specificed database
-    // this.value will store the string query that the user enters into the search bar or selects from the Material-UI autocomplete suggestions
-    // the variable names "data" and "value" are required to have these names in order for the SearchResults library to use their information
+    // this.data: JSON array response from the get request to the database
+    // this.value: string search query from search bar or autocomplete
+    // variable names "data" and "value" cannot be renamed:
+    //  the SearchResults library requires them
 
     this.state = {
       // states of the produce component
@@ -269,7 +270,6 @@ class Produce extends Component {
   };
 
   showValue = () => {
-    console.log(this.state.value);
     return this.state.value;
   };
 
@@ -290,8 +290,8 @@ class Produce extends Component {
                     display="flex"
                     flexDirection="row"
                     flexWrap="wrap"
-                    p={0}
-                    m={0}
+                    padding={0}
+                    margin={0}
                   >
                     <Box padding={3}>
                       <Typography className={classes.pos} color="textSecondary">
