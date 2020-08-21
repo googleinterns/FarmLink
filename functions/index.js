@@ -40,13 +40,10 @@ const {
   editDeal,
 } = require("./APIs/deals");
 const {
-  queryFoodBanksByDistance,
-  queryFarmsByDistance,
-  querySurplusByDistance,
   queryFoodBanksByTravelTime,
   queryFarmsByTravelTime,
   querySurplusByTravelTime,
-} = require("./APIs/queries");
+} = require("./queries/traveltime");
 
 exports.api = functions.https.onRequest(app);
 
