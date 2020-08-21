@@ -698,15 +698,11 @@ class Produce extends Component {
                 />
               </Grid>
             </Grid>
-            <Grid container spacing={2} alignItem="center">
-              <Grid item xs={12}>
-                <SearchResults
-                  value={value}
-                  data={data}
-                  renderResults={this.handleResultsRender}
-                />
-              </Grid>
-            </Grid>
+            <SearchResults 
+              value={value}
+              data={data}
+              renderResults={this.handleResultsRender}
+            />
           </Container>
           <Dialog
             onClose={handleViewClose}
