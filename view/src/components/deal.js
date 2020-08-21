@@ -72,14 +72,6 @@ const styles = (theme) => ({
   pos: {
     marginBottom: "12px",
   },
-  uiProgess: {
-    position: "fixed",
-    zIndex: "1000",
-    height: "31px",
-    width: "31px",
-    left: "50%",
-    top: "35%",
-  },
   dialogStyle: {
     maxWidth: "50%",
   },
@@ -132,11 +124,8 @@ class Deal extends Component {
     super(props);
 
     this.state = {
-      // Deal states (haven't been connected to CRUD)
-      deals: "",
-      title: "",
-      body: "",
-      todoId: "",
+      // Deal states
+      deals: "", // TODO(anrewhojel): connect all individual deal states
       // Page states
       errors: [],
       open: false,
@@ -171,7 +160,7 @@ class Deal extends Component {
   componentDidMount() {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
-      .get("/todos")
+      .get("/deals")
       .then((response) => {
         this.setState({
           // Produce state
@@ -191,12 +180,10 @@ class Deal extends Component {
    * @param data A deal object
    */
   handleDelete(data) {
-    authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
-    let todoId = data.todo.todoId;
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
+    let dealId = data.deal.dealId;
     axios
-      .delete(`todo/${todoId}`) // NOT CONNECTED TO DEALS CRUD YET
+      .delete(`deal/${dealId}`)
       .then(() => {
         window.location.reload();
       })
@@ -212,10 +199,7 @@ class Deal extends Component {
    */
   handleEditClick(data) {
     this.setState({
-      // Deal state
-      title: data.todo.title,
-      body: data.todo.body,
-      todoId: data.todo.todoId,
+      // Deal states (TODO(andrewhojel): add these deal states)
       // Page state
       buttonType: "Edit",
       open: true,
@@ -230,9 +214,7 @@ class Deal extends Component {
    */
   handleViewOpen(data) {
     this.setState({
-      // Deal state
-      title: data.todo.title,
-      body: data.todo.body,
+      // Deal state (TODO(andrewhojel): add these deal states)
       // Page state
       viewOpen: true,
     });
@@ -270,37 +252,32 @@ class Deal extends Component {
     /** Set states related to dialogue to generic value when opening */
     const handleAddClick = () => {
       this.setState({
-        // Deal states
-        todoId: "",
-        title: "",
-        body: "",
-        buttonType: "",
+        // Deal states (TODO(andrewhojel): add these deal states)
         // Page state
+        buttonType: "",
         open: true,
       });
     };
 
     /**
-     * Either updates or submits a new deal object to the data base
+     * Either updates or submits a new deal object to the database
      * @param event The event being handled
      */
     const handleSubmit = (event) => {
       event.preventDefault();
       const userTodo = {
-        // Deal states
-        title: this.state.title,
-        body: this.state.body,
+        // Deal states (TODO(andrewhojel): add these deal states)
       };
       let options = {};
       if (this.state.buttonType === "Edit") {
         options = {
-          url: `/todo/${this.state.todoId}`, // NOT CONNECTED TO CRUD YET
+          url: `/deals/${this.state.dealId}`,
           method: "put",
           data: userTodo,
         };
       } else {
         options = {
-          url: "/todo",
+          url: "/deals",
           method: "post",
           data: userTodo,
         };
@@ -343,7 +320,7 @@ class Deal extends Component {
           <Fab
             color="primary"
             className={classes.floatingButton}
-            aria-label="Add Produce"
+            aria-label="Add Deal"
             onClick={handleAddClick}
           >
             <AddIcon />
@@ -387,7 +364,7 @@ class Deal extends Component {
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12}>
                 <div className={classes.search}>
-                  <div className={classes.searchIcon}>
+                  <div className={classes.searchIcon} aria-hidden="true">
                     <SearchIcon />
                   </div>
                   <InputBase
@@ -401,46 +378,38 @@ class Deal extends Component {
                   />
                 </div>
               </Grid>
-              {this.state.deals.map((todo) => (
+              {/* TODO(andrewhojel): connect to CRUD and design custom deal cards
+              {this.state.deals.map((deal) => (
                 <Grid item xs={12}>
                   <Card className={classes.root} variant="outlined">
                     <CardContent>
-                      <Typography variant="h5" component="h2">
-                        {todo.title}
-                      </Typography>
-                      <Typography className={classes.pos} color="textSecondary">
-                        {dayjs(todo.createdAt).fromNow()}
-                      </Typography>
-                      <Typography variant="body2" component="p">
-                        {todo.body}
-                      </Typography>
                     </CardContent>
                     <CardActions>
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.handleViewOpen({ todo })}
+                        onClick={() => this.handleViewOpen({ deal })}
                       >
                         View
                       </Button>
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.handleEditClick({ todo })}
+                        onClick={() => this.handleEditClick({ deal })}
                       >
                         Edit
                       </Button>
                       <Button
                         size="small"
                         color="primary"
-                        onClick={() => this.handleDelete({ todo })}
+                        onClick={() => this.handleDelete({ deal })}
                       >
                         Delete
                       </Button>
                     </CardActions>
                   </Card>
                 </Grid>
-              ))}
+              ))} */}
             </Grid>
           </Container>
 
@@ -457,7 +426,7 @@ class Deal extends Component {
             <DialogContent dividers>
               <TextField
                 fullWidth
-                id="todoDetails"
+                id="dealDetails"
                 name="body"
                 multiline
                 readonly
