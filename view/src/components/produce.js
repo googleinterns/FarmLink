@@ -698,7 +698,7 @@ class Produce extends Component {
                 />
               </Grid>
             </Grid>
-            <SearchResults 
+            <SearchResults
               value={value}
               data={data}
               renderResults={this.handleResultsRender}
