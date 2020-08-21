@@ -77,9 +77,6 @@ app.post("/deals", auth, postOneDeal);
 app.delete("/deals/:dealId", auth, deleteDeal);
 app.put("/deals/:dealId", auth, editDeal);
 
-app.get("/queryFoodBanksByDistance", auth, queryFoodBanksByDistance);
-app.get("/queryFarmsByDistance", auth, queryFarmsByDistance);
-app.get("/querySurplusByDistance", auth, querySurplusByDistance);
 app.get("/queryFoodBanksByTravelTime", auth, queryFoodBanksByTravelTime);
 app.get("/queryFarmsByTravelTime", auth, queryFarmsByTravelTime);
 app.get("/querySurplusByTravelTime", auth, querySurplusByTravelTime);
