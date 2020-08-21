@@ -56,7 +56,7 @@ const styles = (theme) => ({
   },
   form: {
     width: "calc(100% - 32px)",
-    marginLeft: 13,
+    marginLeft: "12px",
     marginTop: theme.spacing(3),
   },
   toolbar: theme.mixins.toolbar,
@@ -69,7 +69,7 @@ const styles = (theme) => ({
     transform: "scale(0.8)",
   },
   pos: {
-    marginBottom: 12,
+    marginBottom: "12px",
   },
   uiProgess: {
     position: "fixed",
@@ -119,9 +119,30 @@ const styles = (theme) => ({
     width: "100%",
   },
   table: {
-    marginTop: "50px",
+    marginTop: "48px",
+  },
+  formText: {
+    marginBottom: "16px",
   },
 });
+
+// Used as a placeholder since the CustomTable isn't connected to CRUD
+const tableData = {
+  columns: [
+    { title: "Role", field: "contactRole" },
+    { title: "Name", field: "contactName" },
+    { title: "Email", field: "contactEmail" },
+    { title: "Phone Number", field: "contactPhone" },
+  ],
+  data: [
+    {
+      contactRole: "Farm Manager",
+      contactName: "Jamie Doe",
+      contactEmail: "jamie@doe.com",
+      contactPhone: "(777)851-1234",
+    },
+  ],
+};
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -137,7 +158,7 @@ class Surplus extends Component {
     super(props);
 
     this.state = {
-      // surplus state
+      // Surplus state
       surplusObjects: "",
       surplusId: "",
       produceId: "",
@@ -151,12 +172,14 @@ class Surplus extends Component {
       cost: "",
       totalQuantityAvailable: "",
       packagingType: "",
-      // page state
+      // Page state
       errors: [],
-      open: false, // use to open the edit / add dialog (form)
+      open: false,  //  Used to open the edit / add dialog (form)
       uiLoading: true,
       buttonType: "",
-      viewOpen: false, // used to open the view dialgo
+      viewOpen: false, //  Used to open the view dialog
+      selectedCard: "",
+      reloadCards: false,
     };
 
     this.handleDelete = this.handleDelete.bind(this);
@@ -187,42 +210,74 @@ class Surplus extends Component {
     });
   };
 
+  /**
+   * Sets states to values so that cards can be reloaded and calls
+   * function to reload cards
+   */
+  reFetch = () => {
+    this.setState({
+      uiLoading: true,
+      reLoadCards: true,
+      open: false,
+    });
+    this.reFetchSurplus();
+  };
+
   /** Returns the authentication token stored in local storage */
   getAuth = () => {
     authMiddleWare(this.props.history);
     return localStorage.getItem("AuthToken");
   };
 
-  /** Load in all of the current food banks when the component has mounted */
+  /** Function to refresh the cards in the page without calling window.reload */
+  reFetchSurplus = () => {
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
+    axios
+      .get("/surplus")
+      .then((response) => {
+        this.setState({
+          surplusObjects: response.data,
+          uiLoading: false,
+          reloadCards: false,
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        this.props.alert("error", "Error reloading in the surplus cards!");
+      });
+  };
+
+  /** Load in all of the current surplus when the component has mounted */
   componentDidMount() {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
       .get("/surplus")
       .then((response) => {
         this.setState({
-          // surplus state
           surplusObjects: response.data,
-          // page state
           uiLoading: false,
         });
       })
       .catch((err) => {
         console.error(err);
+        this.props.alert("error", "Error loading in the surplus!");
       });
   }
 
   /**
-   * Takes a food bank object as an input and deletes the given food bank
+   * Takes a surplus object as an input and deletes the given surplus
    * object from the database
-   * @param data A food bank object
+   * @param data A surplus object
    */
   handleDelete(data) {
-    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
+    authMiddleWare(this.props.history);
+    const authToken = localStorage.getItem("AuthToken");
+    axios.defaults.headers.common = { Authorization: `${authToken}` };
     let surplusId = data.surplus.surplusId;
     axios
       .delete(`surplus/${surplusId}`)
       .then(() => {
-        window.location.reload();
+        this.reFetch();
         this.props.alert("success", "Surplus successfully deleted!");
       })
       .catch((err) => {
@@ -234,14 +289,19 @@ class Surplus extends Component {
       });
   }
 
+  /** Causes selected card to have hover styling applied */
+  handleSelect(data) {
+    this.setState({ selectedCard: data.surplus.surplusId });
+  }
+
   /**
-   * Takes a food bank object as an input and opens a dialog page to
-   * allow the user to update the attributes of the food bank object
-   * @param data A food bank object
+   * Takes a surplus object as an input and opens a dialog page to
+   * allow the user to update the attributes of the surplus object
+   * @param data A surplus object
    */
   handleEditClick(data) {
     this.setState({
-      // surplus state
+      // Surplus states
       surplusId: data.surplus.surplusId,
       produceId: data.surplus.produceId,
       produceName: data.surplus.produceName,
@@ -254,21 +314,21 @@ class Surplus extends Component {
       cost: data.surplus.cost,
       totalQuantityAvailable: data.surplus.totalQuantityAvailable,
       packagingType: data.surplus.packagingType,
-      // page state
+      // Page states
       buttonType: "Edit",
       open: true,
     });
   }
 
   /**
-   * Takes a food bank object as an input and opens a popup with all the
-   * information about the food bank (currently not being used -> will be
+   * Takes a surplus object as an input and opens a popup with all the
+   * information about the surplus (currently not being used -> will be
    * updated to show augmented information)
-   * @param data A food bank object
+   * @param data A surplus object
    */
   handleViewOpen(data) {
     this.setState({
-      // surplus state
+      // Surplus states
       surplusId: data.surplus.surplusId,
       produceId: data.surplus.produceId,
       produceName: data.surplus.produceName,
@@ -281,7 +341,7 @@ class Surplus extends Component {
       cost: data.surplus.cost,
       totalQuantityAvailable: data.surplus.totalQuantityAvailable,
       packagingType: data.surplus.packagingType,
-      // page state
+      // Page state
       viewOpen: true,
     });
   }
@@ -318,7 +378,7 @@ class Surplus extends Component {
     /** Set all states to generic value when opening a dialog page */
     const handleClickOpen = () => {
       this.setState({
-        // surplus state
+        // Surplus states
         surplusId: "",
         produceId: "",
         produceName: "",
@@ -331,32 +391,46 @@ class Surplus extends Component {
         cost: "",
         totalQuantityAvailable: "",
         packagingType: "",
-        // page state
+        // Page states
         buttonType: "",
         open: true,
       });
     };
 
     const handleViewClose = () => {
-      // page state
+      // Page state
       this.setState({ viewOpen: false });
     };
 
     const handleDialogClose = (event) => {
-      // page state
+      // Page state
       this.setState({ open: false });
     };
 
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          {this.state.uiLoading && <CardSkeletons classes={classes} />}
+          {this.state.uiLoading && (
+            <CardSkeletons
+              classes={classes}
+              noPadding={this.props.inDealStepper}
+            />
+          )}
         </main>
       );
     } else {
       return (
         <main className={classes.content}>
-          <div className={classes.toolbar} />
+          {this.props.inDealStepper && (
+            <Typography className={(classes.instructions, classes.formText)}>
+              Please select a Surplus Object that you would like to pair with a
+              Food Bank. If you would like to create a new Surplus Object, press
+              addition icon.
+            </Typography>
+          )}
+          <div
+            className={!this.props.inDealStepper ? classes.toolbar : undefined}
+          />
           <Fab
             color="primary"
             className={classes.floatingButton}
@@ -395,8 +469,7 @@ class Surplus extends Component {
                 farmId={this.state.originFarmId}
                 produceId={this.state.produceId}
                 surplusId={this.state.surplusId}
-                handleChange={this.handleChange}
-                handleAsyncChange={this.handleAsyncChange}
+                reFetch={this.reFetch}
               />
             </Container>
           </Dialog>
@@ -420,10 +493,18 @@ class Surplus extends Component {
               </Grid>
               {this.state.surplusObjects.map((surplus) => (
                 <Grid item xs={12}>
-                  <Card className={classes.root} variant="outlined">
+                  <Card
+                    className={classes.root}
+                    raised={surplus.surplusId === this.state.selectedCard}
+                    variant={
+                      surplus.surplusId === this.state.selectedCard
+                        ? "elevation"
+                        : "outlined"
+                    }
+                  >
                     <CardContent>
                       <Typography variant="h5" component="h2">
-                        {surplus.totalQuantityAvailable} lbs of
+                        {surplus.totalQuantityAvailable} lbs of{" "}
                         {surplus.produceName} from {surplus.originFarmName}
                       </Typography>
                       <Box
@@ -458,7 +539,7 @@ class Surplus extends Component {
                           <Typography variant="body2" component="p">
                             Type of Produce: {surplus.produceName}
                             <br />
-                            Total Quantity Available (lbs):
+                            Total Quantity Available (lbs):{" "}
                             {surplus.totalQuantityAvailable}
                             <br />
                             Cost (USD / lb): {surplus.cost}
@@ -467,27 +548,42 @@ class Surplus extends Component {
                       </Box>
                     </CardContent>
                     <CardActions>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleViewOpen({ surplus })}
-                      >
-                        View
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleEditClick({ surplus })}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleDelete({ surplus })}
-                      >
-                        Delete
-                      </Button>
+                      {!this.props.inDealStepper && (
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() => this.handleViewOpen({ surplus })}
+                        >
+                          View
+                        </Button>
+                      )}
+                      {!this.props.inDealStepper && (
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() => this.handleEditClick({ surplus })}
+                        >
+                          Edit
+                        </Button>
+                      )}
+                      {!this.props.inDealStepper && (
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() => this.handleDelete({ surplus })}
+                        >
+                          Delete
+                        </Button>
+                      )}
+                      {this.props.inDealStepper && (
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() => this.handleSelect({ surplus })}
+                        >
+                          Select
+                        </Button>
+                      )}
                     </CardActions>
                   </Card>
                 </Grid>
