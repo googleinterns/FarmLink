@@ -43,10 +43,7 @@ const {
   queryFoodBanksByDistance,
   queryFarmsByDistance,
   querySurplusByDistance,
-  queryFoodBanksByTravelTime,
-  queryFarmsByTravelTime,
-  querySurplusByTravelTime,
-} = require("./APIs/queries");
+} = require("./queries/distance");
 
 exports.api = functions.https.onRequest(app);
 
