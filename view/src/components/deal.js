@@ -378,38 +378,7 @@ class Deal extends Component {
                   />
                 </div>
               </Grid>
-              {/* TODO(andrewhojel): connect to CRUD and design custom deal cards
-              {this.state.deals.map((deal) => (
-                <Grid item xs={12}>
-                  <Card className={classes.root} variant="outlined">
-                    <CardContent>
-                    </CardContent>
-                    <CardActions>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleViewOpen({ deal })}
-                      >
-                        View
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleEditClick({ deal })}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleDelete({ deal })}
-                      >
-                        Delete
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))} */}
+              {/* TODO(andrewhojel): connect to CRUD and design custom deal cards */}
             </Grid>
           </Container>
 
