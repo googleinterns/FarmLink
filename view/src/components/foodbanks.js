@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 
 import Address from "../extras/address";
+import CardSkeletons from "../extras/skeleton";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -17,7 +17,6 @@ import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import Container from "@material-ui/core/Container";
 import CardActions from "@material-ui/core/CardActions";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import CardContent from "@material-ui/core/CardContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
@@ -31,11 +30,11 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import PropTypes from "prop-types";
 import MaskedInput from "react-text-mask";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
 
 import axios from "axios";
 import dayjs from "dayjs";
@@ -69,8 +68,8 @@ const styles = (theme) => ({
   },
   floatingButton: {
     position: "fixed",
-    bottom: "0px",
-    right: "0px",
+    bottom: "16px",
+    right: "16px",
   },
   form: {
     width: "calc(100% - 32px)",
@@ -88,14 +87,6 @@ const styles = (theme) => ({
   },
   pos: {
     marginBottom: "12px",
-  },
-  uiProgess: {
-    position: "fixed",
-    zIndex: "1000",
-    height: "32px",
-    width: "32px",
-    left: "50%",
-    top: "35%",
   },
   dialogStyle: {
     maxWidth: "50%",
@@ -216,6 +207,8 @@ class Foodbank extends Component {
       uiLoading: true,
       buttonType: "",
       viewOpen: false, // used for opening food banks view dialog
+      reloadCards: false,
+      selectedCard: "",
     };
 
     this.handleDelete = this.handleDelete.bind(this);
@@ -232,11 +225,6 @@ class Foodbank extends Component {
     this.setState({
       [event.target.name]: event.target.value,
     });
-  };
-
-  /** Used to uncheck and check the form checkboxes */
-  handleChecked = (name) => (event) => {
-    this.setState({ [name]: event.target.checked });
   };
 
   /** Used to update tags in form */
@@ -259,6 +247,34 @@ class Foodbank extends Component {
   };
 
   /** Returns the authentication token stored in local storage */
+  reFetch = () => {
+    this.setState({
+      uiLoading: true,
+      reLoadCards: true,
+      open: false,
+    });
+    this.reFetchSurplus();
+  };
+
+  /** Load in all of the current surplus when the component has mounted */
+  reFetchSurplus = () => {
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
+    axios
+      .get("/foodbanks")
+      .then((response) => {
+        this.setState({
+          foodbanks: response.data,
+          uiLoading: false,
+          reloadCards: false,
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        this.props.alert("error", "Error reloading in the foodbanks cards!");
+      });
+  };
+
+  /** Returns the authentication token stored in local storage */
   getAuth = () => {
     authMiddleWare(this.props.history);
     return localStorage.getItem("AuthToken");
@@ -277,6 +293,7 @@ class Foodbank extends Component {
       })
       .catch((err) => {
         console.error(err);
+        this.props.alert("error", "Error loading in the food banks!");
       });
   }
 
@@ -293,11 +310,21 @@ class Foodbank extends Component {
     axios
       .delete(`foodbanks/${foodbankId}`)
       .then(() => {
-        window.location.reload();
+        this.reFetch();
+        this.props.alert("success", "Food bank successfully deleted!");
       })
       .catch((err) => {
         console.error(err);
+        this.props.alert(
+          "error",
+          "An error occurred when attempting to delete the Food Bank!"
+        );
       });
+  }
+
+  /** Causes selected card to have hover styling applied */
+  handleSelect(data) {
+    this.setState({ selectedCard: data.surplus.surplusId });
   }
 
   /**
@@ -452,10 +479,23 @@ class Foodbank extends Component {
         .then(() => {
           // page state
           this.setState({ open: false });
-          window.location.reload();
+          const action =
+            this.state.buttonType === "Edit" ? " edited!" : " submitted!";
+          this.props.alert(
+            "success",
+            "Food Bank has been successfully" + action
+          );
+          this.reFetch();
         })
         .catch((error) => {
           // page state
+          const action = this.state.buttonType === "Edit" ? " edit" : " submit";
+          this.props.alert(
+            "error",
+            "An error has occured when attempting to " +
+              action +
+              " the Food Bank!"
+          );
           this.setState({ open: true, errors: error.response.data });
           console.error(error);
         });
@@ -474,25 +514,29 @@ class Foodbank extends Component {
     if (this.state.uiLoading === true) {
       return (
         <main className={classes.content}>
-          <div className={classes.toolbar} />
           {this.state.uiLoading && (
-            <CircularProgress size={150} className={classes.uiProgess} />
+            <CardSkeletons classes={classes} noPadding={this.props.inSurplus} />
           )}
         </main>
       );
     } else {
       return (
         <main className={classes.content}>
-          <div className={classes.toolbar} />
-
-          <IconButton
-            className={classes.floatingButton}
+          {this.props.inStepper && (
+            <Typography className={(classes.instructions, classes.formText)}>
+              Please select a Food Bank to send the Surplus to. If you would
+              like to create a new Food Bank, press the addition icon.
+            </Typography>
+          )}
+          <div className={this.props.main ? classes.toolbar : undefined} />
+          <Fab
             color="primary"
-            aria-label="Add Food Bank"
+            className={classes.floatingButton}
+            aria-label="Add Produce"
             onClick={handleAddClick}
           >
-            <AddCircleIcon style={{ fontSize: 60 }} />
-          </IconButton>
+            <AddIcon />
+          </Fab>
           <Dialog
             fullScreen
             open={open}
@@ -600,46 +644,61 @@ class Foodbank extends Component {
                     />
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.loadingDock}
-                          onChange={this.handleChecked("loadingDock")}
-                          value={"loadingDock"}
-                          name="loadingDock"
-                          color="primary"
-                        />
-                      }
-                      label="Loading Doc Present"
-                    />
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel htmlFor="outlined-age-native-simple">
+                        Loading Dock Present
+                      </InputLabel>
+                      <Select
+                        value={this.state.loadingDock}
+                        onChange={this.handleChange}
+                        label="Loading Dock Present"
+                        inputProps={{
+                          name: "loadingDock",
+                          id: "outlined-age-native-simple",
+                        }}
+                      >
+                        <MenuItem value={true}>Yes</MenuItem>
+                        <MenuItem value={false}>No</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.forklift}
-                          onChange={this.handleChecked("forklift")}
-                          value={"forklift"}
-                          name="forklift"
-                          color="primary"
-                        />
-                      }
-                      label="Forklift Present"
-                    />
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel htmlFor="outlined-age-native-simple">
+                        Forklift Present
+                      </InputLabel>
+                      <Select
+                        value={this.state.forklift}
+                        onChange={this.handleChange}
+                        label="Forklift Present"
+                        inputProps={{
+                          name: "forklift",
+                          id: "outlined-age-native-simple",
+                        }}
+                      >
+                        <MenuItem value={true}>Yes</MenuItem>
+                        <MenuItem value={false}>No</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={3}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={this.state.pallet}
-                          onChange={this.handleChecked("pallet")}
-                          value={"pallet"}
-                          name="pallet"
-                          color="primary"
-                        />
-                      }
-                      label="Pallet Present"
-                    />
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel htmlFor="outlined-age-native-simple">
+                        Pallet Present
+                      </InputLabel>
+                      <Select
+                        value={this.state.pallet}
+                        onChange={this.handleChange}
+                        label="Pallet Present"
+                        inputProps={{
+                          name: "pallet",
+                          id: "outlined-age-native-simple",
+                        }}
+                      >
+                        <MenuItem value={true}>Yes</MenuItem>
+                        <MenuItem value={false}>No</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Grid>
                   <Grid item xs={3}>
                     <TextField
@@ -690,7 +749,7 @@ class Foodbank extends Component {
                   <Grid item xs={12}>
                     <Autocomplete
                       multiple
-                      id="tags-filled"
+                      id="foodbankTags"
                       onChange={this.onTagsChange}
                       options={TAG_EXAMPLES.map((option) => option.title)}
                       defaultValue={[this.state.foodbankTags]}
@@ -734,7 +793,15 @@ class Foodbank extends Component {
               </Grid>
               {this.state.foodbanks.map((foodbank) => (
                 <Grid item xs={12}>
-                  <Card className={classes.root} variant="outlined">
+                  <Card
+                    className={classes.root}
+                    raised={foodbank.foodbankId === this.state.selectedCard}
+                    variant={
+                      foodbank.foodbankId === this.state.selectedCard
+                        ? "elevation"
+                        : "outlined"
+                    }
+                  >
                     <CardContent>
                       <Typography variant="h5" component="h2">
                         {foodbank.foodbankName}
@@ -825,27 +892,42 @@ class Foodbank extends Component {
                       </Box>
                     </CardContent>
                     <CardActions>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleViewOpen({ foodbank })}
-                      >
-                        View
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleEditClick({ foodbank })}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleDelete({ foodbank })}
-                      >
-                        Delete
-                      </Button>
+                      {!this.props.inStepper && (
+                        <Button
+                          size="small"
+                          color="primary" 
+                          onClick={() => this.handleViewOpen({ foodbank })}
+                        >
+                          View
+                        </Button>
+                      )}
+                      {!this.props.inStepper && (
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() => this.handleEditClick({ foodbank })}
+                        >
+                          Edit
+                        </Button>
+                      )}
+                      {!this.props.inStepper && (
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() => this.handleDelete({ foodbank })}
+                        >
+                          Delete
+                        </Button>
+                      )}
+                      {this.props.inStepper && (
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={() => this.handleSelect({ foodbank })}
+                        >
+                          Select
+                        </Button>
+                      )}
                     </CardActions>
                   </Card>
                 </Grid>
