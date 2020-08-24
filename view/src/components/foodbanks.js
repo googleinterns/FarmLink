@@ -130,6 +130,9 @@ const styles = (theme) => ({
   foodbankLocation: {
     maxWidth: "280px",
   },
+  formText: {
+    marginBottom: "16px",
+  },
 });
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -324,7 +327,7 @@ class Foodbank extends Component {
 
   /** Causes selected card to have hover styling applied */
   handleSelect(data) {
-    this.setState({ selectedCard: data.surplus.surplusId });
+    this.setState({ selectedCard: data.foodbank.foodbankId });
   }
 
   /**
@@ -528,7 +531,7 @@ class Foodbank extends Component {
               like to create a new Food Bank, press the addition icon.
             </Typography>
           )}
-          <div className={this.props.main ? classes.toolbar : undefined} />
+          <div className={!this.props.inStepper ? classes.toolbar : undefined} />
           <Fab
             color="primary"
             className={classes.floatingButton}

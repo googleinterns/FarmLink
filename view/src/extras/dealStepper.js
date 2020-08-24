@@ -42,9 +42,9 @@ export default function HorizontalLinearStepper(props) {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return <Surplus inSurplus={true} alert={props.alert} />;
+        return <Surplus inStepper={true} alert={props.alert} />;
       case 1:
-        return <FoodBanks inSurplus={true} alert={props.alert} />;
+        return <FoodBanks inStepper={true} alert={props.alert} />;
       case 2:
         return "deal form"; // <DealForm alert={props.alert} />;
       default:

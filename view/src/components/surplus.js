@@ -394,7 +394,7 @@ class Surplus extends Component {
           {this.state.uiLoading && (
             <CardSkeletons
               classes={classes}
-              noPadding={this.props.inDealStepper}
+              noPadding={this.props.inStepper}
             />
           )}
         </main>
@@ -402,7 +402,7 @@ class Surplus extends Component {
     } else {
       return (
         <main className={classes.content}>
-          {this.props.inDealStepper && (
+          {this.props.inStepper && (
             <Typography className={(classes.instructions, classes.formText)}>
               Please select a Surplus Object that you would like to pair with a
               Food Bank. If you would like to create a new Surplus Object, press
@@ -410,7 +410,7 @@ class Surplus extends Component {
             </Typography>
           )}
           <div
-            className={!this.props.inDealStepper ? classes.toolbar : undefined}
+            className={!this.props.inStepper ? classes.toolbar : undefined}
           />
           <Fab
             color="primary"
@@ -529,7 +529,7 @@ class Surplus extends Component {
                       </Box>
                     </CardContent>
                     <CardActions>
-                      {!this.props.inDealStepper && (
+                      {!this.props.inStepper && (
                         <Button
                           size="small"
                           color="primary"
@@ -538,7 +538,7 @@ class Surplus extends Component {
                           View
                         </Button>
                       )}
-                      {!this.props.inDealStepper && (
+                      {!this.props.inStepper && (
                         <Button
                           size="small"
                           color="primary"
@@ -547,7 +547,7 @@ class Surplus extends Component {
                           Edit
                         </Button>
                       )}
-                      {!this.props.inDealStepper && (
+                      {!this.props.inStepper && (
                         <Button
                           size="small"
                           color="primary"
@@ -556,7 +556,7 @@ class Surplus extends Component {
                           Delete
                         </Button>
                       )}
-                      {this.props.inDealStepper && (
+                      {this.props.inStepper && (
                         <Button
                           size="small"
                           color="primary"
