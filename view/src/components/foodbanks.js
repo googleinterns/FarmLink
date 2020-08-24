@@ -525,7 +525,7 @@ class Foodbank extends Component {
           {this.props.inStepper && (
             <Typography className={(classes.instructions, classes.formText)}>
               Please select a Food Bank to send the Surplus to. If you would
-              like to create a new Food Bank, press addition icon..
+              like to create a new Food Bank, press the addition icon.
             </Typography>
           )}
           <div className={this.props.main ? classes.toolbar : undefined} />
@@ -895,7 +895,7 @@ class Foodbank extends Component {
                       {!this.props.inStepper && (
                         <Button
                           size="small"
-                          color="primary"
+                          color="primary" 
                           onClick={() => this.handleViewOpen({ foodbank })}
                         >
                           View
@@ -905,7 +905,7 @@ class Foodbank extends Component {
                         <Button
                           size="small"
                           color="primary"
-                          onClick={() => this.handleEditClickOpen({ foodbank })}
+                          onClick={() => this.handleEditClick({ foodbank })}
                         >
                           Edit
                         </Button>
@@ -914,7 +914,7 @@ class Foodbank extends Component {
                         <Button
                           size="small"
                           color="primary"
-                          onClick={() => this.deleteTodoHandler({ foodbank })}
+                          onClick={() => this.handleDelete({ foodbank })}
                         >
                           Delete
                         </Button>
