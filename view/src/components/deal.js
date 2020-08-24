@@ -12,15 +12,11 @@ import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
 import Container from "@material-ui/core/Container";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
-import CardSkeletons from "../extras/skeleton";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import DealStepper from "../extras/dealStepper";
@@ -127,7 +123,6 @@ class Deal extends Component {
       // Deal states
       deals: "", // TODO(anrewhojel): connect all individual deal states
       // Page states
-      errors: [],
       open: false,
       uiLoading: true,
       buttonType: "",
@@ -247,7 +242,7 @@ class Deal extends Component {
 
     dayjs.extend(relativeTime);
     const { classes } = this.props;
-    const { open, errors, viewOpen } = this.state;
+    const { open, viewOpen } = this.state;
 
     /** Set states related to dialogue to generic value when opening */
     const handleAddClick = () => {

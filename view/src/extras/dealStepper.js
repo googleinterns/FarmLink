@@ -7,7 +7,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Surplus from "../components/surplus";
 import FoodBanks from "../components/foodbanks";
-import DealForm from "../extras/dealForm";
+//import DealForm from "../extras/dealForm";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,7 +46,7 @@ export default function HorizontalLinearStepper(props) {
       case 1:
         return <FoodBanks inSurplus={true} alert={props.alert} />;
       case 2:
-        return <DealForm alert={props.alert} />;
+        return "deal form"; // <DealForm alert={props.alert} />;
       default:
         return "Unknown step";
     }
@@ -81,9 +81,6 @@ export default function HorizontalLinearStepper(props) {
         {steps.map((label, index) => {
           const stepProps = {};
           const labelProps = {};
-          if (isStepSkipped(index)) {
-            stepProps.completed = false;
-          }
           return (
             <Step key={label} {...stepProps}>
               <StepLabel {...labelProps}>{label}</StepLabel>

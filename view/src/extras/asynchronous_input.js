@@ -21,14 +21,14 @@ export default function AsynchronousInput(props) {
   // determines whether or not to show loading circle
   const loading = open && options.length === 0;
 
-  /** Returns the authentication token stored in local storage */
-  const getAuth = () => {
-    authMiddleWare(props.history);
-    return localStorage.getItem("AuthToken");
-  };
-
   /** Asynchronously loads in the possible responses from props.target path */
   React.useEffect(() => {
+    /** Returns the authentication token stored in local storage */
+    const getAuth = () => {
+      authMiddleWare(props.history);
+      return localStorage.getItem("AuthToken");
+    };
+
     let active = true;
 
     if (!loading) {
@@ -52,7 +52,7 @@ export default function AsynchronousInput(props) {
     return () => {
       active = false;
     };
-  }, [loading]);
+  }, [loading, props.target, props.history]);
 
   React.useEffect(() => {
     if (!open) {

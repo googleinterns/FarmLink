@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import Address from "../extras/address";
+import Address from "../extras/address_autocomplete_field";
 import CardSkeletons from "../extras/skeleton";
 
 import withStyles from "@material-ui/core/styles/withStyles";
@@ -895,7 +895,7 @@ class Foodbank extends Component {
                       {!this.props.inStepper && (
                         <Button
                           size="small"
-                          color="primary" 
+                          color="primary"
                           onClick={() => this.handleViewOpen({ foodbank })}
                         >
                           View

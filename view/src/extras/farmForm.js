@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import Address from "../extras/address";
+import Address from "../extras/address_autocomplete_field";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";

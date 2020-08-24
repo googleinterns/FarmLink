@@ -126,24 +126,6 @@ const styles = (theme) => ({
   },
 });
 
-// Used as a placeholder since the CustomTable isn't connected to CRUD
-const tableData = {
-  columns: [
-    { title: "Role", field: "contactRole" },
-    { title: "Name", field: "contactName" },
-    { title: "Email", field: "contactEmail" },
-    { title: "Phone Number", field: "contactPhone" },
-  ],
-  data: [
-    {
-      contactRole: "Farm Manager",
-      contactName: "Jamie Doe",
-      contactEmail: "jamie@doe.com",
-      contactPhone: "(777)851-1234",
-    },
-  ],
-};
-
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -173,8 +155,7 @@ class Surplus extends Component {
       totalQuantityAvailable: "",
       packagingType: "",
       // Page state
-      errors: [],
-      open: false,  //  Used to open the edit / add dialog (form)
+      open: false, //  Used to open the edit / add dialog (form)
       uiLoading: true,
       buttonType: "",
       viewOpen: false, //  Used to open the view dialog
@@ -373,7 +354,7 @@ class Surplus extends Component {
 
     dayjs.extend(relativeTime);
     const { classes } = this.props;
-    const { open, errors, viewOpen } = this.state;
+    const { open, viewOpen } = this.state;
 
     /** Set all states to generic value when opening a dialog page */
     const handleClickOpen = () => {

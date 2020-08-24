@@ -164,9 +164,11 @@ class Home extends Component {
         return <Farms alert={this.alert} />;
       case "foodbanks":
         return <FoodBanks alert={this.alert} inStepper={false} />;
+      default:
+        console.error("Failed to load page");
+        this.alert("error", "Failed to load page!");
+        return undefined;
     }
-    console.error("Failed to load page");
-    this.alert("error", "Failed to load page!");
   };
 
   constructor(props) {
@@ -215,7 +217,7 @@ class Home extends Component {
         });
       })
       .catch((error) => {
-        if (error.response.status === 403) {
+        if (error.response && error.response.status === 403) {
           this.props.history.push("/login");
         }
         console.error(error);
