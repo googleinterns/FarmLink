@@ -159,11 +159,11 @@ class Home extends Component {
       case "produce":
         return <Produce alert={this.alert} />;
       case "surplus":
-        return <Surplus alert={this.alert} main={true} />;
+        return <Surplus alert={this.alert} inStepper={false} />;
       case "farms":
         return <Farms alert={this.alert} />;
       case "foodbanks":
-        return <FoodBanks alert={this.alert} main={true} />;
+        return <FoodBanks alert={this.alert} inStepper={false} />;
     }
     console.error("Failed to load page");
     this.alert("error", "Failed to load page!");
