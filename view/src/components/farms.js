@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Address from "../extras/address";
+import Address from "../extras/address_autocomplete_field";
 import CardSkeletons from "../extras/skeleton";
 import CustomTable from "../extras/table";
 

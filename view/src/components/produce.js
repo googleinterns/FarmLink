@@ -28,6 +28,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { authMiddleWare } from "../util/auth";
+import AddIcon from "@material-ui/icons/Add";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
@@ -530,15 +531,11 @@ class Produce extends Component {
           this.setState({ open: false });
           const action =
             this.state.buttonType === "Edit" ? " edited!" : " submitted!";
-          this.props.alert(
-            "success",
-            "Produce has been successfully" + action
-          );
+          this.props.alert("success", "Produce has been successfully" + action);
           window.location.reload();
         })
         .catch((error) => {
-          const action =
-            this.state.buttonType === "Edit" ? " edit" : " submit";
+          const action = this.state.buttonType === "Edit" ? " edit" : " submit";
           this.props.alert(
             "error",
             "An error has occured when attempting to " +
