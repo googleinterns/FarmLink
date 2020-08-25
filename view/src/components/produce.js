@@ -329,7 +329,7 @@ class Produce extends Component {
             <Typography className={classes.heading}>Filter by Tags</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            {/* Skeleton to add tag filtering */}
+            {/* TODO(fatimazali): Add tag filtering) */}
             <Typography>Select tags to filter by:</Typography>
           </AccordionDetails>
         </Accordion>
