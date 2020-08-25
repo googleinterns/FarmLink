@@ -28,6 +28,10 @@ import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { authMiddleWare } from "../util/auth";
+import Accordion from "@material-ui/core/Accordion";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 const styles = (theme) => ({
   content: {
@@ -68,7 +72,7 @@ const styles = (theme) => ({
     margin: "0 2px",
     transform: "scale(0.8)",
   },
-  pos: {
+  position: {
     marginBottom: 12,
   },
   uiProgress: {
@@ -279,6 +283,66 @@ class Produce extends Component {
     return this.state.value;
   };
 
+  filteringAccordion = () => {
+    const { classes } = this.props;
+    const { data, value } = this.state;
+
+    return (
+      <div>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography className={classes.heading}>Search by Name</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Autocomplete
+              id="produce-name-search"
+              options={data.map((produce) => produce.name)}
+              value={value}
+              onSelect={this.handleSearch}  // Receive the name from data element for value
+              fullWidth={true}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Produce Names"
+                  variant="outlined"
+                  onChange={this.handleSearch}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel2a-content"
+            id="panel2a-header"
+          >
+            <Typography className={classes.heading}>Filter by Tags</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {/* TODO(fatimazali): Add tag filtering) */}
+            <Typography>Select tags to filter by:</Typography>
+          </AccordionDetails>
+        </Accordion>
+      </div>
+    );
+  };
+
   // Handles the rendering of filtered produce results into React cards
   handleResultsRender = (results) => {
     const { classes } = this.props;
@@ -300,7 +364,10 @@ class Produce extends Component {
                     margin={0}
                   >
                     <Box padding={3}>
-                      <Typography className={classes.pos} color="textSecondary">
+                      <Typography
+                        className={classes.position}
+                        color="textSecondary"
+                      >
                         Shipping Temperatures in Reefer (°F):
                       </Typography>
                       <Typography variant="body2" component="p">
@@ -312,7 +379,10 @@ class Produce extends Component {
                       </Typography>
                     </Box>
                     <Box padding={3}>
-                      <Typography className={classes.pos} color="textSecondary">
+                      <Typography
+                        className={classes.position}
+                        color="textSecondary"
+                      >
                         Pricing (in USD / lb):
                       </Typography>
                       <Typography variant="body2" component="p">
@@ -322,7 +392,10 @@ class Produce extends Component {
                       </Typography>
                     </Box>
                     <Box padding={3}>
-                      <Typography className={classes.pos} color="textSecondary">
+                      <Typography
+                        className={classes.position}
+                        color="textSecondary"
+                      >
                         Internal Statistics:
                       </Typography>
                       <Typography variant="body2" component="p">
@@ -687,32 +760,7 @@ class Produce extends Component {
           <Container maxWidth="lg">
             <Grid container spacing={2} alignItem="center">
               <Grid item xs={12}>
-                <Autocomplete
-                  id="produce-name-search"
-                  options={data.map((produce) => produce.name)}
-                  value={value}
-                  onSelect={this.handleSearch} // Receive the name from data element for value
-                  fullWidth={true}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Search by produce name"
-                      variant="outlined"
-                      onChange={this.handleSearch}
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <>
-                            <InputAdornment position="start">
-                              <SearchIcon />
-                            </InputAdornment>
-                            {params.InputProps.startAdornment}
-                          </>
-                        ),
-                      }}
-                    />
-                  )}
-                />
+                {this.filteringAccordion()}
               </Grid>
             </Grid>
             <SearchResults
@@ -740,7 +788,10 @@ class Produce extends Component {
                 margin={0}
               >
                 <Box padding={3}>
-                  <Typography className={classes.pos} color="textSecondary">
+                  <Typography
+                    className={classes.position}
+                    color="textSecondary"
+                  >
                     Shipping Temperatures in Reefer (°F):
                   </Typography>
                   <Typography variant="body2" component="p">
@@ -753,7 +804,10 @@ class Produce extends Component {
                   </Typography>
                 </Box>
                 <Box padding={3}>
-                  <Typography className={classes.pos} color="textSecondary">
+                  <Typography
+                    className={classes.position}
+                    color="textSecondary"
+                  >
                     Internal Statistics:
                   </Typography>
                   <Typography variant="body2" component="p">
