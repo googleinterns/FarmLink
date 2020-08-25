@@ -46,7 +46,7 @@ export default function HorizontalLinearStepper(props) {
       case 1:
         return <FoodBanks inStepper={true} alert={props.alert} />;
       case 2:
-        return "deal form"; // <DealForm alert={props.alert} />;
+        return undefined; // <DealForm alert={props.alert} />;
       default:
         return "Unknown step";
     }
