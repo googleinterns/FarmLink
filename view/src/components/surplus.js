@@ -126,24 +126,6 @@ const styles = (theme) => ({
   },
 });
 
-// Used as a placeholder since the CustomTable isn't connected to CRUD
-const tableData = {
-  columns: [
-    { title: "Role", field: "contactRole" },
-    { title: "Name", field: "contactName" },
-    { title: "Email", field: "contactEmail" },
-    { title: "Phone Number", field: "contactPhone" },
-  ],
-  data: [
-    {
-      contactRole: "Farm Manager",
-      contactName: "Jamie Doe",
-      contactEmail: "jamie@doe.com",
-      contactPhone: "(777)851-1234",
-    },
-  ],
-};
-
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -173,8 +155,7 @@ class Surplus extends Component {
       totalQuantityAvailable: "",
       packagingType: "",
       // Page state
-      errors: [],
-      open: false,  //  Used to open the edit / add dialog (form)
+      open: false, //  Used to open the edit / add dialog (form)
       uiLoading: true,
       buttonType: "",
       viewOpen: false, //  Used to open the view dialog
@@ -373,7 +354,7 @@ class Surplus extends Component {
 
     dayjs.extend(relativeTime);
     const { classes } = this.props;
-    const { open, errors, viewOpen } = this.state;
+    const { open, viewOpen } = this.state;
 
     /** Set all states to generic value when opening a dialog page */
     const handleClickOpen = () => {
@@ -413,7 +394,7 @@ class Surplus extends Component {
           {this.state.uiLoading && (
             <CardSkeletons
               classes={classes}
-              noPadding={this.props.inDealStepper}
+              noPadding={this.props.inStepper}
             />
           )}
         </main>
@@ -421,7 +402,7 @@ class Surplus extends Component {
     } else {
       return (
         <main className={classes.content}>
-          {this.props.inDealStepper && (
+          {this.props.inStepper && (
             <Typography className={(classes.instructions, classes.formText)}>
               Please select a Surplus Object that you would like to pair with a
               Food Bank. If you would like to create a new Surplus Object, press
@@ -429,7 +410,7 @@ class Surplus extends Component {
             </Typography>
           )}
           <div
-            className={!this.props.inDealStepper ? classes.toolbar : undefined}
+            className={!this.props.inStepper ? classes.toolbar : undefined}
           />
           <Fab
             color="primary"
@@ -548,7 +529,7 @@ class Surplus extends Component {
                       </Box>
                     </CardContent>
                     <CardActions>
-                      {!this.props.inDealStepper && (
+                      {!this.props.inStepper && (
                         <Button
                           size="small"
                           color="primary"
@@ -557,7 +538,7 @@ class Surplus extends Component {
                           View
                         </Button>
                       )}
-                      {!this.props.inDealStepper && (
+                      {!this.props.inStepper && (
                         <Button
                           size="small"
                           color="primary"
@@ -566,7 +547,7 @@ class Surplus extends Component {
                           Edit
                         </Button>
                       )}
-                      {!this.props.inDealStepper && (
+                      {!this.props.inStepper && (
                         <Button
                           size="small"
                           color="primary"
@@ -575,7 +556,7 @@ class Surplus extends Component {
                           Delete
                         </Button>
                       )}
-                      {this.props.inDealStepper && (
+                      {this.props.inStepper && (
                         <Button
                           size="small"
                           color="primary"

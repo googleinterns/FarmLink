@@ -60,6 +60,9 @@ const styles = (theme) => ({
     flexShrink: "0px",
     flexGrow: "0px",
     marginTop: "20px",
+    display: "block",
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   uiProgess: {
     position: "fixed",
@@ -133,7 +136,7 @@ class Home extends Component {
   };
 
   /** Loads the page with the provided name (and stores it in local storage to remember post page reload) */
-  loadPage = (name) => {
+  loadPage = (event, name) => {
     localStorage.setItem("toRender", name);
     this.setState({ toRender: name });
   };
@@ -164,9 +167,11 @@ class Home extends Component {
         return <Farms alert={this.alert} />;
       case "foodbanks":
         return <FoodBanks alert={this.alert} inStepper={false} />;
+      default:
+        console.error("Failed to load page");
+        this.alert("error", "Failed to load page!");
+        return undefined;
     }
-    console.error("Failed to load page");
-    this.alert("error", "Failed to load page!");
   };
 
   constructor(props) {
@@ -268,7 +273,9 @@ class Home extends Component {
                 button
                 className={this.isSelected("farms") && classes.selected}
                 key="Farms"
-                onClick={this.loadPage("farms")}
+                onClick={(e) => {
+                  this.loadPage(e, "farms");
+                }}
               >
                 <ListItemIcon>
                   <NatureIcon
@@ -278,10 +285,12 @@ class Home extends Component {
                 <ListItemText primary="Farms" />
               </ListItem>
               <ListItem
-                button
                 className={this.isSelected("foodbanks") && classes.selected}
+                button
                 key="Food Banks"
-                onClick={this.loadPage("foodbanks")}
+                onClick={(e) => {
+                  this.loadPage(e, "foodbanks");
+                }}
               >
                 <ListItemIcon>
                   <BankIcon
@@ -296,7 +305,9 @@ class Home extends Component {
                 button
                 className={this.isSelected("deals") && classes.selected}
                 key="Deals"
-                onClick={this.loadPage("deals")}
+                onClick={(e) => {
+                  this.loadPage(e, "deals");
+                }}
               >
                 <ListItemIcon>
                   <DealIcon
@@ -309,7 +320,9 @@ class Home extends Component {
                 button
                 className={this.isSelected("surplus") && classes.selected}
                 key="Surplus"
-                onClick={this.loadPage("surplus")}
+                onClick={(e) => {
+                  this.loadPage(e, "surplus");
+                }}
               >
                 <ListItemIcon>
                   <ChartIcon
@@ -324,7 +337,9 @@ class Home extends Component {
                 button
                 className={this.isSelected("produce") && classes.selected}
                 key="Produce"
-                onClick={this.loadPage("produce")}
+                onClick={(e) => {
+                  this.loadPage(e, "produce");
+                }}
               >
                 <ListItemIcon>
                   <EcoIcon
@@ -339,7 +354,9 @@ class Home extends Component {
                 button
                 className={this.isSelected("account") && classes.selected}
                 key="Account"
-                onClick={this.loadPage("account")}
+                onClick={(e) => {
+                  this.loadPage(e, "account");
+                }}
               >
                 <ListItemIcon>
                   <AccountBoxIcon

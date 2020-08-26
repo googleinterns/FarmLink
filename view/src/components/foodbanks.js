@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import Address from "../extras/address";
+import Address from "../extras/address_autocomplete_field";
 import CardSkeletons from "../extras/skeleton";
 
 import withStyles from "@material-ui/core/styles/withStyles";
@@ -129,6 +129,9 @@ const styles = (theme) => ({
   },
   foodbankLocation: {
     maxWidth: "280px",
+  },
+  formText: {
+    marginBottom: "16px",
   },
 });
 
@@ -324,7 +327,7 @@ class Foodbank extends Component {
 
   /** Causes selected card to have hover styling applied */
   handleSelect(data) {
-    this.setState({ selectedCard: data.surplus.surplusId });
+    this.setState({ selectedCard: data.foodbank.foodbankId });
   }
 
   /**
@@ -528,7 +531,7 @@ class Foodbank extends Component {
               like to create a new Food Bank, press the addition icon.
             </Typography>
           )}
-          <div className={this.props.main ? classes.toolbar : undefined} />
+          <div className={!this.props.inStepper ? classes.toolbar : undefined} />
           <Fab
             color="primary"
             className={classes.floatingButton}
@@ -895,7 +898,7 @@ class Foodbank extends Component {
                       {!this.props.inStepper && (
                         <Button
                           size="small"
-                          color="primary" 
+                          color="primary"
                           onClick={() => this.handleViewOpen({ foodbank })}
                         >
                           View
