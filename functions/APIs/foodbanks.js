@@ -1,3 +1,6 @@
+const express = require("express");
+const foodbanksRoute = express.Router();
+const auth = require("../util/auth");
 const { db } = require("../util/admin");
 
 /*
@@ -5,7 +8,7 @@ read a list of all food banks
 GET /foodbanks
 success response: array of food bank objects (documented in POST /foodbanks)
 */
-exports.getAllFoodBanks = (request, response) => {
+foodbanksRoute.get("/", auth, (req, res) => {
   db.collection("foodbanks")
     .get()
     .then((data) => {
@@ -25,30 +28,30 @@ exports.getAllFoodBanks = (request, response) => {
           foodbankTags: doc.data().foodbankTags,
         });
       });
-      return response.json(foodbanks);
+      return res.json(foodbanks);
     })
     .catch((err) => {
       console.log(err);
-      return response.status(500).json({ error: err.code });
+      return res.status(500).json({ error: err.code });
     });
-};
+});
 
 /*
 read a specific food bank
 GET /foodbanks/:id
 success response: food bank object (documented in POST /foodbanks)
 */
-exports.getOneFoodBank = (request, response) => {
-  db.doc(`/foodbanks/${request.params.foodbankId}`)
+foodbanksRoute.get("/:id", auth, (req, res) => {
+  db.doc(`/foodbanks/${req.params.foodbankId}`)
     .get()
     .then((doc) => {
-      return response.json(doc.data());
+      return res.json(doc.data());
     })
     .catch((err) => {
       console.log(err);
-      return response.status(500).json({ error: err.code });
+      return res.status(500).json({ error: err.code });
     });
-};
+});
 
 /*
 create a new food bank
@@ -68,74 +71,76 @@ data params:
 }
 success response: food bank object (documented in POST /foodbanks)
 */
-exports.postOneFoodBank = (request, response) => {
+foodbanksRoute.post("/", auth, (req, res) => {
   const newFoodBankItem = {
-    foodbankName: request.body.foodbankName,
-    location: request.body.location,
-    hours: request.body.hours,
-    contacts: request.body.contacts,
-    forklift: request.body.forklift === "true",
-    pallet: request.body.pallet === "true",
-    loadingDock: request.body.loadingDock === "true",
-    maxLoadSize: parseFloat(request.body.maxLoadSize),
+    foodbankName: req.body.foodbankName,
+    location: req.body.location,
+    hours: req.body.hours,
+    contacts: req.body.contacts,
+    forklift: req.body.forklift === "true",
+    pallet: req.body.pallet === "true",
+    loadingDock: req.body.loadingDock === "true",
+    maxLoadSize: parseFloat(req.body.maxLoadSize),
     refrigerationSpaceAvailable: parseFloat(
-      request.body.refrigerationSpaceAvailable
+      req.body.refrigerationSpaceAvailable
     ),
-    foodbankTags: request.body.foodbankTags,
+    foodbankTags: req.body.foodbankTags,
   };
   db.collection("foodbanks")
     .add(newFoodBankItem)
     .then((doc) => {
-      let responseFoodBankItem = newFoodBankItem;
-      responseFoodBankItem.id = doc.id;
-      return response.json(responseFoodBankItem);
+      let resFoodBankItem = newFoodBankItem;
+      resFoodBankItem.id = doc.id;
+      return res.json(resFoodBankItem);
     })
     .catch((err) => {
       console.log(err);
-      return response.status(500).json({ error: err.code });
+      return res.status(500).json({ error: err.code });
     });
-};
+});
 
 /*
 delete a specific food bank
 DELETE /foodbanks/:id
-success response: {message: 'Delete successfull'}
+success response: {message: 'Delete successfully'}
 */
-exports.deleteFoodBank = (request, response) => {
-  const document = db.doc(`/foodbanks/${request.params.foodbankId}`);
+foodbanksRoute.delete("/:id", auth, (req, res) => {
+  const document = db.doc(`/foodbanks/${req.params.foodbankId}`);
   document
     .get()
     .then((doc) => {
       if (!doc.exists) {
-        return response
+        return res
           .status(404)
           .json({ error: "FoodBank Object not found" });
       }
       return document.delete();
     })
     .then(() => {
-      response.json({ message: "Delete successfull" });
+      res.json({ message: "Delete successfully" });
     })
     .catch((err) => {
       console.log(err);
-      return response.status(500).json({ error: err.code });
+      return res.status(500).json({ error: err.code });
     });
-};
+});
 
 /*
 update a specific food bank
 PUT /foodbanks/:id
 success response: {message: 'Updated successfully'}
 */
-exports.editFoodBank = (request, response) => {
-  let document = db.collection("foodbanks").doc(`${request.params.foodbankId}`);
+foodbanksRoute.put("/:id", auth, (req, res) => {
+  let document = db.collection("foodbanks").doc(`${req.params.foodbankId}`);
   document
-    .update(request.body)
+    .update(req.body)
     .then(() => {
-      response.json({ message: "Updated successfully" });
+      res.json({ message: "Updated successfully" });
     })
     .catch((err) => {
       console.log(err);
-      return response.status(500).json({ error: err.code });
+      return res.status(500).json({ error: err.code });
     });
-};
+});
+
+module.exports = foodbanksRoute;
