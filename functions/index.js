@@ -6,6 +6,7 @@ const farmsRoute = require("./APIs/farms");
 const foodbanksRoute = require("./APIs/foodbanks");
 const surplusRoute = require("./APIs/surplus");
 const dealsRoute = require("./APIs/deals");
+const distanceQueriesRoute = require("./queries/distance");
 const app = express();
 
 app.use("/", authRoute);
@@ -14,5 +15,6 @@ app.use("/farms", farmsRoute);
 app.use("/foodbanks", foodbanksRoute);
 app.use("/surplus", surplusRoute);
 app.use("/deals", dealsRoute);
+app.use("/", distanceQueriesRoute);
 
 exports.api = functions.https.onRequest(app);

@@ -1,21 +1,24 @@
+const express = require("express");
+const distanceQueriesRoute = express.Router();
+const auth = require("../util/auth");
 const { db } = require('../util/admin');
 const axios = require('axios');
 const _ = require('lodash');
 require('dotenv').config();
 
 //calculate distances between farms and food banks
-function calculateDistances(data, request) {
+function calculateDistances(data, req) {
     return new Promise(function(resolve, reject) {
         const url = new URL("https://maps.googleapis.com/maps/api/distancematrix/json");
         url.searchParams.set("units", "imperial");
-        url.searchParams.set("origins", `place_id:${request.query.locationId}`);
+        url.searchParams.set("origins", `place_id:${req.query.locationId}`);
         url.searchParams.set("destinations", `place_id:${data.locationId}`);
         url.searchParams.set("key", process.env.API_KEY);
         axios.get(url.href)
-        .then((response) => {
-            let distanceValue = response.data.rows[0].elements[0].distance.value;
-            let distanceText = response.data.rows[0].elements[0].distance.text;
-            if (parseInt(distanceText.split(" ")[0].replace(/,/g, "")) < parseInt(request.query.distance)) {
+        .then((res) => {
+            let distanceValue = res.data.rows[0].elements[0].distance.value;
+            let distanceText = res.data.rows[0].elements[0].distance.text;
+            if (parseInt(distanceText.split(" ")[0].replace(/,/g, "")) < parseInt(req.query.distance)) {
                 data["distanceValue"] = distanceValue;
                 data["distanceText"] = distanceText;
                 resolve(data);
@@ -36,7 +39,7 @@ GET /queryFoodBanksByDistance
 URL params: locationId, distance (miles)
 success response: array of food bank objects
 */
-exports.queryFoodBanksByDistance = (request, response) => {
+distanceQueriesRoute.get("/queryFoodBanksByDistance", auth, (req, res) => {
     db.collection('foodbanks').get()
     .then((data) => {
         let foodbanks = [];
@@ -45,12 +48,12 @@ exports.queryFoodBanksByDistance = (request, response) => {
         });
 
         Promise.all(foodbanks.map(function(foodbank) {
-            return calculateDistances(foodbank, request);
+            return calculateDistances(foodbank, req);
         }))
         .then((results) => {
             results = results.filter(result => result != null);
             results = _.orderBy(results, ["distanceValue"]);
-            return response.json(results);
+            return res.json(results);
         })
         .catch((err) => {
             console.log(err);
@@ -58,9 +61,9 @@ exports.queryFoodBanksByDistance = (request, response) => {
     })
     .catch((err) => {
         console.log(err);
-        return response.status(500).json({error: err.code});
+        return res.status(500).json({error: err.code});
     });
-}
+});
 
 /*
 find farms that are a specific distance from a food bank
@@ -68,7 +71,7 @@ GET /queryFarmsByDistance
 URL params: locationId, distance (miles)
 success response: array of farm objects
 */
-exports.queryFarmsByDistance = (request, response) => {
+distanceQueriesRoute.get("/queryFarmsByDistance", auth, (req, res) => {
     db.collection('farms').get()
     .then((data) => {
         let farms = [];
@@ -77,12 +80,12 @@ exports.queryFarmsByDistance = (request, response) => {
         });
 
         Promise.all(farms.map(function(farm) {
-            return calculateDistances(farm, request);
+            return calculateDistances(farm, req);
         }))
         .then((results) => {
             results = results.filter(result => result != null);
             results = _.orderBy(results, ["distanceValue"]);
-            return response.json(results);
+            return res.json(results);
         })
         .catch((err) => {
             console.log(err);
@@ -90,9 +93,9 @@ exports.queryFarmsByDistance = (request, response) => {
     })
     .catch((err) => {
         console.log(err);
-        return response.status(500).json({error: err.code});
+        return res.status(500).json({error: err.code});
     });
-}
+});
 
 /*
 find farms with surplus that are a specific distance from a food bank
@@ -100,7 +103,7 @@ GET /querySurplusByDistance
 URL params: locationId, distance (miles)
 success response: array of surplus objects
 */
-exports.querySurplusByDistance = (request, response) => {
+distanceQueriesRoute.get("/querySurplusByDistance", auth, (req, res) => {
     db.collection('surplus').get()
     .then((data) => {
         let surplus = [];
@@ -128,12 +131,12 @@ exports.querySurplusByDistance = (request, response) => {
         Promise.all(surplus.map(queryFarms))
         .then((results) => {
             Promise.all(results.map(function(result) {
-                return calculateDistances(result, request);
+                return calculateDistances(result, req);
             }))
             .then((results) => {
                 results = results.filter(result => result != null);
                 results = _.orderBy(results, ["distanceValue"]);
-                return response.json(results);
+                return res.json(results);
             })
             .catch((err) => {
                 console.log(err);
@@ -145,6 +148,8 @@ exports.querySurplusByDistance = (request, response) => {
     })
     .catch((err) => {
         console.log(err);
-        return response.status(500).json({error: err.code});
+        return res.status(500).json({error: err.code});
     });
-}
+});
+
+module.exports = distanceQueriesRoute;
