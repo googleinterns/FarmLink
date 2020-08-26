@@ -20,12 +20,13 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
-import InputBase from "@material-ui/core/InputBase";
 import Chip from "@material-ui/core/Chip";
 import SearchIcon from "@material-ui/icons/Search";
+import SearchResults from "react-filter-search";
 import Box from "@material-ui/core/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import InputLabel from "@material-ui/core/InputLabel";
+import InputAdornment from "@material-ui/core/InputAdornment";
 import FormControl from "@material-ui/core/FormControl";
 import PropTypes from "prop-types";
 import MaskedInput from "react-text-mask";
@@ -33,7 +34,6 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
 import AddIcon from "@material-ui/icons/Add";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
@@ -215,6 +215,9 @@ class Farms extends Component {
     super(props);
 
     this.state = {
+      // Search states
+      data: "",
+      value: "",
       // Farm states
       farms: "",
       farmName: "",
@@ -240,6 +243,8 @@ class Farms extends Component {
     this.handleDelete = this.handleDelete.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+    this.handleResultsRender = this.handleResultsRender.bind(this);
   }
 
   /**
@@ -287,7 +292,7 @@ class Farms extends Component {
       .then((response) => {
         this.setState({
           // Farm state
-          farms: response.data,
+          data: response.data,
           // Page state
           uiLoading: false,
         });
@@ -369,6 +374,219 @@ class Farms extends Component {
     });
   }
 
+  // Updates the string that the produce array will be searched for.
+  // This string value can contain any produce field (name, weight, internal
+  // shipment numbers) and will still return
+  // the appropriate filtered results.
+  handleSearch = (event) => {
+    const { value } = event.target;
+    this.setState({ value });
+  };
+
+  // Returns the accordion menu that houses all search and filtering options
+  filteringAccordion = () => {
+    const { classes } = this.props;
+    const { data, value } = this.state;
+
+    return (
+      <div>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography className={classes.heading}>Search by Name</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Autocomplete
+              id="produce-name-search"
+              options={data.map((produce) => produce.farmName)}
+              value={value}
+              onSelect={this.handleSearch} // Receive the name from data element for value
+              fullWidth={true}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Farm Names"
+                  variant="outlined"
+                  onChange={this.handleSearch}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography className={classes.heading}>
+              Search by Location
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Autocomplete
+              id="produce-name-search2"
+              options={data.map((produce) => produce.location)}
+              value={value}
+              onSelect={this.handleSearch} // Receive the name from data element for value
+              fullWidth={true}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Farm Locations"
+                  variant="outlined"
+                  onChange={this.handleSearch}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel2a-content"
+            id="panel2a-header"
+          >
+            <Typography className={classes.heading}>
+              Find Farms within Custom Distance of a Location | Driving Hours or
+              Miles
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {/* Skeleton to add location search */}
+            <Typography>Select tags to filter by:</Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel2a-content"
+            id="panel2a-header"
+          >
+            <Typography className={classes.heading}>Filter by Tags</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {/* Skeleton to add tag filtering */}
+            <Typography>Select tags to filter by:</Typography>
+          </AccordionDetails>
+        </Accordion>
+      </div>
+    );
+  };
+
+  // Handles the rendering of filtered produce results into React cards
+  handleResultsRender = (results) => {
+    const { classes } = this.props;
+    return (
+      <div>
+        <Grid container spacing={2} alignItem="center">
+          {results.map((farm) => (
+            <Grid item xs={12} key={farm.farmId}>
+              <Card className={classes.root} variant="outlined">
+                <CardContent>
+                  <Typography variant="h5" component="h2">
+                    {farm.farmName}
+                  </Typography>
+                  {farm.farmTags.map((tag) => (
+                    <Chip className={classes.chip} label={tag} size="small" />
+                  ))}
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    flexWrap="wrap"
+                    p={0}
+                    m={0}
+                  >
+                    <Box p={3}>
+                      <Typography className={classes.pos} color="textSecondary">
+                        Details:
+                      </Typography>
+                      <Typography variant="body2" component="p">
+                        Location of Farm: {`${farm.location.substring(0, 30)}`}
+                        <br />
+                        {`${farm.location.substring(30, 78)}`}
+                      </Typography>
+                    </Box>
+                    <Box p={3}>
+                      <Typography className={classes.pos} color="textSecondary">
+                        Point of Contact:
+                      </Typography>
+                      <Typography variant="body2" component="p">
+                        Name: {farm.contactName}
+                        <br />
+                        Phone: {farm.contactPhone}
+                        <br />
+                        Email: {farm.contactEmail}
+                      </Typography>
+                    </Box>
+                    <Box p={3}>
+                      <Typography className={classes.pos} color="textSecondary">
+                        Logistics:
+                      </Typography>
+                      <Typography variant="body2" component="p">
+                        Have Transportation Means:{" "}
+                        {farm.transportation ? "yes" : "no"}
+                        <br />
+                        Loading Dock: {farm.loadingDock ? "yes" : "no"}
+                        <br />
+                        Forklift: {farm.forklift ? "yes" : "no"}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+                <CardActions>
+                  {/* <Button size="small" color="primary" onClick={() => this.handleViewOpen({ farm })}>
+                                                {" "}
+                                                View{" "}
+                                            </Button> */}
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => this.handleEditClickOpen({ farm })}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => this.deleteTodoHandler({ farm })}
+                  >
+                    Delete
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </div>
+    );
+  };
+
   render() {
     const DialogTitle = withStyles(styles)((props) => {
       const { children, classes, onClose, ...other } = props;
@@ -397,6 +615,7 @@ class Farms extends Component {
     dayjs.extend(relativeTime);
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
+    const { data, value } = this.state;
 
     /** Set all states to generic value when opening a dialog page */
     const handleAddClick = () => {
@@ -701,110 +920,14 @@ class Farms extends Component {
           <Container maxWidth="lg">
             <Grid container spacing={2} alignItem="center">
               <Grid item xs={12}>
-                <div className={classes.search}>
-                  <div className={classes.searchIcon}>
-                    <SearchIcon />
-                  </div>
-                  <InputBase
-                    fullWidth={true}
-                    placeholder="Search…"
-                    classes={{
-                      root: classes.inputRoot,
-                      input: classes.inputInput,
-                    }}
-                    inputProps={{ "aria-label": "search" }}
-                  />
-                </div>
+                {this.filteringAccordion()}
               </Grid>
-              {this.state.farms.map((farm) => (
-                <Grid item xs={12}>
-                  <Card className={classes.root} variant="outlined">
-                    <CardContent>
-                      <Typography variant="h5" component="h2">
-                        {farm.farmName}
-                      </Typography>
-                      {farm.farmTags.map((tag) => (
-                        <Chip
-                          className={classes.chip}
-                          label={tag}
-                          size="small"
-                        />
-                      ))}
-                      <Box
-                        display="flex"
-                        flexDirection="row"
-                        flexWrap="wrap"
-                        p={0}
-                        m={0}
-                      >
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Details:
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            component="p"
-                            className={classes.farmLocation}
-                          >
-                            Location of Farm: {farm.location}
-                          </Typography>
-                        </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Point of Contact:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Name: {farm.contactName}
-                            <br />
-                            Phone: {farm.contactPhone}
-                            <br />
-                            Email: {farm.contactEmail}
-                          </Typography>
-                        </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Logistics:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Have Transportation Means:
-                            {farm.transportation ? "yes" : "no"}
-                            <br />
-                            Loading Dock: {farm.loadingDock ? "yes" : "no"}
-                            <br />
-                            Forklift: {farm.forklift ? "yes" : "no"}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                    <CardActions>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleEditClick({ farm })}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleDelete({ farm })}
-                      >
-                        Delete
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
             </Grid>
+            <SearchResults
+              value={value}
+              data={data}
+              renderResults={this.handleResultsRender}
+            />
           </Container>
 
           <Dialog
