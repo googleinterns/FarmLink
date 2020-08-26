@@ -5,6 +5,13 @@ import Button from "@material-ui/core/Button";
 
 import axios from "axios";
 
+/*
+The filters component is used to search farms, food banks, and surplus or suggest a match between a farm and a food bank when making a deal.
+When the user fills out the filter fields, the queries are used to find food banks that are close to a farm, find farms that are close to a food bank, and find farms with surplus that are close to a food bank.
+<Filters database="foodbanks"> adds the filters component to the food banks page.
+<Filters database="farms"> adds the filters component to the farms page.
+<Filters database="surplus"> adds the filters component to the surplus page.
+*/
 class Filters extends Component {
     constructor(props) {
         super(props);
@@ -38,7 +45,10 @@ class Filters extends Component {
                 url = "/querySurplusByDistance";
                 break;
         }
-        url += `?locationId=${this.state.locationId}&distance=${this.state.distance}`;
+        url += "?";
+        url += `locationId=${this.state.locationId}`;
+        url += "&";
+        url += `distance=${this.state.distance}`;
         axios.get(url)
         .then(res => {
             this.setState({results: res.data});
@@ -58,7 +68,14 @@ class Filters extends Component {
             url = "/querySurplusByTravelTime";
             break;
         }
-        url += `?locationId=${this.state.locationId}&days=${this.state.days}&hours=${this.state.hours}&minutes=${this.state.minutes}`;
+        url += "?";
+        url += `locationId=${this.state.locationId}`;
+        url += "&";
+        url += `days=${this.state.days}`;
+        url += "&";
+        url += `hours=${this.state.hours}`;
+        url += "&";
+        url += `minutes=${this.state.minutes}`;
         axios.get(url)
         .then(res => {
             this.setState({results: res.data});
@@ -68,15 +85,15 @@ class Filters extends Component {
     render() {
         return (
             <div>
-                <TextField id="outlined-basic" label="Outlined" variant="outlined" label="Location ID" name="locationId" value={this.state.locationId} onChange={this.handleChange} />
+                <TextField variant="outlined" label="Location ID" name="locationId" value={this.state.locationId} onChange={this.handleChange} />
                 <div>
-                    <TextField id="outlined-basic" label="Outlined" variant="outlined" label="Distance (Miles)" name="distance" value={this.state.distance} onChange={this.handleChange} />
+                    <TextField variant="outlined" label="Distance (Miles)" name="distance" value={this.state.distance} onChange={this.handleChange} />
                     <Button onClick={this.filterByDistance}>Filter by Distance</Button>
                 </div>
                 <div>
-                    <TextField id="outlined-basic" label="Outlined" variant="outlined" label="Days" name="days" value={this.state.days} onChange={this.handleChange} />
-                    <TextField id="outlined-basic" label="Outlined" variant="outlined" label="Hours" name="hours" value={this.state.hours} onChange={this.handleChange} />
-                    <TextField id="outlined-basic" label="Outlined" variant="outlined" label="Minutes" name="minutes" value={this.state.minutes} onChange={this.handleChange} />
+                    <TextField variant="outlined" label="Days" name="days" value={this.state.days} onChange={this.handleChange} />
+                    <TextField variant="outlined" label="Hours" name="hours" value={this.state.hours} onChange={this.handleChange} />
+                    <TextField variant="outlined" label="Minutes" name="minutes" value={this.state.minutes} onChange={this.handleChange} />
                     <Button onClick={this.filterByTravelTime}>Filter by Travel Time</Button>
                 </div>
             </div>
