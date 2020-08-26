@@ -13,92 +13,122 @@ When the user fills out the filter fields, the queries are used to find food ban
 <Filters database="surplus"> adds the filters component to the surplus page.
 */
 class Filters extends Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            locationId: "",
-            distance: "0",
-            days: "0",
-            hours: "0",
-            minutes: "0",
-            results: [],
-        }
+    this.state = {
+      locationId: "",
+      distance: "0",
+      days: "0",
+      hours: "0",
+      minutes: "0",
+      results: [],
+    };
+  }
+
+  handleChange = (event) => {
+    this.setState({
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  filterByDistance = () => {
+    let url = "";
+    switch (this.props.database) {
+      case "foodbanks":
+        url = "/queryFoodBanksByDistance";
+        break;
+      case "farms":
+        url = "/queryFarmsByDistance";
+        break;
+      case "surplus":
+        url = "/querySurplusByDistance";
+        break;
     }
+    url += "?";
+    url += `locationId=${this.state.locationId}`;
+    url += "&";
+    url += `distance=${this.state.distance}`;
+    axios.get(url).then((res) => {
+      this.setState({ results: res.data });
+    });
+  };
 
-    handleChange = (event) => {
-        this.setState({
-            [event.target.name]: event.target.value,
-        });
-    };
-
-    filterByDistance = () => {
-        let url = "";
-        switch (this.props.database) {
-            case "foodbanks":
-                url = "/queryFoodBanksByDistance";
-                break;
-            case "farms":
-                url = "/queryFarmsByDistance";
-                break;
-            case "surplus":
-                url = "/querySurplusByDistance";
-                break;
-        }
-        url += "?";
-        url += `locationId=${this.state.locationId}`;
-        url += "&";
-        url += `distance=${this.state.distance}`;
-        axios.get(url)
-        .then(res => {
-            this.setState({results: res.data});
-        });
-    };
-
-    filterByTravelTime = () => {
-        let url = "";
-        switch (this.props.database) {
-          case "foodbanks":
-            url = "/queryFoodBanksByTravelTime";
-            break;
-          case "farms":
-            url = "/queryFarmsByTravelTime";
-            break;
-          case "surplus":
-            url = "/querySurplusByTravelTime";
-            break;
-        }
-        url += "?";
-        url += `locationId=${this.state.locationId}`;
-        url += "&";
-        url += `days=${this.state.days}`;
-        url += "&";
-        url += `hours=${this.state.hours}`;
-        url += "&";
-        url += `minutes=${this.state.minutes}`;
-        axios.get(url)
-        .then(res => {
-            this.setState({results: res.data});
-        });
-    };
-
-    render() {
-        return (
-            <div>
-                <TextField variant="outlined" label="Location ID" name="locationId" value={this.state.locationId} onChange={this.handleChange} />
-                <div>
-                    <TextField variant="outlined" label="Distance (Miles)" name="distance" value={this.state.distance} onChange={this.handleChange} />
-                    <Button onClick={this.filterByDistance}>Filter by Distance</Button>
-                </div>
-                <div>
-                    <TextField variant="outlined" label="Days" name="days" value={this.state.days} onChange={this.handleChange} />
-                    <TextField variant="outlined" label="Hours" name="hours" value={this.state.hours} onChange={this.handleChange} />
-                    <TextField variant="outlined" label="Minutes" name="minutes" value={this.state.minutes} onChange={this.handleChange} />
-                    <Button onClick={this.filterByTravelTime}>Filter by Travel Time</Button>
-                </div>
-            </div>
-        );
+  filterByTravelTime = () => {
+    let url = "";
+    switch (this.props.database) {
+      case "foodbanks":
+        url = "/queryFoodBanksByTravelTime";
+        break;
+      case "farms":
+        url = "/queryFarmsByTravelTime";
+        break;
+      case "surplus":
+        url = "/querySurplusByTravelTime";
+        break;
     }
+    url += "?";
+    url += `locationId=${this.state.locationId}`;
+    url += "&";
+    url += `days=${this.state.days}`;
+    url += "&";
+    url += `hours=${this.state.hours}`;
+    url += "&";
+    url += `minutes=${this.state.minutes}`;
+    axios.get(url).then((res) => {
+      this.setState({ results: res.data });
+    });
+  };
+
+  render() {
+    return (
+      <div>
+        <TextField
+          variant="outlined"
+          label="Location ID"
+          name="locationId"
+          value={this.state.locationId}
+          onChange={this.handleChange}
+        />
+        <div>
+          <TextField
+            variant="outlined"
+            label="Distance (Miles)"
+            name="distance"
+            value={this.state.distance}
+            onChange={this.handleChange}
+          />
+          <Button onClick={this.filterByDistance}>Filter by Distance</Button>
+        </div>
+        <div>
+          <TextField
+            variant="outlined"
+            label="Days"
+            name="days"
+            value={this.state.days}
+            onChange={this.handleChange}
+          />
+          <TextField
+            variant="outlined"
+            label="Hours"
+            name="hours"
+            value={this.state.hours}
+            onChange={this.handleChange}
+          />
+          <TextField
+            variant="outlined"
+            label="Minutes"
+            name="minutes"
+            value={this.state.minutes}
+            onChange={this.handleChange}
+          />
+          <Button onClick={this.filterByTravelTime}>
+            Filter by Travel Time
+          </Button>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default Filters;
