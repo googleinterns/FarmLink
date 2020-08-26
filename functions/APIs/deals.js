@@ -1,3 +1,6 @@
+const express = require("express");
+const dealsRoute = express.Router();
+const auth = require("../util/auth");
 const { db } = require("../util/admin");
 
 /*
@@ -5,7 +8,7 @@ read a list of all deals
 GET /deals
 success response: array of deal objects (documented in POST /deals)
 */
-exports.getAllDeals = (request, response) => {
+dealsRoute.get("/", auth, (req, res) => {
   db.collection("deals")
     .get()
     .then((data) => {
@@ -34,30 +37,30 @@ exports.getAllDeals = (request, response) => {
           notes: doc.data().notes,
         });
       });
-      return response.json(deals);
+      return res.json(deals);
     })
     .catch((err) => {
       console.log(err);
-      return response.status(500).json({ error: err.code });
+      return res.status(500).json({ error: err.code });
     });
-};
+});
 
 /*
 read a specific deal
 GET /deals/:id
 success response: deal object (documented in POST /deals)
 */
-exports.getOneDeal = (request, response) => {
-  db.doc(`/deals/${request.params.dealId}`)
+dealsRoute.get("/:id", auth, (req, res) => {
+  db.doc(`/deals/${req.params.dealId}`)
     .get()
     .then((doc) => {
-      return response.json(doc.data());
+      return res.json(doc.data());
     })
     .catch((err) => {
       console.log(err);
-      return response.status(500).json({ error: err.code });
+      return res.status(500).json({ error: err.code });
     });
-};
+});
 
 /*
 create a new deal
@@ -86,79 +89,81 @@ data params:
 }
 success response: deal object (documented in POST /deals)
 */
-exports.postOneDeal = (request, response) => {
+dealsRoute.post("/", auth, (req, res) => {
   const newDealItem = {
-    farmId: request.body.farmId,
-    foodbankId: request.body.foodbankId,
-    surplusId: request.body.surplusId,
-    farmContactKey: request.body.farmContactKey, //the index of the contact in the contacts array
-    foodbankContactKey: request.body.foodbankContactKey, //the index of the contact in the contacts array
-    farmlinkContactName: request.body.farmlinkContactName,
-    farmlinkContactPhone: request.body.farmlinkContactPhone,
-    farmlinkContactEmail: request.body.farmlinkContactEmail,
-    pickupDate: request.body.pickupDate,
-    pickupTime: request.body.pickupTime,
-    deliveryDate: request.body.deliveryDate,
-    deliveryTime: request.body.deliveryTime,
-    bill: request.body.bill,
-    fundsPaidToFarm: parseFloat(request.body.fundsPaidToFarm),
-    fundsPaidForShipping: parseFloat(request.body.fundsPaidForShipping),
-    totalSpent: parseFloat(request.body.totalSpent),
-    invoice: request.body.invoice,
-    associatedPress: request.body.associatedPress,
-    notes: request.body.notes,
+    farmId: req.body.farmId,
+    foodbankId: req.body.foodbankId,
+    surplusId: req.body.surplusId,
+    farmContactKey: req.body.farmContactKey, //the index of the contact in the contacts array
+    foodbankContactKey: req.body.foodbankContactKey, //the index of the contact in the contacts array
+    farmlinkContactName: req.body.farmlinkContactName,
+    farmlinkContactPhone: req.body.farmlinkContactPhone,
+    farmlinkContactEmail: req.body.farmlinkContactEmail,
+    pickupDate: req.body.pickupDate,
+    pickupTime: req.body.pickupTime,
+    deliveryDate: req.body.deliveryDate,
+    deliveryTime: req.body.deliveryTime,
+    bill: req.body.bill,
+    fundsPaidToFarm: parseFloat(req.body.fundsPaidToFarm),
+    fundsPaidForShipping: parseFloat(req.body.fundsPaidForShipping),
+    totalSpent: parseFloat(req.body.totalSpent),
+    invoice: req.body.invoice,
+    associatedPress: req.body.associatedPress,
+    notes: req.body.notes,
   };
   db.collection("deals")
     .add(newDealItem)
     .then((doc) => {
-      let responseDealItem = newDealItem;
-      responseDealItem.id = doc.id;
-      return response.json(responseDealItem);
+      let resDealItem = newDealItem;
+      resDealItem.id = doc.id;
+      return res.json(resDealItem);
     })
     .catch((err) => {
       console.log(err);
-      return response.status(500).json({ error: err.code });
+      return res.status(500).json({ error: err.code });
     });
-};
+});
 
 /*
 delete a specific deal
 DELETE /deals/:id
-success response: {message: 'Delete successfull'}
+success response: {message: 'Delete successfully'}
 */
-exports.deleteDeal = (request, response) => {
-  const document = db.doc(`/deals/${request.params.dealId}`);
+dealsRoute.delete("/:id", auth, (req, res) => {
+  const document = db.doc(`/deals/${req.params.dealId}`);
   document
     .get()
     .then((doc) => {
       if (!doc.exists) {
-        return response.status(404).json({ error: "Deal Object not found" });
+        return res.status(404).json({ error: "Deal Object not found" });
       }
       return document.delete();
     })
     .then(() => {
-      response.json({ message: "Delete successfull" });
+      res.json({ message: "Delete successfully" });
     })
     .catch((err) => {
       console.log(err);
-      return response.status(500).json({ error: err.code });
+      return res.status(500).json({ error: err.code });
     });
-};
+});
 
 /*
 update a specific deal
 PUT /deals/:id
 success response: {message: 'Updated successfully'}
 */
-exports.editDeal = (request, response) => {
-  let document = db.collection("deals").doc(`${request.params.dealId}`);
+dealsRoute.put("/:id", auth, (req, res) => {
+  let document = db.collection("deals").doc(`${req.params.dealId}`);
   document
-    .update(request.body)
+    .update(req.body)
     .then(() => {
-      response.json({ message: "Updated successfully" });
+      res.json({ message: "Updated successfully" });
     })
     .catch((err) => {
       console.log(err);
-      return response.status(500).json({ error: err.code });
+      return res.status(500).json({ error: err.code });
     });
-};
+});
+
+module.exports = dealsRoute;
