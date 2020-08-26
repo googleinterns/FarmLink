@@ -1,20 +1,23 @@
+const express = require("express");
+const traveltimeQueriesRoute = express.Router();
+const auth = require("../util/auth");
 const { db } = require('../util/admin');
 const axios = require('axios');
 const _ = require('lodash');
 require('dotenv').config();
 
 //calculate travel times between farms and food banks
-function calculateTravelTimes(data, request) {
+function calculateTravelTimes(data, req) {
     return new Promise(function(resolve, reject) {
         const url = new URL("https://maps.googleapis.com/maps/api/distancematrix/json");
         url.searchParams.set("units", "imperial");
-        url.searchParams.set("origins", `place_id:${request.query.locationId}`);
+        url.searchParams.set("origins", `place_id:${req.query.locationId}`);
         url.searchParams.set("destinations", `place_id:${data.locationId}`);
         url.searchParams.set("key", process.env.API_KEY);
         axios.get(url.href)
-        .then((response) => {
-            let durationValue = response.data.rows[0].elements[0].duration.value;
-            let durationText = response.data.rows[0].elements[0].duration.text;
+        .then((res) => {
+            let durationValue = res.data.rows[0].elements[0].duration.value;
+            let durationText = res.data.rows[0].elements[0].duration.text;
             durationText = durationText.split(" ");
             let days = parseInt(durationText[durationText.indexOf("days") - 1]);
             let hours = parseInt(durationText[durationText.indexOf("hours") - 1]);
@@ -22,7 +25,7 @@ function calculateTravelTimes(data, request) {
             days = (isNaN(days)) ? 0 : days;
             hours = (isNaN(hours)) ? 0 : hours;
             minutes = (isNaN(minutes)) ? 0 : minutes;
-            if (convertTime(days, hours, minutes) < convertTime(parseInt(request.query.days), parseInt(request.query.hours), parseInt(request.query.minutes))) {
+            if (convertTime(days, hours, minutes) < convertTime(parseInt(req.query.days), parseInt(req.query.hours), parseInt(req.query.minutes))) {
                 data["durationValue"] = durationValue;
                 data["durationText"] = durationText.join(" ");
                 resolve(data);
@@ -48,7 +51,7 @@ GET /queryFoodBanksByTravelTime
 URL params: locationId, days, hours, minutes
 success response: array of food bank objects
 */
-exports.queryFoodBanksByTravelTime = (request, response) => {
+traveltimeQueriesRoute.get("/queryFoodBanksByTravelTime", auth, (req, res) => {
     db.collection('foodbanks').get()
     .then((data) => {
         let foodbanks = [];
@@ -57,12 +60,12 @@ exports.queryFoodBanksByTravelTime = (request, response) => {
         });
 
         Promise.all(foodbanks.map(function(foodbank) {
-            return calculateTravelTimes(foodbank, request);
+            return calculateTravelTimes(foodbank, req);
         }))
         .then((results) => {
             results = results.filter(result => result != null);
             results = _.orderBy(results, ["durationValue"]);
-            return response.json(results);
+            return res.json(results);
         })
         .catch((err) => {
             console.log(err);
@@ -70,9 +73,9 @@ exports.queryFoodBanksByTravelTime = (request, response) => {
     })
     .catch((err) => {
         console.log(err);
-        return response.status(500).json({error: err.code});
+        return res.status(500).json({error: err.code});
     });
-}
+});
 
 /*
 find farms that are a specific travel time from a food bank
@@ -80,7 +83,7 @@ GET /queryFarmsByTravelTime
 URL params: locationId, days, hours, minutes
 success response: array of farm objects
 */
-exports.queryFarmsByTravelTime = (request, response) => {
+traveltimeQueriesRoute.get("/queryFarmsByTravelTime", auth, (req, res) => {
     db.collection('farms').get()
     .then((data) => {
         let farms = [];
@@ -89,12 +92,12 @@ exports.queryFarmsByTravelTime = (request, response) => {
         });
 
         Promise.all(farms.map(function(farm) {
-            return calculateTravelTimes(farm, request);
+            return calculateTravelTimes(farm, req);
         }))
         .then((results) => {
             results = results.filter(result => result != null);
             results = _.orderBy(results, ["durationValue"]);
-            return response.json(results);
+            return res.json(results);
         })
         .catch((err) => {
             console.log(err);
@@ -102,9 +105,9 @@ exports.queryFarmsByTravelTime = (request, response) => {
     })
     .catch((err) => {
         console.log(err);
-        return response.status(500).json({error: err.code});
+        return res.status(500).json({error: err.code});
     });
-}
+});
 
 /*
 find farms with surplus that are a specific travel time from a food bank
@@ -112,7 +115,7 @@ GET /querySurplusByTravelTime
 URL params: locationId, days, hours, minutes
 success response: array of surplus objects
 */
-exports.querySurplusByTravelTime = (request, response) => {
+traveltimeQueriesRoute.get("/querySurplusByTravelTime", auth, (req, res) => {
     db.collection('surplus').get()
     .then((data) => {
         let surplus = [];
@@ -140,12 +143,12 @@ exports.querySurplusByTravelTime = (request, response) => {
         Promise.all(surplus.map(queryFarms))
         .then((results) => {
             Promise.all(results.map(function(result) {
-                return calculateTravelTimes(result, request);
+                return calculateTravelTimes(result, req);
             }))
             .then((results) => {
                 results = results.filter(result => result != null);
                 results = _.orderBy(results, ["durationValue"]);
-                return response.json(results);
+                return res.json(results);
             })
             .catch((err) => {
                 console.log(err);
@@ -157,6 +160,8 @@ exports.querySurplusByTravelTime = (request, response) => {
     })
     .catch((err) => {
         console.log(err);
-        return response.status(500).json({error: err.code});
+        return res.status(500).json({error: err.code});
     });
-}
+});
+
+module.exports = traveltimeQueriesRoute;
