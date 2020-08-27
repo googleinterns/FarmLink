@@ -56,12 +56,19 @@ export default function CustomTable(props) {
   // Populates the table using the tableState property passed by the parent elem
   const [tableState, setState] = React.useState(props.tableState);
 
+  React.useEffect(() => {
+    if (props.data !== tableState.data) {
+      props.changeContacts(tableState.data);
+    }
+  }, [props, tableState]);
+
   return (
     <MaterialTable
       title={props.title}
       columns={tableState.columns}
       data={tableState.data}
       icons={tableIcons}
+      onChange={() => console.log("test")}
       editable={{
         // Updates the table data after user adds row to table
         onRowAdd: (newData) =>
