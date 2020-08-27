@@ -531,7 +531,9 @@ class Foodbank extends Component {
               like to create a new Food Bank, press the addition icon.
             </Typography>
           )}
-          <div className={!this.props.inStepper ? classes.toolbar : undefined} />
+          <div
+            className={!this.props.inStepper ? classes.toolbar : undefined}
+          />
           <Fab
             color="primary"
             className={classes.floatingButton}

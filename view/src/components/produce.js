@@ -303,7 +303,7 @@ class Produce extends Component {
               id="produce-name-search"
               options={data.map((produce) => produce.name)}
               value={value}
-              onSelect={this.handleSearch}  // Receive the name from data element for value
+              onSelect={this.handleSearch} // Receive the name from data element for value
               fullWidth={true}
               renderInput={(params) => (
                 <TextField
