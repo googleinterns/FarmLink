@@ -334,7 +334,6 @@ class Farms extends Component {
       open: true,
     });
     tableState.data = data.farm.contacts;
-    console.log(tableState);
   }
 
   /**
@@ -425,7 +424,6 @@ class Farms extends Component {
         locationId: this.state.locationId,
         transportation: this.state.transportation,
       };
-      console.log(newFarm);
       let options = {};
       if (this.state.buttonType === "Edit") {
         options = {
