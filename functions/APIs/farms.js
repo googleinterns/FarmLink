@@ -16,7 +16,7 @@ exports.getAllFarms = (request, response) => {
           farmName: doc.data().farmName,
           location: doc.data().location,
           locationId: doc.data().locationId,
-          // hours: doc.data().hours,
+          // TODO(andrewhojel): add the hours feature
           transportation: doc.data().transportation,
           contacts: doc.data().contacts,
           loadingDock: doc.data().loadingDock,
@@ -69,7 +69,7 @@ exports.postOneFarm = (request, response) => {
   const newFarmItem = {
     farmName: request.body.farmName,
     location: request.body.location,
-    //hours: request.body.hours,
+    // TODO(andrewhojel): add the hours feature
     locationId: request.body.locationId,
     transportation: request.body.transportation === "true",
     contacts: request.body.contacts,
