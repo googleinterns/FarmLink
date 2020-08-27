@@ -68,7 +68,6 @@ export default function CustomTable(props) {
       columns={tableState.columns}
       data={tableState.data}
       icons={tableIcons}
-      onChange={() => console.log("test")}
       editable={{
         // Updates the table data after user adds row to table
         onRowAdd: (newData) =>
