@@ -15,7 +15,8 @@ exports.getAllFoodBanks = (request, response) => {
           foodbankId: doc.id,
           foodbankName: doc.data().foodbankName,
           location: doc.data().location,
-          hours: doc.data().hours,
+          locationId: doc.data().locationId,
+          // TODO(andrewhojel): add the hours feature
           contacts: doc.data().contacts,
           forklift: doc.data().forklift,
           pallet: doc.data().pallet,
@@ -72,7 +73,8 @@ exports.postOneFoodBank = (request, response) => {
   const newFoodBankItem = {
     foodbankName: request.body.foodbankName,
     location: request.body.location,
-    hours: request.body.hours,
+    locationId: request.body.locationId,
+    // TODO(andrewhojel): add the hours feature
     contacts: request.body.contacts,
     forklift: request.body.forklift === "true",
     pallet: request.body.pallet === "true",

@@ -141,7 +141,7 @@ const TAG_EXAMPLES = [
   { title: "Great Environmental Rating" },
 ];
 
-/** Place holder for contact table data pulled from database */
+/** Structure for contacts table */
 let tableState = {
   columns: [
     { title: "Role", field: "contactRole" },
@@ -249,6 +249,7 @@ class Farms extends Component {
     });
   };
 
+  /** Updates the contacts table */
   changeContacts = (data) => {
     this.setState({ contacts: data });
   };
