@@ -218,6 +218,7 @@ class Farms extends Component {
       // Search states
       data: "",
       value: "",
+      locationQuery: "",
       // Farm states
       farms: "",
       farmName: "",
@@ -244,6 +245,7 @@ class Farms extends Component {
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
+    this.handleLocationSearch = this.handleLocationSearch.bind(this);
     this.handleResultsRender = this.handleResultsRender.bind(this);
   }
 
@@ -386,7 +388,7 @@ class Farms extends Component {
   // Returns the accordion menu that houses all search and filtering options
   filteringAccordion = () => {
     const { classes } = this.props;
-    const { data, value } = this.state;
+    const { data, value, locationQuery } = this.state;
 
     return (
       <div>
@@ -441,15 +443,15 @@ class Farms extends Component {
             <Autocomplete
               id="produce-name-search2"
               options={data.map((produce) => produce.location)}
-              value={value}
-              onSelect={this.handleSearch} // Receive the name from data element for value
+              value={locationQuery}
+              onSelect={this.handleLocationSearch} // Receive the name from data element for value
               fullWidth={true}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   label="Farm Locations"
                   variant="outlined"
-                  onChange={this.handleSearch}
+                  //onChange={this.handleSearch}
                   InputProps={{
                     ...params.InputProps,
                     startAdornment: (
@@ -500,12 +502,12 @@ class Farms extends Component {
   };
 
   // Handles the rendering of filtered produce results into React cards
-  handleResultsRender = (results) => {
+  handleResultsRender = (filteredValues) => {
     const { classes } = this.props;
     return (
       <div>
         <Grid container spacing={2} alignItem="center">
-          {results.map((farm) => (
+          {filteredValues.map((farm) => (
             <Grid item xs={12} key={farm.farmId}>
               <Card className={classes.root} variant="outlined">
                 <CardContent>
@@ -926,7 +928,7 @@ class Farms extends Component {
             <SearchResults
               value={value}
               data={data}
-              renderResults={this.handleResultsRender}
+              renderResults={(results) => this.handleResultsRender(results)}
             />
           </Container>
 
