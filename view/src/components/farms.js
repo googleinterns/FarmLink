@@ -297,6 +297,7 @@ class Farms extends Component {
         this.setState({
           // Farm state
           data: response.data,
+          filteredData: response.data,
           // Page state
           uiLoading: false,
         });
@@ -385,9 +386,19 @@ class Farms extends Component {
   handleSearch = (event) => {
     const { value } = event.target;
     this.setState({ value });
+    // reset page data upon clearing of search value ? dif situation here ?
+    if (value === "") {
+      this.setState({ filteredData: this.state.data.slice() });
+    }
+    this.simpleSearch("name", event.target.value); // update fD
   };
 
+  // handlesSelects only right now - expand for anyChange next?
   handleLocationSearch = (event) => {
+    if (event.target.value === "") {
+      this.setState({ filteredData: this.state.data.slice() });
+      return;
+    }
     console.log("event", event);
     console.log("etv", event.target.value);
     const lq = event.target.value;
@@ -410,21 +421,34 @@ class Farms extends Component {
     // cleaner to do this instead of tracking multiple searches? or add that for more support??
     // call simple search and re-render????
     //this.simpleSearch(this.state.locationQuery);
-    this.simpleSearch(event.target.value);
+    this.simpleSearch("location", event.target.value);
   };
 
   // Search specified field for string query
   // Render updated data into the cards - reload if user wants to re name - search after adding extra search details in
-  simpleSearch = (query) => {
+  simpleSearch = (field, query) => {
     console.log("query here", query);
+    const parsedQuery = query.toLowerCase();
     // const { value } = event.target;
     // multiFilteredData = filter by query
     //const { value } = event.target;
-    const multiFilteredData = this.state.filteredData.filter((farm) =>
-      farm.location.includes(query)
-    );
+    var multiFilteredData = "";
+    if (field === "name") {
+      multiFilteredData = this.state.filteredData.filter((farm) =>
+        farm.farmName.toLowerCase().includes(parsedQuery)
+      );
+    }
+
+    // turn into a case switch? more scalable way to do this?
+    if (field === "location") {
+      multiFilteredData = this.state.filteredData.filter((farm) =>
+        farm.location.toLowerCase().includes(parsedQuery)
+      );
+    }
+
     console.log("mfd here: ", multiFilteredData);
-    this.handleResultsRender(multiFilteredData);
+    this.setState({ filteredData: multiFilteredData });
+    //this.handleResultsRender(multiFilteredData);
   };
 
   // Returns the accordion menu that houses all search and filtering options
@@ -544,14 +568,15 @@ class Farms extends Component {
   };
 
   // Handles the rendering of filtered produce results into React cards
-  handleResultsRender = (filteredValues) => {
+  handleResultsRender = () => {
     const { classes } = this.props;
-    console.log("FV HERE", filteredValues);
+    const { filteredData } = this.state;
+    console.log("FD HERE", filteredData);
 
     return (
       <div>
         <Grid container spacing={2} alignItem="center">
-          {filteredValues.map((farm) => (
+          {filteredData.map((farm) => (
             <Grid item xs={12} key={farm.farmId}>
               <Card className={classes.root} variant="outlined">
                 <CardContent>
@@ -969,7 +994,8 @@ class Farms extends Component {
                 {this.filteringAccordion()}
               </Grid>
             </Grid>
-            <SearchResults
+            {this.handleResultsRender()}
+            {/* <SearchResults
               value={value}
               data={data}
               //renderResults={(results) => this.handleResultsRender}
@@ -977,7 +1003,7 @@ class Farms extends Component {
               //{ console.log("Calling hRR here?") }
               // rR instead of filtering on my own - impact not needed anymore make this the same as before?
               renderResults={this.handleResultsRender}
-            />
+            /> */}
           </Container>
 
           <Dialog
