@@ -219,6 +219,7 @@ class Farms extends Component {
       data: "",
       value: "",
       locationQuery: "",
+      filteredData: "",
       // Farm states
       farms: "",
       farmName: "",
@@ -247,6 +248,7 @@ class Farms extends Component {
     this.handleSearch = this.handleSearch.bind(this);
     this.handleLocationSearch = this.handleLocationSearch.bind(this);
     this.handleResultsRender = this.handleResultsRender.bind(this);
+    this.simpleSearch = this.simpleSearch.bind(this);
   }
 
   /**
@@ -383,6 +385,35 @@ class Farms extends Component {
   handleSearch = (event) => {
     const { value } = event.target;
     this.setState({ value });
+  };
+
+  handleLocationSearch = (event) => {
+    //const { value } = event.target;
+    const { fdata } = this.state.data;
+    //const fdata = data.slice();
+
+    this.setState((fdata) => ({
+      locationQuery: event.target.value,
+      filteredData: fdata.slice(),
+    }));
+
+    console.log("fd", this.state.filteredData);
+    console.log("d", this.state.data);
+    // data to use for secondary search - ultimately avoid copying?
+    // call simple search and re-render????
+    this.simpleSearch(this.state.locationQuery);
+  };
+
+  // Search specified field for string query
+  // Render updated data into the cards - reload if user wants to re name - search after adding extra search details in
+  simpleSearch = (query) => {
+    // const { value } = event.target;
+    // multiFilteredData = filter by query
+    //const { value } = event.target;
+    const multiFilteredData = this.state.filteredData.filter((farm) =>
+      farm.location.includes(query)
+    );
+    this.handleResultsRender(multiFilteredData);
   };
 
   // Returns the accordion menu that houses all search and filtering options
