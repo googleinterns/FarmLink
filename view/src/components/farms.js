@@ -138,11 +138,6 @@ const styles = (theme) => ({
   },
 });
 
-const TAG_EXAMPLES = [
-  { title: "Black Owned" },
-  { title: "Great Environmental Rating" },
-];
-
 /** Place holder for contact table data pulled from database */
 const TABLE_STATE = {
   columns: [
@@ -325,7 +320,7 @@ class Farms extends Component {
     return localStorage.getItem("AuthToken");
   };
 
-  /** Load in all of the current todos when the component has mounted */
+  /** Load in all of the current farms when the component has mounted */
   componentDidMount() {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
@@ -342,6 +337,7 @@ class Farms extends Component {
       .catch((err) => {
         console.error(err);
       });
+    this.populateAllFarmTags();
   }
 
   /**
@@ -455,19 +451,22 @@ class Farms extends Component {
   };
 
   handleTagFilter = (event) => {
-    if (event.target.value === []) {
+        console.log("ht event", event);
+        console.log("ht etv", event.target.value);
+    if (event.target.value === [] || event.target.value === "") {
       //this.setState({ filteredData: this.state.data.slice() });
       // TODO: use data reset button instead?
       return;
     }
-    console.log("event", event);
-    console.log("etv", event.target.value);
-    //const lq = event.target.value;
 
-    this.setState({
-      tagQuery: event.target.value,
-      //filteredData: this.state.data.slice(), don't need anymore since sSearch updates FD
-    });
+    //const lq = event.target.value;
+    // add to the existing array or what oops
+    this.tagQuery.push.apply(this.tagQuery, event.target.value);
+
+    // this.setState({
+    //   tagQuery: event.target.value,
+    //   //filteredData: this.state.data.slice(), don't need anymore since sSearch updates FD
+    // });
 
     // data to use for secondary search - ultimately avoid copying?
     // avoid copying by calling SR here, then taking results into simple search, then rendering that..
@@ -546,7 +545,7 @@ class Farms extends Component {
                   {...params}
                   label="Farm Names"
                   variant="outlined"
-                  onChange={this.handhandleNameSearchleSearch}
+                  onChange={this.handleNameSearch}
                   InputProps={{
                     ...params.InputProps,
                     startAdornment: (
@@ -627,10 +626,66 @@ class Farms extends Component {
             <Typography className={classes.heading}>Filter by Tags</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            {/* Skeleton to add tag filtering */}
-            <Typography>Select tags to filter by:</Typography>
+            {/** Adjust spacing here **/}
+            {this.tagsAutocompleteSearch()}
           </AccordionDetails>
         </Accordion>
+      </div>
+    );
+  };
+
+  // Q for reviewers: should i separate this function into two?
+  // Returns tag autocomplete search - used in filteringAccording and
+  // add or edit a farm form
+  // div and container spacing around respectively - or assign spacing inline with boolean check
+  tagsAutocompleteSearch = () => {
+    const { classes } = this.props;
+    const { filteredData, viewOpen, allFarmTags } = this.state;
+    console.log("FD HERE", filteredData);
+    return (
+      <div>
+        <Autocomplete
+          multiple
+          id="farmTags"
+          //onChange={viewOpen? this.onTagsChange : this.handleTagsSe}
+          // is null safe here
+          onChange={viewOpen ? this.onTagsChange : null}
+          onSelect={viewOpen ? this.onTagsChange : this.handleTagFilter}
+          options={allFarmTags}
+          defaultValue={viewOpen ? this.state.farmTags : allFarmTags}
+          // old dval? to get it to show viusually yes
+          fullWidth={viewOpen ? false : true}
+          // viewOpen ? this.state.farmTags :
+          freeSolo={viewOpen ? true : false}
+          renderTags={(value, getTagProps) =>
+            value.map((option, index) => (
+              <Chip label={option} {...getTagProps({ index })} />
+            ))
+          }
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              label="Farm Tags"
+              placeholder="tags..."
+              InputProps={
+                viewOpen
+                  ? null
+                  : {
+                      ...params.InputProps,
+                      startAdornment: (
+                        <>
+                          <InputAdornment position="start">
+                            <SearchIcon />
+                          </InputAdornment>
+                          {params.InputProps.startAdornment}
+                        </>
+                      ),
+                    }
+              }
+            />
+          )}
+        />
       </div>
     );
   };
@@ -754,7 +809,6 @@ class Farms extends Component {
     dayjs.extend(relativeTime);
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
-    const { allFarmTags } = this.state;
 
     /** Set all states to generic value when opening a dialog page */
     const handleAddClick = () => {
@@ -1024,32 +1078,7 @@ class Farms extends Component {
                     </FormControl>
                   </Grid>
                   <Grid item xs={6}>
-                    <Autocomplete
-                      multiple
-                      id="farmTags"
-                      //onChange={viewOpen? this.onTagsChange : this.handleTagsSe}
-                      // is null safe here
-                      onChange={viewOpen ? this.onTagsChange : null}
-                      onSelect={
-                        viewOpen ? this.onTagsChange : this.handleTagFilter
-                      }
-                      options={allFarmTags}
-                      defaultValue={this.state.farmTags}
-                      freeSolo={viewOpen ? true : false}
-                      renderTags={(value, getTagProps) =>
-                        value.map((option, index) => (
-                          <Chip label={option} {...getTagProps({ index })} />
-                        ))
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          variant="outlined"
-                          label="Farm Tags"
-                          placeholder="tags..."
-                        />
-                      )}
-                    />
+                    {this.tagsAutocompleteSearch()}
                   </Grid>
                 </Grid>
                 <div className={classes.table}>
