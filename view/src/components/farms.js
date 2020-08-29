@@ -519,7 +519,7 @@ class Farms extends Component {
                   {...params}
                   label="Farm Locations"
                   variant="outlined"
-                  //onChange={this.handleSearch}
+                  onChange={this.handleLocationSearch}
                   InputProps={{
                     ...params.InputProps,
                     startAdornment: (
