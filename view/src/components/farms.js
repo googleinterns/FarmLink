@@ -388,7 +388,8 @@ class Farms extends Component {
     this.setState({ value });
     // reset page data upon clearing of search value ? dif situation here ?
     if (value === "") {
-      this.setState({ filteredData: this.state.data.slice() });
+      //this.setState({ filteredData: this.state.data.slice() });
+      return;
     }
     this.simpleSearch("name", event.target.value); // update fD
   };
@@ -396,7 +397,8 @@ class Farms extends Component {
   // handlesSelects only right now - expand for anyChange next?
   handleLocationSearch = (event) => {
     if (event.target.value === "") {
-      this.setState({ filteredData: this.state.data.slice() });
+      //this.setState({ filteredData: this.state.data.slice() });
+      // TODO: use data reset button instead?
       return;
     }
     console.log("event", event);
@@ -454,8 +456,8 @@ class Farms extends Component {
   // Returns the accordion menu that houses all search and filtering options
   filteringAccordion = () => {
     const { classes } = this.props;
-    const { data, value, locationQuery } = this.state;
-
+    const { data, value, locationQuery, filteredData } = this.state;
+    // TODO: update value to nameQuery
     return (
       <div>
         <Accordion>
@@ -469,7 +471,7 @@ class Farms extends Component {
           <AccordionDetails>
             <Autocomplete
               id="produce-name-search"
-              options={data.map((produce) => produce.farmName)}
+              options={filteredData.map((produce) => produce.farmName)}
               value={value}
               onSelect={this.handleSearch} // Receive the name from data element for value
               fullWidth={true}
@@ -508,7 +510,7 @@ class Farms extends Component {
           <AccordionDetails>
             <Autocomplete
               id="produce-name-search2"
-              options={data.map((produce) => produce.location)}
+              options={filteredData.map((produce) => produce.location)}
               value={locationQuery}
               onSelect={this.handleLocationSearch} // Receive the name from data element for value
               fullWidth={true}
