@@ -265,20 +265,9 @@ class Farms extends Component {
   };
 
   /** Iterate over all tags in filteredData to update tags for filtering by */
+  // TODO: figure out why it doesn't work for initial data
   populateAllFarmTags = () => {
     const { filteredData } = this.state;
-    // options={filteredData.map((produce) => produce.farmName)}
-    // const oldSet = new Set([1, 2]);
-    // const newSet = new Set(oldSet); // for react to notice a state change
-    // iter thru these items, concat the array to our existing array
-    // then make it into a set, then another array
-    // would doing this on the BE and adding it to the get list be too much mixing ?
-    // const populatedTags = [
-    //   ...new Set(filteredData.map((data) => data.farmTags.map((tag) => tag))),
-    // ];
-    // const populatedTags = [
-    //   ...new Set(filteredData.map((data) => data.farmTags.map((tag) => tag))),
-    // ];
     var populatedTags = [];
     filteredData.map((data) =>
       populatedTags.push.apply(populatedTags, data.farmTags)
@@ -442,17 +431,12 @@ class Farms extends Component {
       //filteredData: this.state.data.slice(),
     });
 
-    // data to use for secondary search - ultimately avoid copying?
-    // avoid copying by calling SR here, then taking results into simple search, then rendering that..
-    // cleaner to do this instead of tracking multiple searches? or add that for more support??
-    // call simple search and re-render????
-    //this.simpleSearch(this.state.locationQuery);
     this.simpleSearch("location", event.target.value);
   };
 
   handleTagFilter = (event) => {
-        console.log("ht event", event);
-        console.log("ht etv", event.target.value);
+    console.log("ht event", event);
+    console.log("ht etv", event.target.value);
     if (event.target.value === [] || event.target.value === "") {
       //this.setState({ filteredData: this.state.data.slice() });
       // TODO: use data reset button instead?
@@ -462,30 +446,12 @@ class Farms extends Component {
     //const lq = event.target.value;
     // add to the existing array or what oops
     this.tagQuery.push.apply(this.tagQuery, event.target.value);
-
-    // this.setState({
-    //   tagQuery: event.target.value,
-    //   //filteredData: this.state.data.slice(), don't need anymore since sSearch updates FD
-    // });
-
-    // data to use for secondary search - ultimately avoid copying?
-    // avoid copying by calling SR here, then taking results into simple search, then rendering that..
-    // cleaner to do this instead of tracking multiple searches? or add that for more support??
-    // call simple search and re-render????
-    //this.simpleSearch(this.state.locationQuery);
     this.state.tagQuery.map((tag) => this.simpleSearch("tag", tag));
   };
   // Search specified field for string query
   // Render updated data into the cards - reload if user wants to re name - search after adding extra search details in
   simpleSearch = (field, query) => {
     console.log("query here", query);
-    // const parsedQuery
-    // if (field != "tag") {
-    // const parsedQuery = query.toLowerCase();
-    // }
-    // const { value } = event.target;
-    // multiFilteredData = filter by query
-    //const { value } = event.target;
     var multiFilteredData = "";
     if (field === "name") {
       multiFilteredData = this.state.filteredData.filter((farm) =>
@@ -1097,15 +1063,6 @@ class Farms extends Component {
               </Grid>
             </Grid>
             {this.handleResultsRender()}
-            {/* <SearchResults
-              value={value}
-              data={data}
-              //renderResults={(results) => this.handleResultsRender}
-              //renderResults={this.handleResultsRender({ results = {results} })}
-              //{ console.log("Calling hRR here?") }
-              // rR instead of filtering on my own - impact not needed anymore make this the same as before?
-              renderResults={this.handleResultsRender}
-            /> */}
           </Container>
 
           <Dialog
