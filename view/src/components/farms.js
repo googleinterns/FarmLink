@@ -22,7 +22,6 @@ import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import Chip from "@material-ui/core/Chip";
 import SearchIcon from "@material-ui/icons/Search";
-import SearchResults from "react-filter-search";
 import Box from "@material-ui/core/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -217,9 +216,12 @@ class Farms extends Component {
     this.state = {
       // Search states
       data: "",
-      value: "",
+      nameQuery: "",
       locationQuery: "",
       filteredData: [],
+      allFarmTags: [],
+      // TODO: should this be updated as data gets filtered - yes ? realtime maybe not needed
+      // asynch / wait for user to submit before filtering?
       // Farm states
       farms: "",
       farmName: "",
@@ -245,10 +247,15 @@ class Farms extends Component {
     this.handleDelete = this.handleDelete.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
-    this.handleSearch = this.handleSearch.bind(this);
+
+    this.handleNameSearch = this.handleNameSearch.bind(this);
     this.handleLocationSearch = this.handleLocationSearch.bind(this);
-    this.handleResultsRender = this.handleResultsRender.bind(this);
     this.simpleSearch = this.simpleSearch.bind(this);
+
+    this.populateAllFarmTags = this.populateAllFarmTags.bind(this);
+    this.handleTagFilter = this.handleTagFilter.bind(this);
+
+    this.handleResultsRender = this.handleResultsRender.bind(this);
   }
 
   /**
@@ -259,6 +266,36 @@ class Farms extends Component {
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
+    });
+  };
+
+  /** Iterate over all tags in filteredData to update tags for filtering by */
+  populateAllFarmTags = () => {
+    const { filteredData } = this.state;
+    // options={filteredData.map((produce) => produce.farmName)}
+    // const oldSet = new Set([1, 2]);
+    // const newSet = new Set(oldSet); // for react to notice a state change
+    // iter thru these items, concat the array to our existing array
+    // then make it into a set, then another array
+    // would doing this on the BE and adding it to the get list be too much mixing ?
+    // const populatedTags = [
+    //   ...new Set(filteredData.map((data) => data.farmTags.map((tag) => tag))),
+    // ];
+    // const populatedTags = [
+    //   ...new Set(filteredData.map((data) => data.farmTags.map((tag) => tag))),
+    // ];
+    var populatedTags = [];
+    filteredData.map((data) =>
+      populatedTags.push.apply(populatedTags, data.farmTags)
+    );
+    const populatedUniqueTags = [...new Set(populatedTags)];
+
+    // set vs array here vs later ????
+    console.log("pt arr", populatedTags);
+    console.log("pt unique arr", populatedUniqueTags);
+
+    this.setState({
+      allFarmTags: populatedUniqueTags,
     });
   };
 
@@ -383,7 +420,7 @@ class Farms extends Component {
   // This string value can contain any produce field (name, weight, internal
   // shipment numbers) and will still return
   // the appropriate filtered results.
-  handleSearch = (event) => {
+  handleNameSearch = (event) => {
     const { value } = event.target;
     this.setState({ value });
     // reset page data upon clearing of search value ? dif situation here ?
@@ -401,22 +438,13 @@ class Farms extends Component {
       // TODO: use data reset button instead?
       return;
     }
-    console.log("event", event);
-    console.log("etv", event.target.value);
+
     const lq = event.target.value;
-    const fdata = this.state.data;
-    //const fdata = data.slice();
-    const local_copy = this.state.data.slice();
-    console.log("lc", local_copy);
 
     this.setState({
       locationQuery: lq,
-      filteredData: this.state.data.slice(),
+      //filteredData: this.state.data.slice(),
     });
-
-    console.log("fd", this.state.filteredData);
-    console.log("d", this.state.data);
-    console.log("lq", this.state.locationQuery);
 
     // data to use for secondary search - ultimately avoid copying?
     // avoid copying by calling SR here, then taking results into simple search, then rendering that..
@@ -426,38 +454,76 @@ class Farms extends Component {
     this.simpleSearch("location", event.target.value);
   };
 
+  handleTagFilter = (event) => {
+    if (event.target.value === []) {
+      //this.setState({ filteredData: this.state.data.slice() });
+      // TODO: use data reset button instead?
+      return;
+    }
+    console.log("event", event);
+    console.log("etv", event.target.value);
+    //const lq = event.target.value;
+
+    this.setState({
+      tagQuery: event.target.value,
+      //filteredData: this.state.data.slice(), don't need anymore since sSearch updates FD
+    });
+
+    // data to use for secondary search - ultimately avoid copying?
+    // avoid copying by calling SR here, then taking results into simple search, then rendering that..
+    // cleaner to do this instead of tracking multiple searches? or add that for more support??
+    // call simple search and re-render????
+    //this.simpleSearch(this.state.locationQuery);
+    this.state.tagQuery.map((tag) => this.simpleSearch("tag", tag));
+  };
   // Search specified field for string query
   // Render updated data into the cards - reload if user wants to re name - search after adding extra search details in
   simpleSearch = (field, query) => {
     console.log("query here", query);
-    const parsedQuery = query.toLowerCase();
+    // const parsedQuery
+    // if (field != "tag") {
+    // const parsedQuery = query.toLowerCase();
+    // }
     // const { value } = event.target;
     // multiFilteredData = filter by query
     //const { value } = event.target;
     var multiFilteredData = "";
     if (field === "name") {
       multiFilteredData = this.state.filteredData.filter((farm) =>
-        farm.farmName.toLowerCase().includes(parsedQuery)
+        farm.farmName.toLowerCase().includes(query.toLowerCase())
       );
     }
 
     // turn into a case switch? more scalable way to do this?
     if (field === "location") {
       multiFilteredData = this.state.filteredData.filter((farm) =>
-        farm.location.toLowerCase().includes(parsedQuery)
+        farm.location.toLowerCase().includes(query.toLowerCase())
       );
     }
-
+    // check if farm.farmTags has the tag as an element -
+    // only complete tags will be entered, since onSelect only,
+    // no searching from onChange - no need to lowercase any
+    if (field === "tag") {
+      multiFilteredData = this.state.filteredData.filter((farm) =>
+        farm.farmTags.includes(query)
+      );
+    }
     console.log("mfd here: ", multiFilteredData);
     this.setState({ filteredData: multiFilteredData });
     //this.handleResultsRender(multiFilteredData);
+    this.populateAllFarmTags();
+    // update farm tags with newly filtered data
   };
+
+  // Iterate through selectedTags and call simpleSearch on each
 
   // Returns the accordion menu that houses all search and filtering options
   filteringAccordion = () => {
     const { classes } = this.props;
-    const { data, value, locationQuery, filteredData } = this.state;
-    // TODO: update value to nameQuery
+    const { nameQuery, locationQuery, filteredData } = this.state;
+    // For filtering by name and location
+    const { data } = this.state;
+    // For filtering by distances from location
     return (
       <div>
         <Accordion>
@@ -472,15 +538,15 @@ class Farms extends Component {
             <Autocomplete
               id="produce-name-search"
               options={filteredData.map((produce) => produce.farmName)}
-              value={value}
-              onSelect={this.handleSearch} // Receive the name from data element for value
+              value={nameQuery}
+              onSelect={this.handleNameSearch} // Receive the name from data element for value
               fullWidth={true}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   label="Farm Names"
                   variant="outlined"
-                  onChange={this.handleSearch}
+                  onChange={this.handhandleNameSearchleSearch}
                   InputProps={{
                     ...params.InputProps,
                     startAdornment: (
@@ -688,7 +754,7 @@ class Farms extends Component {
     dayjs.extend(relativeTime);
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
-    const { data, value } = this.state;
+    const { allFarmTags } = this.state;
 
     /** Set all states to generic value when opening a dialog page */
     const handleAddClick = () => {
@@ -961,10 +1027,15 @@ class Farms extends Component {
                     <Autocomplete
                       multiple
                       id="farmTags"
-                      onChange={this.onTagsChange}
-                      options={TAG_EXAMPLES.map((option) => option.title)} // need to create aggregated tags array
+                      //onChange={viewOpen? this.onTagsChange : this.handleTagsSe}
+                      // is null safe here
+                      onChange={viewOpen ? this.onTagsChange : null}
+                      onSelect={
+                        viewOpen ? this.onTagsChange : this.handleTagFilter
+                      }
+                      options={allFarmTags}
                       defaultValue={this.state.farmTags}
-                      freeSolo
+                      freeSolo={viewOpen ? true : false}
                       renderTags={(value, getTagProps) =>
                         value.map((option, index) => (
                           <Chip label={option} {...getTagProps({ index })} />
