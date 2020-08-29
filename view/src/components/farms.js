@@ -928,7 +928,9 @@ class Farms extends Component {
             <SearchResults
               value={value}
               data={data}
-              renderResults={(results) => this.handleResultsRender(results)}
+              //renderResults={(results) => this.handleResultsRender}
+              //renderResults={this.handleResultsRender({ results = {results} })}
+              renderResults={this.handleResultsRender}
             />
           </Container>
 
