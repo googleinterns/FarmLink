@@ -29,7 +29,6 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import FormControl from "@material-ui/core/FormControl";
 import PropTypes from "prop-types";
 import MaskedInput from "react-text-mask";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import Fab from "@material-ui/core/Fab";
@@ -136,24 +135,20 @@ const styles = (theme) => ({
   farmLocation: {
     maxWidth: "280px",
   },
+  tablePadding: {
+    marginTop: "24px",
+  },
 });
 
 /** Place holder for contact table data pulled from database */
-const TABLE_STATE = {
+let tableState = {
   columns: [
     { title: "Role", field: "contactRole" },
     { title: "Name", field: "contactName" },
     { title: "Email", field: "contactEmail" },
     { title: "Phone Number", field: "contactPhone" },
   ],
-  data: [
-    {
-      contactRole: "Farm Manager",
-      contactName: "Jamie Doe",
-      contactEmail: "jamie@doe.com",
-      contactPhone: "(777)851-1234",
-    },
-  ],
+  data: [],
 };
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -221,10 +216,8 @@ class Farms extends Component {
       farms: "",
       farmName: "",
       farmId: "",
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "(1  )    -    ",
       farmTags: [],
+      contacts: [],
       forklift: false,
       loadingDock: false,
       location: "",
@@ -289,6 +282,10 @@ class Farms extends Component {
       // Farm state
       farmTags: values,
     });
+  };
+
+  changeContacts = (data) => {
+    this.setState({ contacts: data });
   };
 
   /** Used to update location from address autocomplete component */
@@ -362,9 +359,7 @@ class Farms extends Component {
       // Farm states
       farmName: data.farm.farmName,
       farmId: data.farm.farmId,
-      contactName: data.farm.contactName,
-      contactEmail: data.farm.contactEmail,
-      contactPhone: data.farm.contactPhone,
+      contacts: data.farm.contacts,
       farmTags: data.farm.farmTags,
       forklift: data.farm.forklift,
       loadingDock: data.farm.loadingDock,
@@ -375,6 +370,7 @@ class Farms extends Component {
       buttonType: "Edit",
       open: true,
     });
+    tableState.data = data.farm.contacts;
   }
 
   /**
@@ -386,16 +382,14 @@ class Farms extends Component {
   handleViewOpen(data) {
     this.setState({
       // Farm states
-      farmName: this.state.farmName,
-      contactName: this.state.contactName,
-      contactEmail: this.state.contactEmail,
-      contactPhone: this.state.contactPhone,
-      farmTags: this.state.farmTags,
-      forklift: this.state.forklift,
-      loadingDock: this.state.loadingDock,
-      location: this.state.location,
-      locationId: this.state.locationId,
-      transportation: this.state.transportation,
+      farmName: data.farm.farmName,
+      contacts: data.farm.contacts,
+      farmTags: data.farm.farmTags,
+      forklift: data.farm.forklift,
+      loadingDock: data.farm.loadingDock,
+      location: data.farm.location,
+      locationId: data.farm.locationId,
+      transportation: data.farm.transportation,
       // Page states
       viewOpen: true,
     });
@@ -782,10 +776,8 @@ class Farms extends Component {
         // Farm states
         farmName: "",
         farmId: "",
-        contactName: "",
-        contactEmail: "",
-        contactPhone: "(1  )    -    ",
         farmTags: [],
+        contacts: [],
         forklift: false,
         loadingDock: false,
         location: "",
@@ -794,6 +786,7 @@ class Farms extends Component {
         // Page states
         open: true,
       });
+      tableState.data = [];
     };
 
     /**
@@ -806,9 +799,7 @@ class Farms extends Component {
       const newFarm = {
         // farm states
         farmName: this.state.farmName,
-        contactName: this.state.contactName,
-        contactEmail: this.state.contactEmail,
-        contactPhone: this.state.contactPhone,
+        contacts: this.state.contacts,
         farmTags: this.state.farmTags,
         forklift: this.state.forklift,
         loadingDock: this.state.loadingDock,
@@ -936,57 +927,7 @@ class Farms extends Component {
                       location={this.state.location}
                     />
                   </Grid>
-                  <Grid item xs={3}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="contactName"
-                      label="Point of Contact - Name"
-                      name="contactName"
-                      type="text"
-                      autoComplete="contactName"
-                      helperText={errors.contactName}
-                      value={this.state.contactName}
-                      error={errors.contactName ? true : false}
-                      onChange={this.handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <FormControl fullWidth>
-                      <InputLabel variant="outlined" htmlFor="contactPhone">
-                        Point of Contact - Phone
-                      </InputLabel>
-                      <OutlinedInput
-                        label="Point of Contact - Phone"
-                        onChange={this.handleChange}
-                        name="contactPhone"
-                        id="contactPhone"
-                        autoComplete="contactName"
-                        helperText={errors.contactPhone}
-                        value={this.state.contactPhone}
-                        error={errors.contactPhone ? true : false}
-                        inputComponent={TextMaskCustom}
-                      />
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="contactEmail"
-                      label="Point of Contact - Email"
-                      name="contactEmail"
-                      type="email"
-                      autoComplete="contactEmail"
-                      helperText={errors.contactEmail}
-                      value={this.state.contactEmail}
-                      error={errors.contactEmail ? true : false}
-                      onChange={this.handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                     <FormControl variant="outlined" fullWidth>
                       <InputLabel htmlFor="outlined-transportation">
                         Loading Dock Present
@@ -1005,7 +946,7 @@ class Farms extends Component {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                     <FormControl variant="outlined" fullWidth>
                       <InputLabel htmlFor="outlined-transportation">
                         Forklift Present
@@ -1024,7 +965,7 @@ class Farms extends Component {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                     <FormControl variant="outlined" fullWidth>
                       <InputLabel htmlFor="outlined-transportation">
                         Transportation Present
@@ -1043,14 +984,16 @@ class Farms extends Component {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={12}>
                     {this.tagsAutocompleteSearch()}
                   </Grid>
                 </Grid>
-                <div className={classes.table}>
+                <div className={classes.tablePadding}>
                   <CustomTable
                     title="Farms Contacts"
-                    tableState={TABLE_STATE}
+                    tableState={tableState}
+                    data={this.state.contacts}
+                    changeContacts={this.changeContacts}
                   />
                 </div>
               </form>
@@ -1061,6 +1004,94 @@ class Farms extends Component {
               <Grid item xs={12}>
                 {this.filteringAccordion()}
               </Grid>
+              {this.state.farms.map((farm) => (
+                <Grid item xs={12}>
+                  <Card className={classes.root} variant="outlined">
+                    <CardContent>
+                      <Typography variant="h5" component="h2">
+                        {farm.farmName}
+                      </Typography>
+                      {farm.farmTags.map((tag) => (
+                        <Chip
+                          className={classes.chip}
+                          label={tag}
+                          size="small"
+                        />
+                      ))}
+                      <Box
+                        display="flex"
+                        flexDirection="row"
+                        flexWrap="wrap"
+                        p={0}
+                        m={0}
+                      >
+                        <Box p={3}>
+                          <Typography
+                            className={classes.pos}
+                            color="textSecondary"
+                          >
+                            Details:
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            component="p"
+                            className={classes.farmLocation}
+                          >
+                            Location of Farm: {farm.location}
+                          </Typography>
+                        </Box>
+                        <Box p={3}>
+                          <Typography
+                            className={classes.pos}
+                            color="textSecondary"
+                          >
+                            Point of Contact:
+                          </Typography>
+                          <Typography variant="body2" component="p">
+                            Name: {farm.contacts[0]["contactName"]}
+                            <br />
+                            Phone: {farm.contacts[0]["contactPhone"]}
+                            <br />
+                            Email: {farm.contacts[0]["contactEmail"]}
+                          </Typography>
+                        </Box>
+                        <Box p={3}>
+                          <Typography
+                            className={classes.pos}
+                            color="textSecondary"
+                          >
+                            Logistics:
+                          </Typography>
+                          <Typography variant="body2" component="p">
+                            Have Transportation Means:
+                            {farm.transportation ? "yes" : "no"}
+                            <br />
+                            Loading Dock: {farm.loadingDock ? "yes" : "no"}
+                            <br />
+                            Forklift: {farm.forklift ? "yes" : "no"}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                    <CardActions>
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => this.handleEditClick({ farm })}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => this.handleDelete({ farm })}
+                      >
+                        Delete
+                      </Button>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              ))}
             </Grid>
             {this.handleResultsRender()}
           </Container>
@@ -1095,13 +1126,13 @@ class Farms extends Component {
                   <Typography className={classes.pos} color="textSecondary">
                     Point of Contact:
                   </Typography>
-                  <Typography variant="body2" component="p">
-                    Name: {this.state.contactName}
+                  {/* <Typography variant="body2" component="p">
+                    Name: {this.state.contacts[0]["contactName"]}
                     <br />
-                    Phone: {this.state.contactPhone}
+                    Phone: {this.state.contacts[0]["contactPhone"]}
                     <br />
-                    Email: {this.state.contactEmail}
-                  </Typography>
+                    Email: {this.state.contacts[0]["contactEmail"]}
+                  </Typography> */}
                 </Box>
                 <Box p={3}>
                   <Typography className={classes.pos} color="textSecondary">

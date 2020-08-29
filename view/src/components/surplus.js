@@ -392,10 +392,7 @@ class Surplus extends Component {
       return (
         <main className={classes.content}>
           {this.state.uiLoading && (
-            <CardSkeletons
-              classes={classes}
-              noPadding={this.props.inStepper}
-            />
+            <CardSkeletons classes={classes} noPadding={this.props.inStepper} />
           )}
         </main>
       );
