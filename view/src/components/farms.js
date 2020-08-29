@@ -219,7 +219,7 @@ class Farms extends Component {
       data: "",
       value: "",
       locationQuery: "",
-      filteredData: "",
+      filteredData: [],
       // Farm states
       farms: "",
       farmName: "",
@@ -388,31 +388,42 @@ class Farms extends Component {
   };
 
   handleLocationSearch = (event) => {
-    //const { value } = event.target;
-    const { fdata } = this.state.data;
+    console.log("event", event);
+    console.log("etv", event.target.value);
+    const lq = event.target.value;
+    const fdata = this.state.data;
     //const fdata = data.slice();
+    const local_copy = this.state.data.slice();
+    console.log("lc", local_copy);
 
-    this.setState((fdata) => ({
-      locationQuery: event.target.value,
-      filteredData: fdata.slice(),
-    }));
+    this.setState({
+      locationQuery: lq,
+      filteredData: this.state.data.slice(),
+    });
 
     console.log("fd", this.state.filteredData);
     console.log("d", this.state.data);
+    console.log("lq", this.state.locationQuery);
+
     // data to use for secondary search - ultimately avoid copying?
+    // avoid copying by calling SR here, then taking results into simple search, then rendering that..
+    // cleaner to do this instead of tracking multiple searches? or add that for more support??
     // call simple search and re-render????
-    this.simpleSearch(this.state.locationQuery);
+    //this.simpleSearch(this.state.locationQuery);
+    this.simpleSearch(event.target.value);
   };
 
   // Search specified field for string query
   // Render updated data into the cards - reload if user wants to re name - search after adding extra search details in
   simpleSearch = (query) => {
+    console.log("query here", query);
     // const { value } = event.target;
     // multiFilteredData = filter by query
     //const { value } = event.target;
     const multiFilteredData = this.state.filteredData.filter((farm) =>
       farm.location.includes(query)
     );
+    console.log("mfd here: ", multiFilteredData);
     this.handleResultsRender(multiFilteredData);
   };
 
@@ -535,6 +546,8 @@ class Farms extends Component {
   // Handles the rendering of filtered produce results into React cards
   handleResultsRender = (filteredValues) => {
     const { classes } = this.props;
+    console.log("FV HERE", filteredValues);
+
     return (
       <div>
         <Grid container spacing={2} alignItem="center">
@@ -961,6 +974,8 @@ class Farms extends Component {
               data={data}
               //renderResults={(results) => this.handleResultsRender}
               //renderResults={this.handleResultsRender({ results = {results} })}
+              //{ console.log("Calling hRR here?") }
+              // rR instead of filtering on my own - impact not needed anymore make this the same as before?
               renderResults={this.handleResultsRender}
             />
           </Container>
