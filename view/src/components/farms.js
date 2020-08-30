@@ -22,6 +22,7 @@ import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import Chip from "@material-ui/core/Chip";
 import SearchIcon from "@material-ui/icons/Search";
+import ClearIcon from "@material-ui/icons/Clear";
 import Box from "@material-ui/core/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -538,6 +539,15 @@ class Farms extends Component {
             <Typography className={classes.heading}>Search by Name</Typography>
           </AccordionSummary>
           <AccordionDetails>
+            <Button
+              //onClick={() => this.resetCards}
+              onClick={this.resetCards}
+              variant="contained"
+              color="primary"
+            >
+              <ClearIcon />
+              All Queries
+            </Button>
             <Autocomplete
               id="produce-name-search"
               options={filteredData.map((produce) => produce.farmName)}
