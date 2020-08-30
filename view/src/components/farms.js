@@ -245,6 +245,7 @@ class Farms extends Component {
     this.handleTagFilter = this.handleTagFilter.bind(this);
 
     this.handleResultsRender = this.handleResultsRender.bind(this);
+    this.resetCards = this.resetCards.bind(this);
   }
 
   /**
@@ -442,13 +443,23 @@ class Farms extends Component {
       return;
     }
     var { tagsQuery } = this.state;
-    tagsQuery.push.apply(tagsQuery, values);
+    // tagsQuery.push.apply(tagsQuery, values);
+
+    //tagsQuery.push.apply([], values);
+    // needed for state change to register? or perhaps not?
+    if (values.length < tagsQuery.length) {
+      this.resetCards();
+    } else {
+      tagsQuery.push.apply(tagsQuery, values);
+    }
+
     // to get state change to register, need to ?
     // this.setState({
     //   // Search state
     //   tagsQuery: [...values],
     // });
     console.log("updated tq why? ", this.state.tagsQuery);
+    // update after cards have been reset!
     this.state.tagsQuery.map((tag) => this.simpleSearch("tag", tag));
   };
   //handleTagFilter = (event) =>
@@ -682,6 +693,38 @@ class Farms extends Component {
         />
       </div>
     );
+  };
+
+  // Upon clearing of search queries, or clicking reset button
+  // Reset filteredData to the original page data
+  resetCards = () => {
+    // help why doesn't it update... but push apply does?
+    console.log("current fd", this.state.filteredData);
+    console.log("current d", this.state.data);
+    //var copyData = this.state.data.map((item) => item);
+    const copyData = this.state.data.slice();
+    console.log("cd pls :( ", copyData);
+    this.setState(
+      {
+        filteredData: copyData,
+      },
+      this.handleResultsRender
+    );
+    // this.setState((prevState) => ({
+    //   filteredData: [...prevState.data],
+    // }));
+    console.log("updated fd", this.state.filteredData);
+    // this.state.filteredData.push.apply([], this.state.data);
+    // var newData = [...this.state.data];
+    // console.log("current nd", this.state.data);
+    // this.setState({
+    //   filteredData: newData,
+    // });
+    // this.setState((state) => {
+    //   const filteredData = state.data.map((item) => item);
+
+    //   return { filteredData };
+    // });
   };
 
   // Handles the rendering of filtered produce results into React cards
