@@ -208,6 +208,7 @@ class Farms extends Component {
       data: "",
       nameQuery: "",
       locationQuery: "",
+      tagsQuery: [],
       filteredData: [],
       allFarmTags: [],
       // TODO: should this be updated as data gets filtered - yes ? realtime maybe not needed
@@ -429,21 +430,51 @@ class Farms extends Component {
 
     this.simpleSearch("location", event.target.value);
   };
-
-  handleTagFilter = (event) => {
-    console.log("ht event", event);
-    console.log("ht etv", event.target.value);
-    if (event.target.value === [] || event.target.value === "") {
-      //this.setState({ filteredData: this.state.data.slice() });
-      // TODO: use data reset button instead?
+  // TODO: see if can isolate only the mos trecent addition - let it go
+  /** Used to update tagQueries for searching the page */
+  handleTagFilter = (event, values) => {
+    // console.log("htf called: ", event.target.value)
+    console.log("HTF VALUES", values);
+    // console.log("htf called: ", event.target.values);
+    // console.log("htf called. et: ", event.target);
+    // console.log("htf called. e: ", event);
+    if (values === null || values === []) {
       return;
     }
-
-    //const lq = event.target.value;
-    // add to the existing array or what oops
-    this.tagQuery.push.apply(this.tagQuery, event.target.value);
-    this.state.tagQuery.map((tag) => this.simpleSearch("tag", tag));
+    var { tagsQuery } = this.state;
+    tagsQuery.push.apply(tagsQuery, values);
+    // to get state change to register, need to ?
+    // this.setState({
+    //   // Search state
+    //   tagsQuery: [...values],
+    // });
+    console.log("updated tq why? ", this.state.tagsQuery);
+    this.state.tagsQuery.map((tag) => this.simpleSearch("tag", tag));
   };
+  //handleTagFilter = (event) =>
+  // handleTagFilter = (event) => {
+  //   console.log("ht event", event);
+  //   console.log("ht etv", event.target.value);
+  //   if (event.target.value === [] || event.target.value === "") {
+  //     //this.setState({ filteredData: this.state.data.slice() });
+  //     // TODO: use data reset button instead?
+  //     return;
+  //   }
+
+  //   //const lq = event.target.value;
+  //   // add to the existing array or what oops - is this too direct modify?
+  //   // copy the array, edit it, then setState to a copy of that array next???
+  //   // return to what push.apply returns to us???
+  //   // when / how to update tQuery - inside here or after here???
+  //   // we might already have the whole array RIPPP :(
+  //   // did i learn this for nothing :/
+  //   // ok try it out - maybe dont code at 4am again
+  //   var { tagQuery } = this.state;
+  //   tagQuery.push.apply(tagQuery, event.target.value);
+  //   tagQuery.map((tag) => this.simpleSearch("tag", tag)); // only want to ss the next one that got added
+  //   // aka 1 by 1 search things ideally
+  //   // tracking tQ not needed in btwn things then?
+  // };
   // Search specified field for string query
   // Render updated data into the cards - reload if user wants to re name - search after adding extra search details in
   simpleSearch = (field, query) => {
@@ -602,7 +633,7 @@ class Farms extends Component {
   // div and container spacing around respectively - or assign spacing inline with boolean check
   tagsAutocompleteSearch = () => {
     const { classes } = this.props;
-    const { filteredData, viewOpen, allFarmTags } = this.state;
+    const { filteredData, viewOpen, allFarmTags, tagsQuery } = this.state;
     console.log("FD HERE", filteredData);
     return (
       <div>
@@ -611,10 +642,11 @@ class Farms extends Component {
           id="farmTags"
           //onChange={viewOpen? this.onTagsChange : this.handleTagsSe}
           // is null safe here
-          onChange={viewOpen ? this.onTagsChange : null}
-          onSelect={viewOpen ? this.onTagsChange : this.handleTagFilter}
+          onChange={viewOpen ? this.onTagsChange : this.handleTagFilter}
+          // doesn't do anything onSelect={viewOpen ? this.onTagsChange : this.handleTagFilter}
           options={allFarmTags}
-          defaultValue={viewOpen ? this.state.farmTags : allFarmTags}
+          //defaultValue={viewOpen ? this.state.farmTags : allFarmTags}
+          //value={tagsQuery} // update from here instead? but why??
           // old dval? to get it to show viusually yes
           fullWidth={viewOpen ? false : true}
           // viewOpen ? this.state.farmTags :
@@ -723,14 +755,14 @@ class Farms extends Component {
                   <Button
                     size="small"
                     color="primary"
-                    onClick={() => this.handleEditClickOpen({ farm })}
+                    onClick={() => this.handleEditClick({ farm })}
                   >
                     Edit
                   </Button>
                   <Button
                     size="small"
                     color="primary"
-                    onClick={() => this.deleteTodoHandler({ farm })}
+                    onClick={() => this.handleDelete({ farm })}
                   >
                     Delete
                   </Button>
