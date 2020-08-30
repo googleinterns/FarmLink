@@ -319,11 +319,11 @@ class Farms extends Component {
           // Page state
           uiLoading: false,
         });
+        this.populateAllFarmTags();
       })
       .catch((err) => {
         console.error(err);
       });
-    this.populateAllFarmTags();
   }
 
   /**
@@ -394,6 +394,8 @@ class Farms extends Component {
       viewOpen: true,
     });
   }
+
+  // string for which search, search can auto update onChange of the nameQuery state??
 
   // Updates the string that the produce array will be searched for.
   // This string value can contain any produce field (name, weight, internal
@@ -1004,94 +1006,6 @@ class Farms extends Component {
               <Grid item xs={12}>
                 {this.filteringAccordion()}
               </Grid>
-              {this.state.farms.map((farm) => (
-                <Grid item xs={12}>
-                  <Card className={classes.root} variant="outlined">
-                    <CardContent>
-                      <Typography variant="h5" component="h2">
-                        {farm.farmName}
-                      </Typography>
-                      {farm.farmTags.map((tag) => (
-                        <Chip
-                          className={classes.chip}
-                          label={tag}
-                          size="small"
-                        />
-                      ))}
-                      <Box
-                        display="flex"
-                        flexDirection="row"
-                        flexWrap="wrap"
-                        p={0}
-                        m={0}
-                      >
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Details:
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            component="p"
-                            className={classes.farmLocation}
-                          >
-                            Location of Farm: {farm.location}
-                          </Typography>
-                        </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Point of Contact:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Name: {farm.contacts[0]["contactName"]}
-                            <br />
-                            Phone: {farm.contacts[0]["contactPhone"]}
-                            <br />
-                            Email: {farm.contacts[0]["contactEmail"]}
-                          </Typography>
-                        </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Logistics:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Have Transportation Means:
-                            {farm.transportation ? "yes" : "no"}
-                            <br />
-                            Loading Dock: {farm.loadingDock ? "yes" : "no"}
-                            <br />
-                            Forklift: {farm.forklift ? "yes" : "no"}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                    <CardActions>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleEditClick({ farm })}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleDelete({ farm })}
-                      >
-                        Delete
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
             </Grid>
             {this.handleResultsRender()}
           </Container>
