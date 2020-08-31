@@ -600,7 +600,11 @@ class Farms extends Component {
     );
   };
 
-  /** Returns tag filtering menu */
+  /**
+   * Returns tag filtering menu for searching cards.
+   * Re-using the autocomplete for the add new/edit farm form causes issues with setting a conditional
+   * value for Autocomplete value={}, so separating the two is smoother.
+   */
   tagsAutocomplete = () => {
     const { classes } = this.props;
     const { allFarmTags, tagsQuery } = this.state;
