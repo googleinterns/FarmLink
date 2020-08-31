@@ -229,10 +229,10 @@ class Farms extends Component {
     this.state = {
       // Search states
       data: "",
+      filteredData: [],
       nameQuery: "",
       locationQuery: "",
       tagsQuery: [],
-      filteredData: [],
       allFarmTags: [],
       // Farm states
       farms: "",
