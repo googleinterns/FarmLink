@@ -123,7 +123,6 @@ const styles = (theme) => ({
   },
   searchBar: {
     borderRadius: theme.shape.borderRadius,
-    marginRight: "4px",
     marginTop: "2px",
   },
   searchIcon: {
@@ -675,7 +674,7 @@ class Farms extends Component {
       <div>
         <Grid container spacing={2} alignItem="center">
           {filteredData.map((farm) => (
-            <Grid item xs={12} key={farm.farmId}>
+            <Grid item xs={12}>
               <Card className={classes.root} variant="outlined">
                 <CardContent>
                   <Typography variant="h5" component="h2">
@@ -695,10 +694,12 @@ class Farms extends Component {
                       <Typography className={classes.pos} color="textSecondary">
                         Details:
                       </Typography>
-                      <Typography variant="body2" component="p">
-                        Location of Farm: {`${farm.location.substring(0, 30)}`}
-                        <br />
-                        {`${farm.location.substring(30, 78)}`}
+                      <Typography
+                        variant="body2"
+                        component="p"
+                        className={classes.farmLocation}
+                      >
+                        Location of Farm: {farm.location}
                       </Typography>
                     </Box>
                     <Box p={3}>
@@ -706,11 +707,11 @@ class Farms extends Component {
                         Point of Contact:
                       </Typography>
                       <Typography variant="body2" component="p">
-                        Name: {farm.contactName}
+                        Name: {farm.contacts[0]["contactName"]}
                         <br />
-                        Phone: {farm.contactPhone}
+                        Phone: {farm.contacts[0]["contactPhone"]}
                         <br />
-                        Email: {farm.contactEmail}
+                        Email: {farm.contacts[0]["contactEmail"]}
                       </Typography>
                     </Box>
                     <Box p={3}>
@@ -719,7 +720,7 @@ class Farms extends Component {
                       </Typography>
                       <Typography variant="body2" component="p">
                         Have Transportation Means:{" "}
-                        {farm.transportation ? "yes" : "no"}
+                        {farm.transportation ? " yes" : " no"}
                         <br />
                         Loading Dock: {farm.loadingDock ? "yes" : "no"}
                         <br />
