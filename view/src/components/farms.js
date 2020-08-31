@@ -264,6 +264,7 @@ class Farms extends Component {
 
     this.populateAllFarmTags = this.populateAllFarmTags.bind(this);
     this.handleTagFilter = this.handleTagFilter.bind(this);
+    this.searchTagQuery = this.searchTagQuery.bind(this);
 
     this.handleResultsRender = this.handleResultsRender.bind(this);
     this.resetCards = this.resetCards.bind(this);
@@ -282,18 +283,14 @@ class Farms extends Component {
   };
 
   /** Iterate over all tags in filteredData to update tags for filtering by */
-  // TODO: figure out why it doesn't work for initial data
   populateAllFarmTags = () => {
     const { filteredData } = this.state;
     var populatedTags = [];
     filteredData.map((data) =>
       populatedTags.push.apply(populatedTags, data.farmTags)
     );
+    // Get unique tags only
     const populatedUniqueTags = [...new Set(populatedTags)];
-
-    // set vs array here vs later ????
-    console.log("pt arr", populatedTags);
-    console.log("pt unique arr", populatedUniqueTags);
 
     this.setState({
       allFarmTags: populatedUniqueTags,
@@ -426,35 +423,55 @@ class Farms extends Component {
   // shipment numbers) and will still return
   // the appropriate filtered results.
   handleNameSearch = (event) => {
+    console.log("hnst", event.target);
+    console.log("hnsn", event.target.id);
     const { value } = event.target;
     this.setState({ value });
-    // reset page data upon clearing of search value ? dif situation here ?
     if (value === "") {
-      //this.setState({ filteredData: this.state.data.slice() });
       return;
     }
-    this.simpleSearch("name", event.target.value); // update fD
+    this.simpleSearch("name", event.target.value);
   };
 
   // handlesSelects only right now - expand for anyChange next?
-  handleLocationSearch = (event) => {
-    if (event.target.value === "") {
+  handleStringSearch = (event) => {
+    //console.log
+    const lq = event.target.value;
+    if (lq === "") {
       //this.setState({ filteredData: this.state.data.slice() });
       // TODO: use data reset button instead?
       return;
     }
 
+    this.setState({
+      locationQuery: lq,
+    });
+
+    this.simpleSearch("location", lq);
+  };
+
+  // handlesSelects only right now - expand for anyChange next?
+  handleLocationSearch = (event) => {
     const lq = event.target.value;
+    if (lq === "") {
+      //this.setState({ filteredData: this.state.data.slice() });
+      // TODO: use data reset button instead?
+      return;
+    }
 
     this.setState({
       locationQuery: lq,
-      //filteredData: this.state.data.slice(),
     });
 
-    this.simpleSearch("location", event.target.value);
+    this.simpleSearch("location", lq);
   };
-  // TODO: see if can isolate only the mos trecent addition - let it go
-  /** Used to update tagQueries for searching the page */
+
+  searchTagQuery = () => {
+    console.log("updated stq why? ", this.state.tagsQuery);
+    this.state.tagsQuery.map((item) => this.simpleSearch("tag", item));
+  };
+
+  /** Used to update tagQueries and search the page */
   handleTagFilter = (event, values) => {
     // console.log("htf called: ", event.target.value)
     console.log("HTF VALUES", values);
@@ -464,25 +481,32 @@ class Farms extends Component {
     if (values === null || values === []) {
       return;
     }
-    var { tagsQuery } = this.state;
+    const prevValues = this.state.tagsQuery;
     // tagsQuery.push.apply(tagsQuery, values);
 
     //tagsQuery.push.apply([], values);
     // needed for state change to register? or perhaps not?
-    if (values.length < tagsQuery.length) {
+    // NO this needs to be the previous state? bc tQ is now updated in there or nah ah
+    // not updated in there so that we can compare in this way???
+    if (values.length < prevValues.length) {
       this.resetCards();
     } else {
-      tagsQuery.push.apply(tagsQuery, values);
+      const tempValues = [...values];
+
+      this.setState(
+        {
+          // Search state
+          tagsQuery: [...values],
+        },
+        this.searchTagQuery
+      );
+      // this.setState((prevState) => {
+      //   tagsQuery: [...prevState.tagsQuery, values];
+      // });
+      //tagsQuery.push.apply(tagsQuery, values);
     }
 
     // to get state change to register, need to ?
-    // this.setState({
-    //   // Search state
-    //   tagsQuery: [...values],
-    // });
-    console.log("updated tq why? ", this.state.tagsQuery);
-    // update after cards have been reset!
-    this.state.tagsQuery.map((tag) => this.simpleSearch("tag", tag));
   };
   //handleTagFilter = (event) =>
   // handleTagFilter = (event) => {
@@ -581,7 +605,7 @@ class Farms extends Component {
           />
         </div>
 
-        <div>{this.tagsAutocompleteSearch()}</div>
+        <div>{this.tagsAutocomplete(false)}</div>
 
         <div>
           <Typography className={classes.heading}>
@@ -656,56 +680,56 @@ class Farms extends Component {
   // Returns tag autocomplete search - used in filteringAccording and
   // add or edit a farm form
   // div and container spacing around respectively - or assign spacing inline with boolean check
-  tagsAutocompleteSearch = () => {
+  tagsAutocomplete = (modifyingItem) => {
     const { classes } = this.props;
     const { filteredData, viewOpen, allFarmTags, tagsQuery } = this.state;
-    console.log("FD HERE", filteredData);
+
     return (
-      <div>
-        <Autocomplete
-          className={classes.searchBars}
-          multiple
-          id="farmTags"
-          //onChange={viewOpen? this.onTagsChange : this.handleTagsSe}
-          // is null safe here
-          onChange={viewOpen ? this.onTagsChange : this.handleTagFilter}
-          // doesn't do anything onSelect={viewOpen ? this.onTagsChange : this.handleTagFilter}
-          options={allFarmTags}
-          //defaultValue={viewOpen ? this.state.farmTags : allFarmTags}
-          //value={tagsQuery} // update from here instead? but why??
-          fullWidth={viewOpen ? false : true}
-          // viewOpen ? this.state.farmTags :
-          freeSolo={viewOpen ? true : false}
-          renderTags={(value, getTagProps) =>
-            value.map((option, index) => (
-              <Chip label={option} {...getTagProps({ index })} />
-            ))
-          }
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="outlined"
-              label="Farm Tags"
-              placeholder="Type or Select a Farm Tag"
-              InputProps={
-                viewOpen
-                  ? null
-                  : {
-                      ...params.InputProps,
-                      startAdornment: (
-                        <>
-                          <InputAdornment position="start">
-                            <SearchIcon />
-                          </InputAdornment>
-                          {params.InputProps.startAdornment}
-                        </>
-                      ),
-                    }
-              }
-            />
-          )}
-        />
-      </div>
+      <Autocomplete
+        className={modifyingItem ? null : classes.searchBars}
+        multiple
+        id="farmTags"
+        //onChange={viewOpen? this.onTagsChange : this.handleTagsSe}
+        // is null safe here
+        onChange={modifyingItem ? this.onTagsChange : this.handleTagFilter}
+        // doesn't do anything onSelect={viewOpen ? this.onTagsChange : this.handleTagFilter}
+        options={allFarmTags}
+        defaultValue={modifyingItem ? this.state.farmTags : []}
+        //defaultValue={modifyingItem ? this.state.farmTags : allFarmTags}
+        value={tagsQuery} // update from here instead? but why??
+        // match up when clears up?
+        fullWidth={modifyingItem ? false : true}
+        // viewOpen ? this.state.farmTags :
+        freeSolo={modifyingItem ? true : false}
+        renderTags={(value, getTagProps) =>
+          value.map((option, index) => (
+            <Chip label={option} {...getTagProps({ index })} />
+          ))
+        }
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            label="Farm Tags"
+            placeholder="Type or Select a Farm Tag"
+            InputProps={
+              modifyingItem
+                ? null
+                : {
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                  }
+            }
+          />
+        )}
+      />
     );
   };
 
@@ -714,12 +738,9 @@ class Farms extends Component {
       return;
     }
     const copyData = [...newValues]; // is this needed?
-    this.setState(
-      {
-        filteredData: copyData,
-      },
-      this.handleResultsRender
-    );
+    this.setState({
+      filteredData: copyData,
+    });
   };
 
   // Upon clearing of search queries, or clicking reset button
@@ -731,6 +752,7 @@ class Farms extends Component {
       locationQuery: "",
       tagsQuery: [],
     });
+    this.populateAllFarmTags();
   };
 
   // Handles the rendering of filtered produce results into React cards
@@ -1066,6 +1088,9 @@ class Farms extends Component {
                         <MenuItem value={false}>No</MenuItem>
                       </Select>
                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12}>
+                    {/*this.tagsAutocomplete(true)*/}
                   </Grid>
                 </Grid>
                 <div className={classes.tablePadding}>
