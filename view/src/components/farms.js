@@ -40,7 +40,6 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Divider from "@material-ui/core/Divider";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
 
 import axios from "axios";
 import dayjs from "dayjs";
@@ -426,7 +425,8 @@ class Farms extends Component {
 
   /** Update a stringQuery and search the cards by the specified query variable */
   handleStringSearch = (queryName, event) => {
-    console.log("hnsn", queryName);
+    // queryName is used instead of event.target.name or event.target.id
+    // since both onChange and onSelect call this function with id and name
     const { value } = event.target;
     if (value === "") {
       return;
@@ -441,7 +441,6 @@ class Farms extends Component {
 
   /** Search the cards by the current tagQueries. */
   searchTagQuery = () => {
-    // Iterate through selectedTags and call simpleSearch on each
     this.state.tagsQuery.map((item) => this.simpleSearch("tags-search", item));
   };
 
@@ -461,14 +460,14 @@ class Farms extends Component {
           tagsQuery: [...values],
         },
         // Use callback to ensure that tagsQuery has updated before searching tags
-        // Avoid adding parameters: it causes timing  issues with the callback
+        // Avoid adding parameters: it causes timing issues with the callback
         this.searchTagQuery
       );
     }
   };
 
+  /** Makes appropriate search by field and query of the data, updates filtered page states */
   simpleSearch = (field, query) => {
-    console.log("query here", query);
     var multiFilteredData = [];
 
     switch (field) {
@@ -496,7 +495,7 @@ class Farms extends Component {
     );
   };
 
-  // Returns additional search features that are collapsed at first glance
+  /** Returns additional search features that are collapsed at first glance */
   extraFiltersAccordion = () => {
     const { classes } = this.props;
     const { locationQuery, filteredData } = this.state;
@@ -545,13 +544,11 @@ class Farms extends Component {
     );
   };
 
-  // Returns the accordion menu that houses all search and filtering options
+  /** Returns the accordion menu that contains all search and filtering options */
   filteringAccordion = () => {
     const { classes } = this.props;
-    const { nameQuery, locationQuery, filteredData } = this.state;
-    // For filtering by name and location
-    const { data } = this.state;
-    // For filtering by distances from location
+    const { nameQuery, filteredData } = this.state;
+
     return (
       <div>
         <Accordion>
@@ -605,10 +602,7 @@ class Farms extends Component {
     );
   };
 
-  // Q for reviewers: should i separate this function into two?
-  // Returns tag autocomplete search - used in filteringAccording and
-  // add or edit a farm form
-  // div and container spacing around respectively - or assign spacing inline with boolean check
+  /** Returns tag filtering menu */
   tagsAutocomplete = () => {
     const { classes } = this.props;
     const { allFarmTags, tagsQuery } = this.state;
@@ -650,7 +644,7 @@ class Farms extends Component {
     );
   };
 
-  /** Update filteredData with new array */
+  /** Updates filteredData with a new array; used with filters.js queries */
   updateCards = (newValues) => {
     if (newValues === []) {
       return;
@@ -662,20 +656,21 @@ class Farms extends Component {
 
   /** Reset filteredData to the original page data, upon clicking reset */
   resetCards = () => {
-    this.setState({
-      filteredData: [...this.state.data],
-      nameQuery: "",
-      locationQuery: "",
-      tagsQuery: [],
-    });
-    this.populateAllFarmTags();
+    this.setState(
+      {
+        filteredData: [...this.state.data],
+        nameQuery: "",
+        locationQuery: "",
+        tagsQuery: [],
+      },
+      this.populateAllFarmTags
+    );
   };
 
   /** Renders filtered produce results into Material-UI cards */
   handleResultsRender = () => {
     const { classes } = this.props;
     const { filteredData } = this.state;
-    console.log("FD HERE", filteredData);
 
     return (
       <div>
@@ -818,7 +813,7 @@ class Farms extends Component {
       authMiddleWare(this.props.history);
       event.preventDefault();
       const newFarm = {
-        // farm states
+        // Farm states
         farmName: this.state.farmName,
         contacts: this.state.contacts,
         farmTags: this.state.farmTags,
