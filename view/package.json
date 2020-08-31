@@ -17,6 +17,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-filter-search": "^1.0.11",
+    "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "react-text-mask": "^5.4.3"
@@ -44,6 +45,7 @@
   },
   "proxy": "https://us-central1-farmlink-48502.cloudfunctions.net/api",
   "devDependencies": {
-    "jest-localstorage-mock": "^2.4.3"
+    "jest-localstorage-mock": "^2.4.3",
+    "jest-mock-axios": "^4.2.1"
   }
 }
