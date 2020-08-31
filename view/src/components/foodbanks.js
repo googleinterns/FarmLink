@@ -246,7 +246,6 @@ class Foodbank extends Component {
   /** Used to update tags in form */
   onTagsChange = (event, values) => {
     this.setState({
-      // food bank state
       foodbankTags: values,
     });
   };
@@ -817,21 +816,26 @@ class Foodbank extends Component {
                             Max Load Size (in pallets): {foodbank.maxLoadSize}
                           </Typography>
                         </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Point of Contact:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Name: {foodbank.contacts[0]["contactName"]}
-                            <br />
-                            Phone: {foodbank.contacts[0]["contactPhone"]}
-                            <br />
-                            Email: {foodbank.contacts[0]["contactEmail"]}
-                          </Typography>
-                        </Box>
+                        {/* TODO(andrewhojel): allow user to choose the point of contact! */}
+                        {foodbank.contacts.length > 0 && (
+                          <Box p={3}>
+                            <Typography
+                              className={classes.pos}
+                              color="textSecondary"
+                            >
+                              Point of Contact:
+                            </Typography>
+                            <Typography variant="body2" component="p">
+                              Role: {foodbank.contacts[0]["contactRole"]}
+                              <br />
+                              Name: {foodbank.contacts[0]["contactName"]}
+                              <br />
+                              Phone: {foodbank.contacts[0]["contactPhone"]}
+                              <br />
+                              Email: {foodbank.contacts[0]["contactEmail"]}
+                            </Typography>
+                          </Box>
+                        )}
                         <Box p={3}>
                           <Typography
                             className={classes.pos}
@@ -847,22 +851,7 @@ class Foodbank extends Component {
                             Loading Dock: {foodbank.loadingDock ? "yes" : "no"}
                           </Typography>
                         </Box>
-                        {/* --> this will be implemented when we get hours from Place API <--
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Hours of Operation:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Monday-Friday: 9am - 5pm
-                            <br />
-                            Saturday: 10am - 4pm
-                            <br />
-                            Sunday: closed
-                          </Typography>
-                        </Box> */}
+                        {/* TODO(andrewhojel): do we include hours of foodbanks? */}
                       </Box>
                     </CardContent>
                     <CardActions>
@@ -945,18 +934,6 @@ class Foodbank extends Component {
                     <br />
                     Max Load Size (in pallets): {this.state.maxLoadSize}
                   </Typography>
-                </Box>
-                <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
-                    Point of Contact:
-                  </Typography>
-                  {/* <Typography variant="body2" component="p">
-                    Name: {this.state.contacts[0]["contactName"]}
-                    <br />
-                    Phone: {this.state.contacts[0]["contactName"]}
-                    <br />
-                    Email: {this.state.contacts[0]["contactEmail"]}
-                  </Typography> */}
                 </Box>
                 <Box p={3}>
                   <Typography className={classes.pos} color="textSecondary">

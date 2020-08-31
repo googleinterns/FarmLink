@@ -691,21 +691,24 @@ class Farms extends Component {
                             Location of Farm: {farm.location}
                           </Typography>
                         </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Point of Contact:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Name: {farm.contacts[0]["contactName"]}
-                            <br />
-                            Phone: {farm.contacts[0]["contactPhone"]}
-                            <br />
-                            Email: {farm.contacts[0]["contactEmail"]}
-                          </Typography>
-                        </Box>
+                        {/* TODO(andrewhojel): allow user to choose the point of contact! */}
+                        {farm.contacts.length > 0 && (
+                          <Box p={3}>
+                            <Typography
+                              className={classes.pos}
+                              color="textSecondary"
+                            >
+                              Point of Contact:
+                            </Typography>
+                            <Typography variant="body2" component="p">
+                              Name: {farm.contacts[0]["contactName"]}
+                              <br />
+                              Phone: {farm.contacts[0]["contactPhone"]}
+                              <br />
+                              Email: {farm.contacts[0]["contactEmail"]}
+                            </Typography>
+                          </Box>
+                        )}
                         <Box p={3}>
                           <Typography
                             className={classes.pos}
@@ -771,18 +774,6 @@ class Farms extends Component {
                   <Typography variant="body2" component="p">
                     Location of Farm: {this.state.location}
                   </Typography>
-                </Box>
-                <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
-                    Point of Contact:
-                  </Typography>
-                  {/* <Typography variant="body2" component="p">
-                    Name: {this.state.contacts[0]["contactName"]}
-                    <br />
-                    Phone: {this.state.contacts[0]["contactPhone"]}
-                    <br />
-                    Email: {this.state.contacts[0]["contactEmail"]}
-                  </Typography> */}
                 </Box>
                 <Box p={3}>
                   <Typography className={classes.pos} color="textSecondary">
