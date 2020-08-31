@@ -22,6 +22,7 @@ import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import Chip from "@material-ui/core/Chip";
 import SearchIcon from "@material-ui/icons/Search";
+import ClearIcon from "@material-ui/icons/Clear";
 import Box from "@material-ui/core/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -208,6 +209,7 @@ class Farms extends Component {
       data: "",
       nameQuery: "",
       locationQuery: "",
+      tagsQuery: [],
       filteredData: [],
       allFarmTags: [],
       // TODO: should this be updated as data gets filtered - yes ? realtime maybe not needed
@@ -244,6 +246,7 @@ class Farms extends Component {
     this.handleTagFilter = this.handleTagFilter.bind(this);
 
     this.handleResultsRender = this.handleResultsRender.bind(this);
+    this.resetCards = this.resetCards.bind(this);
   }
 
   /**
@@ -319,11 +322,11 @@ class Farms extends Component {
           // Page state
           uiLoading: false,
         });
+        this.populateAllFarmTags();
       })
       .catch((err) => {
         console.error(err);
       });
-    this.populateAllFarmTags();
   }
 
   /**
@@ -395,6 +398,8 @@ class Farms extends Component {
     });
   }
 
+  // string for which search, search can auto update onChange of the nameQuery state??
+
   // Updates the string that the produce array will be searched for.
   // This string value can contain any produce field (name, weight, internal
   // shipment numbers) and will still return
@@ -427,21 +432,61 @@ class Farms extends Component {
 
     this.simpleSearch("location", event.target.value);
   };
-
-  handleTagFilter = (event) => {
-    console.log("ht event", event);
-    console.log("ht etv", event.target.value);
-    if (event.target.value === [] || event.target.value === "") {
-      //this.setState({ filteredData: this.state.data.slice() });
-      // TODO: use data reset button instead?
+  // TODO: see if can isolate only the mos trecent addition - let it go
+  /** Used to update tagQueries for searching the page */
+  handleTagFilter = (event, values) => {
+    // console.log("htf called: ", event.target.value)
+    console.log("HTF VALUES", values);
+    // console.log("htf called: ", event.target.values);
+    // console.log("htf called. et: ", event.target);
+    // console.log("htf called. e: ", event);
+    if (values === null || values === []) {
       return;
     }
+    var { tagsQuery } = this.state;
+    // tagsQuery.push.apply(tagsQuery, values);
 
-    //const lq = event.target.value;
-    // add to the existing array or what oops
-    this.tagQuery.push.apply(this.tagQuery, event.target.value);
-    this.state.tagQuery.map((tag) => this.simpleSearch("tag", tag));
+    //tagsQuery.push.apply([], values);
+    // needed for state change to register? or perhaps not?
+    if (values.length < tagsQuery.length) {
+      this.resetCards();
+    } else {
+      tagsQuery.push.apply(tagsQuery, values);
+    }
+
+    // to get state change to register, need to ?
+    // this.setState({
+    //   // Search state
+    //   tagsQuery: [...values],
+    // });
+    console.log("updated tq why? ", this.state.tagsQuery);
+    // update after cards have been reset!
+    this.state.tagsQuery.map((tag) => this.simpleSearch("tag", tag));
   };
+  //handleTagFilter = (event) =>
+  // handleTagFilter = (event) => {
+  //   console.log("ht event", event);
+  //   console.log("ht etv", event.target.value);
+  //   if (event.target.value === [] || event.target.value === "") {
+  //     //this.setState({ filteredData: this.state.data.slice() });
+  //     // TODO: use data reset button instead?
+  //     return;
+  //   }
+
+  //   //const lq = event.target.value;
+  //   // add to the existing array or what oops - is this too direct modify?
+  //   // copy the array, edit it, then setState to a copy of that array next???
+  //   // return to what push.apply returns to us???
+  //   // when / how to update tQuery - inside here or after here???
+  //   // we might already have the whole array RIPPP :(
+  //   // did i learn this for nothing :/
+  //   // ok try it out - maybe dont code at 4am again
+  //   var { tagQuery } = this.state;
+  //   tagQuery.push.apply(tagQuery, event.target.value);
+  //   tagQuery.map((tag) => this.simpleSearch("tag", tag)); // only want to ss the next one that got added
+  //   // aka 1 by 1 search things ideally
+  //   // tracking tQ not needed in btwn things then?
+  // };
   // Search specified field for string query
   // Render updated data into the cards - reload if user wants to re name - search after adding extra search details in
   simpleSearch = (field, query) => {
@@ -494,6 +539,15 @@ class Farms extends Component {
             <Typography className={classes.heading}>Search by Name</Typography>
           </AccordionSummary>
           <AccordionDetails>
+            <Button
+              //onClick={() => this.resetCards}
+              onClick={this.resetCards}
+              variant="contained"
+              color="primary"
+            >
+              <ClearIcon />
+              All Queries
+            </Button>
             <Autocomplete
               id="produce-name-search"
               options={filteredData.map((produce) => produce.farmName)}
@@ -600,7 +654,7 @@ class Farms extends Component {
   // div and container spacing around respectively - or assign spacing inline with boolean check
   tagsAutocompleteSearch = () => {
     const { classes } = this.props;
-    const { filteredData, viewOpen, allFarmTags } = this.state;
+    const { filteredData, viewOpen, allFarmTags, tagsQuery } = this.state;
     console.log("FD HERE", filteredData);
     return (
       <div>
@@ -609,10 +663,11 @@ class Farms extends Component {
           id="farmTags"
           //onChange={viewOpen? this.onTagsChange : this.handleTagsSe}
           // is null safe here
-          onChange={viewOpen ? this.onTagsChange : null}
-          onSelect={viewOpen ? this.onTagsChange : this.handleTagFilter}
+          onChange={viewOpen ? this.onTagsChange : this.handleTagFilter}
+          // doesn't do anything onSelect={viewOpen ? this.onTagsChange : this.handleTagFilter}
           options={allFarmTags}
-          defaultValue={viewOpen ? this.state.farmTags : allFarmTags}
+          //defaultValue={viewOpen ? this.state.farmTags : allFarmTags}
+          //value={tagsQuery} // update from here instead? but why??
           // old dval? to get it to show viusually yes
           fullWidth={viewOpen ? false : true}
           // viewOpen ? this.state.farmTags :
@@ -648,6 +703,38 @@ class Farms extends Component {
         />
       </div>
     );
+  };
+
+  // Upon clearing of search queries, or clicking reset button
+  // Reset filteredData to the original page data
+  resetCards = () => {
+    // help why doesn't it update... but push apply does?
+    console.log("current fd", this.state.filteredData);
+    console.log("current d", this.state.data);
+    //var copyData = this.state.data.map((item) => item);
+    const copyData = this.state.data.slice();
+    console.log("cd pls :( ", copyData);
+    this.setState(
+      {
+        filteredData: copyData,
+      },
+      this.handleResultsRender
+    );
+    // this.setState((prevState) => ({
+    //   filteredData: [...prevState.data],
+    // }));
+    console.log("updated fd", this.state.filteredData);
+    // this.state.filteredData.push.apply([], this.state.data);
+    // var newData = [...this.state.data];
+    // console.log("current nd", this.state.data);
+    // this.setState({
+    //   filteredData: newData,
+    // });
+    // this.setState((state) => {
+    //   const filteredData = state.data.map((item) => item);
+
+    //   return { filteredData };
+    // });
   };
 
   // Handles the rendering of filtered produce results into React cards
@@ -721,14 +808,14 @@ class Farms extends Component {
                   <Button
                     size="small"
                     color="primary"
-                    onClick={() => this.handleEditClickOpen({ farm })}
+                    onClick={() => this.handleEditClick({ farm })}
                   >
                     Edit
                   </Button>
                   <Button
                     size="small"
                     color="primary"
-                    onClick={() => this.deleteTodoHandler({ farm })}
+                    onClick={() => this.handleDelete({ farm })}
                   >
                     Delete
                   </Button>
@@ -1004,94 +1091,6 @@ class Farms extends Component {
               <Grid item xs={12}>
                 {this.filteringAccordion()}
               </Grid>
-              {this.state.farms.map((farm) => (
-                <Grid item xs={12}>
-                  <Card className={classes.root} variant="outlined">
-                    <CardContent>
-                      <Typography variant="h5" component="h2">
-                        {farm.farmName}
-                      </Typography>
-                      {farm.farmTags.map((tag) => (
-                        <Chip
-                          className={classes.chip}
-                          label={tag}
-                          size="small"
-                        />
-                      ))}
-                      <Box
-                        display="flex"
-                        flexDirection="row"
-                        flexWrap="wrap"
-                        p={0}
-                        m={0}
-                      >
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Details:
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            component="p"
-                            className={classes.farmLocation}
-                          >
-                            Location of Farm: {farm.location}
-                          </Typography>
-                        </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Point of Contact:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Name: {farm.contacts[0]["contactName"]}
-                            <br />
-                            Phone: {farm.contacts[0]["contactPhone"]}
-                            <br />
-                            Email: {farm.contacts[0]["contactEmail"]}
-                          </Typography>
-                        </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Logistics:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Have Transportation Means:
-                            {farm.transportation ? "yes" : "no"}
-                            <br />
-                            Loading Dock: {farm.loadingDock ? "yes" : "no"}
-                            <br />
-                            Forklift: {farm.forklift ? "yes" : "no"}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                    <CardActions>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleEditClick({ farm })}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleDelete({ farm })}
-                      >
-                        Delete
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
             </Grid>
             {this.handleResultsRender()}
           </Container>
