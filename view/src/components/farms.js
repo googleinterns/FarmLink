@@ -40,6 +40,7 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Divider from "@material-ui/core/Divider";
+import OutlinedInput from "@material-ui/core/OutlinedInput";
 
 import axios from "axios";
 import dayjs from "dayjs";
@@ -245,6 +246,8 @@ class Farms extends Component {
       location: "",
       locationId: "",
       transportation: false,
+      // Farm modifying states
+      unfilteredFarmTags: [],
       // Page states
       errors: [],
       open: false, //  Used for opening the farm edit/create dialog (form)
@@ -333,14 +336,20 @@ class Farms extends Component {
     axios
       .get("/farms")
       .then((response) => {
+        this.setState(
+          {
+            // Farm state
+            data: response.data,
+            filteredData: response.data,
+            // Page state
+            uiLoading: false,
+          },
+          this.populateAllFarmTags
+        );
+
         this.setState({
-          // Farm state
-          data: response.data,
-          filteredData: response.data,
-          // Page state
-          uiLoading: false,
+          unfilteredFarmTags: this.state.allFarmTags,
         });
-        this.populateAllFarmTags();
       })
       .catch((err) => {
         console.error(err);
@@ -680,27 +689,25 @@ class Farms extends Component {
   // Returns tag autocomplete search - used in filteringAccording and
   // add or edit a farm form
   // div and container spacing around respectively - or assign spacing inline with boolean check
-  tagsAutocomplete = (modifyingItem) => {
+  tagsAutocomplete = () => {
     const { classes } = this.props;
-    const { filteredData, viewOpen, allFarmTags, tagsQuery } = this.state;
+    const {
+      filteredData,
+      viewOpen,
+      unfilteredFarmTags,
+      allFarmTags,
+      tagsQuery,
+    } = this.state;
 
     return (
       <Autocomplete
-        className={modifyingItem ? null : classes.searchBars}
+        className={classes.searchBars}
         multiple
         id="farmTags"
-        //onChange={viewOpen? this.onTagsChange : this.handleTagsSe}
-        // is null safe here
-        onChange={modifyingItem ? this.onTagsChange : this.handleTagFilter}
-        // doesn't do anything onSelect={viewOpen ? this.onTagsChange : this.handleTagFilter}
+        onChange={this.handleTagFilter}
         options={allFarmTags}
-        defaultValue={modifyingItem ? this.state.farmTags : []}
-        //defaultValue={modifyingItem ? this.state.farmTags : allFarmTags}
-        value={tagsQuery} // update from here instead? but why??
-        // match up when clears up?
-        fullWidth={modifyingItem ? false : true}
-        // viewOpen ? this.state.farmTags :
-        freeSolo={modifyingItem ? true : false}
+        value={tagsQuery}
+        fullWidth
         renderTags={(value, getTagProps) =>
           value.map((option, index) => (
             <Chip label={option} {...getTagProps({ index })} />
@@ -712,21 +719,17 @@ class Farms extends Component {
             variant="outlined"
             label="Farm Tags"
             placeholder="Type or Select a Farm Tag"
-            InputProps={
-              modifyingItem
-                ? null
-                : {
-                    ...params.InputProps,
-                    startAdornment: (
-                      <>
-                        <InputAdornment position="start">
-                          <SearchIcon />
-                        </InputAdornment>
-                        {params.InputProps.startAdornment}
-                      </>
-                    ),
-                  }
-            }
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: (
+                <>
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                  {params.InputProps.startAdornment}
+                </>
+              ),
+            }}
           />
         )}
       />
@@ -874,7 +877,7 @@ class Farms extends Component {
     dayjs.extend(relativeTime);
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
-
+    const { unfilteredFarmTags } = this.state;
     /** Set all states to generic value when opening a dialog page */
     const handleAddClick = () => {
       this.setState({
@@ -1090,7 +1093,27 @@ class Farms extends Component {
                     </FormControl>
                   </Grid>
                   <Grid item xs={12}>
-                    {/*this.tagsAutocomplete(true)*/}
+                    <Autocomplete
+                      multiple
+                      id="farmTags"
+                      onChange={this.onTagsChange}
+                      options={unfilteredFarmTags}
+                      defaultValue={this.state.farmTags}
+                      freeSolo
+                      renderTags={(value, getTagProps) =>
+                        value.map((option, index) => (
+                          <Chip label={option} {...getTagProps({ index })} />
+                        ))
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          variant="outlined"
+                          label="Farm Tags"
+                          placeholder="tags..."
+                        />
+                      )}
+                    />
                   </Grid>
                 </Grid>
                 <div className={classes.tablePadding}>
