@@ -346,7 +346,7 @@ class Farms extends Component {
         );
 
         this.setState({
-          unfilteredFarmTags: this.state.allFarmTags,
+          unfilteredFarmTags: [...this.state.allFarmTags],
         });
       })
       .catch((err) => {
