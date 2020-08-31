@@ -123,8 +123,8 @@ const styles = (theme) => ({
   },
   searchBar: {
     borderRadius: theme.shape.borderRadius,
-    marginRight: 4,
-    marginTop: 2,
+    marginRight: "4px",
+    marginTop: "2px",
   },
   searchIcon: {
     padding: theme.spacing(0, 2),
@@ -235,7 +235,6 @@ class Farms extends Component {
       filteredData: [],
       allFarmTags: [],
       // Farm states
-      farms: "",
       farmName: "",
       farmId: "",
       farmTags: [],
@@ -245,7 +244,7 @@ class Farms extends Component {
       location: "",
       locationId: "",
       transportation: false,
-      // Farm modifying states
+      // Aggregated tags used for options when editing a specific farm
       unfilteredFarmTags: [],
       // Page states
       errors: [],
