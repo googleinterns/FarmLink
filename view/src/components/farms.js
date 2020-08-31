@@ -439,10 +439,10 @@ class Farms extends Component {
     );
   };
 
-  searchTagQuery = (id) => {
+  /** Search the cards by the current tagQueries. */
+  searchTagQuery = () => {
     // Iterate through selectedTags and call simpleSearch on each
-    console.log("here ap", this.state.tagsQuery);
-    this.state.tagsQuery.map((item) => this.simpleSearch(id, item));
+    this.state.tagsQuery.map((item) => this.simpleSearch("tags-search", item));
   };
 
   /** Update tagQueries and search the cards by tags */
@@ -455,15 +455,14 @@ class Farms extends Component {
     if (values.length < prevValues.length) {
       this.resetCards();
     } else {
-      const valuesCopy = [...values];
       this.setState(
         {
           // Search state
-          tagsQuery: [...valuesCopy],
+          tagsQuery: [...values],
         },
         // Use callback to ensure that tagsQuery has updated before searching tags
-        //this.searchTagQuery(event.target.id)
-        this.searchTagQuery("tags-search")
+        // Avoid adding parameters: it causes timing  issues with the callback
+        this.searchTagQuery
       );
     }
   };
