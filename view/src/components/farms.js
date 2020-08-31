@@ -723,7 +723,7 @@ class Farms extends Component {
                         Logistics:
                       </Typography>
                       <Typography variant="body2" component="p">
-                        Have Transportation Means:{" "}
+                        Have Transportation Means:&nbsp;
                         {farm.transportation ? "yes" : "no"}
                         <br />
                         Loading Dock: {farm.loadingDock ? "yes" : "no"}
