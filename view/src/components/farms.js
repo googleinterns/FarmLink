@@ -729,10 +729,6 @@ class Farms extends Component {
                   </Box>
                 </CardContent>
                 <CardActions>
-                  {/* <Button size="small" color="primary" onClick={() => this.handleViewOpen({ farm })}>
-                                                {" "}
-                                                View{" "}
-                                            </Button> */}
                   <Button
                     size="small"
                     color="primary"
