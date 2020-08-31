@@ -539,6 +539,8 @@ class Farms extends Component {
             Find Farms within Custom Distance of a Location
           </Typography>
           <Filters render={this.updateCards}>database="farms" </Filters>
+          {/* TODO: send filteredData into Filters, get reset button to clear 
+          Filters form, add Address autocomplete to Filters UI}
         </div>
       </div>
     );
