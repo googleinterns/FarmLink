@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Address from "../extras/address_autocomplete_field";
 import CardSkeletons from "../extras/skeleton";
 import CustomTable from "../extras/table";
+import Filters from "./filters";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
@@ -247,6 +248,7 @@ class Farms extends Component {
 
     this.handleResultsRender = this.handleResultsRender.bind(this);
     this.resetCards = this.resetCards.bind(this);
+    this.updateCards = this.updateCards.bind(this);
   }
 
   /**
@@ -627,8 +629,7 @@ class Farms extends Component {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            {/* Skeleton to add location search */}
-            <Typography>Select tags to filter by:</Typography>
+            <Filters render={this.updateCards}>database="farms" </Filters>
           </AccordionDetails>
         </Accordion>
         <Accordion>
@@ -702,6 +703,19 @@ class Farms extends Component {
           )}
         />
       </div>
+    );
+  };
+
+  updateCards = (newValues) => {
+    if (newValues === []) {
+      return;
+    }
+    const copyData = [...newValues]; // is this needed?
+    this.setState(
+      {
+        filteredData: copyData,
+      },
+      this.handleResultsRender
     );
   };
 
