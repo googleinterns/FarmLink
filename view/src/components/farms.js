@@ -261,8 +261,7 @@ class Farms extends Component {
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
 
-    this.handleNameSearch = this.handleNameSearch.bind(this);
-    this.handleLocationSearch = this.handleLocationSearch.bind(this);
+    this.handleStringSearch = this.handleStringSearch.bind(this);
     this.simpleSearch = this.simpleSearch.bind(this);
 
     this.populateAllFarmTags = this.populateAllFarmTags.bind(this);
@@ -285,7 +284,7 @@ class Farms extends Component {
     });
   };
 
-  /** Iterate over all tags in filteredData to update tags for filtering by */
+  /** Combine all tags in filteredData items to update tags that user can select */
   populateAllFarmTags = () => {
     const { filteredData } = this.state;
     var populatedTags = [];
@@ -300,7 +299,7 @@ class Farms extends Component {
     });
   };
 
-  /** Used to update tags in form */
+  /** Used to update tags in form for modifying or adding an item */
   onTagsChange = (event, values) => {
     this.setState({
       // Farm state
@@ -425,171 +424,92 @@ class Farms extends Component {
     });
   }
 
-  // string for which search, search can auto update onChange of the nameQuery state??
-
-  // Updates the string that the produce array will be searched for.
-  // This string value can contain any produce field (name, weight, internal
-  // shipment numbers) and will still return
-  // the appropriate filtered results.
-  handleNameSearch = (event) => {
-    console.log("hnst", event.target);
-    console.log("hnsn", event.target.id);
+  /** Update a stringQuery and search the cards by the specified query variable */
+  handleStringSearch = (queryName, event) => {
+    console.log("hnsn", queryName);
     const { value } = event.target;
-    this.setState({ value });
     if (value === "") {
       return;
     }
-    this.simpleSearch("name", event.target.value);
+    this.setState(
+      {
+        [queryName]: value,
+      },
+      this.simpleSearch(queryName, value)
+    );
   };
 
-  // handlesSelects only right now - expand for anyChange next?
-  handleStringSearch = (event) => {
-    //console.log
-    const lq = event.target.value;
-    if (lq === "") {
-      //this.setState({ filteredData: this.state.data.slice() });
-      // TODO: use data reset button instead?
-      return;
-    }
-
-    this.setState({
-      locationQuery: lq,
-    });
-
-    this.simpleSearch("location", lq);
+  searchTagQuery = (id) => {
+    // Iterate through selectedTags and call simpleSearch on each
+    console.log("here ap", this.state.tagsQuery);
+    this.state.tagsQuery.map((item) => this.simpleSearch(id, item));
   };
 
-  // handlesSelects only right now - expand for anyChange next?
-  handleLocationSearch = (event) => {
-    const lq = event.target.value;
-    if (lq === "") {
-      //this.setState({ filteredData: this.state.data.slice() });
-      // TODO: use data reset button instead?
-      return;
-    }
-
-    this.setState({
-      locationQuery: lq,
-    });
-
-    this.simpleSearch("location", lq);
-  };
-
-  searchTagQuery = () => {
-    console.log("updated stq why? ", this.state.tagsQuery);
-    this.state.tagsQuery.map((item) => this.simpleSearch("tag", item));
-  };
-
-  /** Used to update tagQueries and search the page */
+  /** Update tagQueries and search the cards by tags */
   handleTagFilter = (event, values) => {
-    // console.log("htf called: ", event.target.value)
-    console.log("HTF VALUES", values);
-    // console.log("htf called: ", event.target.values);
-    // console.log("htf called. et: ", event.target);
-    // console.log("htf called. e: ", event);
-    if (values === null || values === []) {
+    if (values === []) {
       return;
     }
     const prevValues = this.state.tagsQuery;
-    // tagsQuery.push.apply(tagsQuery, values);
-
-    //tagsQuery.push.apply([], values);
-    // needed for state change to register? or perhaps not?
-    // NO this needs to be the previous state? bc tQ is now updated in there or nah ah
-    // not updated in there so that we can compare in this way???
+    // If the user has removed one of the previous tags, reset all search queries
     if (values.length < prevValues.length) {
       this.resetCards();
     } else {
-      const tempValues = [...values];
-
+      const valuesCopy = [...values];
       this.setState(
         {
           // Search state
-          tagsQuery: [...values],
+          tagsQuery: [...valuesCopy],
         },
-        this.searchTagQuery
+        // Use callback to ensure that tagsQuery has updated before searching tags
+        //this.searchTagQuery(event.target.id)
+        this.searchTagQuery("tags-search")
       );
-      // this.setState((prevState) => {
-      //   tagsQuery: [...prevState.tagsQuery, values];
-      // });
-      //tagsQuery.push.apply(tagsQuery, values);
     }
-
-    // to get state change to register, need to ?
   };
-  //handleTagFilter = (event) =>
-  // handleTagFilter = (event) => {
-  //   console.log("ht event", event);
-  //   console.log("ht etv", event.target.value);
-  //   if (event.target.value === [] || event.target.value === "") {
-  //     //this.setState({ filteredData: this.state.data.slice() });
-  //     // TODO: use data reset button instead?
-  //     return;
-  //   }
 
-  //   //const lq = event.target.value;
-  //   // add to the existing array or what oops - is this too direct modify?
-  //   // copy the array, edit it, then setState to a copy of that array next???
-  //   // return to what push.apply returns to us???
-  //   // when / how to update tQuery - inside here or after here???
-  //   // we might already have the whole array RIPPP :(
-  //   // did i learn this for nothing :/
-  //   // ok try it out - maybe dont code at 4am again
-  //   var { tagQuery } = this.state;
-  //   tagQuery.push.apply(tagQuery, event.target.value);
-  //   tagQuery.map((tag) => this.simpleSearch("tag", tag)); // only want to ss the next one that got added
-  //   // aka 1 by 1 search things ideally
-  //   // tracking tQ not needed in btwn things then?
-  // };
-  // Search specified field for string query
-  // Render updated data into the cards - reload if user wants to re name - search after adding extra search details in
   simpleSearch = (field, query) => {
     console.log("query here", query);
-    var multiFilteredData = "";
-    if (field === "name") {
-      multiFilteredData = this.state.filteredData.filter((farm) =>
-        farm.farmName.toLowerCase().includes(query.toLowerCase())
-      );
+    var multiFilteredData = [];
+
+    switch (field) {
+      case "nameQuery":
+        multiFilteredData = this.state.filteredData.filter((farm) =>
+          farm.farmName.toLowerCase().includes(query.toLowerCase())
+        );
+        break;
+      case "locationQuery":
+        multiFilteredData = this.state.filteredData.filter((farm) =>
+          farm.location.toLowerCase().includes(query.toLowerCase())
+        );
+        break;
+      case "tags-search":
+        multiFilteredData = this.state.filteredData.filter((farm) =>
+          farm.farmTags.includes(query)
+        );
+        break;
     }
 
-    // turn into a case switch? more scalable way to do this?
-    if (field === "location") {
-      multiFilteredData = this.state.filteredData.filter((farm) =>
-        farm.location.toLowerCase().includes(query.toLowerCase())
-      );
-    }
-    // check if farm.farmTags has the tag as an element -
-    // only complete tags will be entered, since onSelect only,
-    // no searching from onChange - no need to lowercase any
-    if (field === "tag") {
-      multiFilteredData = this.state.filteredData.filter((farm) =>
-        farm.farmTags.includes(query)
-      );
-    }
-    console.log("mfd here: ", multiFilteredData);
-    this.setState({ filteredData: multiFilteredData });
-    //this.handleResultsRender(multiFilteredData);
-    this.populateAllFarmTags();
-    // update farm tags with newly filtered data
+    this.setState(
+      { filteredData: multiFilteredData },
+      // Update farm tags with newly filtered data
+      this.populateAllFarmTags
+    );
   };
 
-  // Iterate through selectedTags and call simpleSearch on each
-
-  // Additional search features that are collapsed at first glance of the page
+  // Returns additional search features that are collapsed at first glance
   extraFiltersAccordion = () => {
     const { classes } = this.props;
-    const { nameQuery, locationQuery, filteredData } = this.state;
-    // For filtering by name and location
-    const { data } = this.state;
-    // For filtering by distances from location
+    const { locationQuery, filteredData } = this.state;
+
     return (
       <div>
         <div>
           <Autocomplete
-            id="farm-location-search"
+            id="location-search"
             options={filteredData.map((data) => data.location)}
             value={locationQuery}
-            onSelect={this.handleLocationSearch} // Receive the name from data element for value
+            onSelect={(e) => this.handleStringSearch("locationQuery", e)}
             fullWidth={true}
             renderInput={(params) => (
               <TextField
@@ -597,7 +517,7 @@ class Farms extends Component {
                 label="Farm Locations"
                 placeholder="Type or Select a Location"
                 variant="outlined"
-                onChange={this.handleLocationSearch}
+                onChange={(e) => this.handleStringSearch("locationQuery", e)}
                 InputProps={{
                   ...params.InputProps,
                   startAdornment: (
@@ -642,10 +562,10 @@ class Farms extends Component {
             id="panel1a-header"
           >
             <Autocomplete
-              id="farm-name-search"
+              id="nameQuery"
               options={[...new Set(filteredData.map((data) => data.farmName))]}
               value={nameQuery}
-              onSelect={this.handleNameSearch} // Receive the name from data element for value
+              onSelect={(e) => this.handleStringSearch("nameQuery", e)}
               fullWidth={true}
               renderInput={(params) => (
                 <TextField
@@ -653,7 +573,8 @@ class Farms extends Component {
                   label="Farm Names"
                   placeholder="Type or Select a Farm Name"
                   variant="outlined"
-                  onChange={this.handleNameSearch}
+                  name="nameQuery"
+                  onChange={(e) => this.handleStringSearch("nameQuery", e)}
                   InputProps={{
                     ...params.InputProps,
                     startAdornment: (
@@ -691,19 +612,13 @@ class Farms extends Component {
   // div and container spacing around respectively - or assign spacing inline with boolean check
   tagsAutocomplete = () => {
     const { classes } = this.props;
-    const {
-      filteredData,
-      viewOpen,
-      unfilteredFarmTags,
-      allFarmTags,
-      tagsQuery,
-    } = this.state;
+    const { allFarmTags, tagsQuery } = this.state;
 
     return (
       <Autocomplete
         className={classes.searchBars}
         multiple
-        id="farmTags"
+        id="tags-search"
         onChange={this.handleTagFilter}
         options={allFarmTags}
         value={tagsQuery}
@@ -736,18 +651,17 @@ class Farms extends Component {
     );
   };
 
+  /** Update filteredData with new array */
   updateCards = (newValues) => {
     if (newValues === []) {
       return;
     }
-    const copyData = [...newValues]; // is this needed?
     this.setState({
-      filteredData: copyData,
+      filteredData: [...newValues],
     });
   };
 
-  // Upon clearing of search queries, or clicking reset button
-  // Reset filteredData to the original page data
+  /** Reset filteredData to the original page data, upon clicking reset */
   resetCards = () => {
     this.setState({
       filteredData: [...this.state.data],
@@ -758,7 +672,7 @@ class Farms extends Component {
     this.populateAllFarmTags();
   };
 
-  // Handles the rendering of filtered produce results into React cards
+  /** Renders filtered produce results into Material-UI cards */
   handleResultsRender = () => {
     const { classes } = this.props;
     const { filteredData } = this.state;
