@@ -851,7 +851,7 @@ class Foodbank extends Component {
                             Loading Dock: {foodbank.loadingDock ? "yes" : "no"}
                           </Typography>
                         </Box>
-                        {/* TODO(andrewhojel): do we include hours of foodbanks? */}
+                        {/* DETERMINE(andrewhojel): do we include hours of foodbanks? */}
                       </Box>
                     </CardContent>
                     <CardActions>
