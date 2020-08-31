@@ -39,6 +39,7 @@ import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import Divider from "@material-ui/core/Divider";
 
 import axios from "axios";
 import dayjs from "dayjs";
@@ -70,10 +71,16 @@ const styles = (theme) => ({
     bottom: "16px",
     right: "16px",
   },
+  searchBars: {
+    marginTop: theme.spacing(3),
+  },
   form: {
     width: "calc(100% - 32px)",
     marginLeft: "12px",
     marginTop: theme.spacing(3),
+  },
+  divider: {
+    padding: theme.spacing(2),
   },
   toolbar: theme.mixins.toolbar,
   root: {
@@ -114,7 +121,21 @@ const styles = (theme) => ({
     marginLeft: 0,
     width: "100%",
   },
+  searchBar: {
+    borderRadius: theme.shape.borderRadius,
+    marginRight: 4,
+    marginTop: 2,
+  },
   searchIcon: {
+    padding: theme.spacing(0, 2),
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  clearIcon: {
     padding: theme.spacing(0, 2),
     height: "100%",
     position: "absolute",
@@ -213,8 +234,6 @@ class Farms extends Component {
       tagsQuery: [],
       filteredData: [],
       allFarmTags: [],
-      // TODO: should this be updated as data gets filtered - yes ? realtime maybe not needed
-      // asynch / wait for user to submit before filtering?
       // Farm states
       farms: "",
       farmName: "",
@@ -523,6 +542,57 @@ class Farms extends Component {
 
   // Iterate through selectedTags and call simpleSearch on each
 
+  // Additional search features that are collapsed at first glance of the page
+  extraFiltersAccordion = () => {
+    const { classes } = this.props;
+    const { nameQuery, locationQuery, filteredData } = this.state;
+    // For filtering by name and location
+    const { data } = this.state;
+    // For filtering by distances from location
+    return (
+      <div>
+        <div>
+          <Autocomplete
+            id="farm-location-search"
+            options={filteredData.map((data) => data.location)}
+            value={locationQuery}
+            onSelect={this.handleLocationSearch} // Receive the name from data element for value
+            fullWidth={true}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Farm Locations"
+                placeholder="Type or Select a Location"
+                variant="outlined"
+                onChange={this.handleLocationSearch}
+                InputProps={{
+                  ...params.InputProps,
+                  startAdornment: (
+                    <>
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                      {params.InputProps.startAdornment}
+                    </>
+                  ),
+                }}
+              />
+            )}
+          />
+        </div>
+
+        <div>{this.tagsAutocompleteSearch()}</div>
+
+        <div>
+          <Typography className={classes.heading}>
+            Find Farms within Custom Distance of a Location
+          </Typography>
+          <Filters render={this.updateCards}>database="farms" </Filters>
+        </div>
+      </div>
+    );
+  };
+
   // Returns the accordion menu that houses all search and filtering options
   filteringAccordion = () => {
     const { classes } = this.props;
@@ -538,21 +608,9 @@ class Farms extends Component {
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
-            <Typography className={classes.heading}>Search by Name</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Button
-              //onClick={() => this.resetCards}
-              onClick={this.resetCards}
-              variant="contained"
-              color="primary"
-            >
-              <ClearIcon />
-              All Queries
-            </Button>
             <Autocomplete
-              id="produce-name-search"
-              options={filteredData.map((produce) => produce.farmName)}
+              id="farm-name-search"
+              options={[...new Set(filteredData.map((data) => data.farmName))]}
               value={nameQuery}
               onSelect={this.handleNameSearch} // Receive the name from data element for value
               fullWidth={true}
@@ -560,6 +618,7 @@ class Farms extends Component {
                 <TextField
                   {...params}
                   label="Farm Names"
+                  placeholder="Type or Select a Farm Name"
                   variant="outlined"
                   onChange={this.handleNameSearch}
                   InputProps={{
@@ -576,74 +635,18 @@ class Farms extends Component {
                 />
               )}
             />
-          </AccordionDetails>
-        </Accordion>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <Typography className={classes.heading}>
-              Search by Location
-            </Typography>
           </AccordionSummary>
-          <AccordionDetails>
-            <Autocomplete
-              id="produce-name-search2"
-              options={filteredData.map((produce) => produce.location)}
-              value={locationQuery}
-              onSelect={this.handleLocationSearch} // Receive the name from data element for value
-              fullWidth={true}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Farm Locations"
-                  variant="outlined"
-                  onChange={this.handleLocationSearch}
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment: (
-                      <>
-                        <InputAdornment position="start">
-                          <SearchIcon />
-                        </InputAdornment>
-                        {params.InputProps.startAdornment}
-                      </>
-                    ),
-                  }}
-                />
-              )}
-            />
-          </AccordionDetails>
-        </Accordion>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel2a-content"
-            id="panel2a-header"
+          <AccordionDetails>{this.extraFiltersAccordion()}</AccordionDetails>
+          <Divider />
+          <Button
+            onClick={this.resetCards}
+            variant="contained"
+            color="primary"
+            classes
           >
-            <Typography className={classes.heading}>
-              Find Farms within Custom Distance of a Location | Driving Hours or
-              Miles
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Filters render={this.updateCards}>database="farms" </Filters>
-          </AccordionDetails>
-        </Accordion>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel2a-content"
-            id="panel2a-header"
-          >
-            <Typography className={classes.heading}>Filter by Tags</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            {/** Adjust spacing here **/}
-            {this.tagsAutocompleteSearch()}
-          </AccordionDetails>
+            <ClearIcon />
+            <Typography className={classes.heading}> Reset </Typography>
+          </Button>
         </Accordion>
       </div>
     );
@@ -660,6 +663,7 @@ class Farms extends Component {
     return (
       <div>
         <Autocomplete
+          className={classes.searchBars}
           multiple
           id="farmTags"
           //onChange={viewOpen? this.onTagsChange : this.handleTagsSe}
@@ -669,7 +673,6 @@ class Farms extends Component {
           options={allFarmTags}
           //defaultValue={viewOpen ? this.state.farmTags : allFarmTags}
           //value={tagsQuery} // update from here instead? but why??
-          // old dval? to get it to show viusually yes
           fullWidth={viewOpen ? false : true}
           // viewOpen ? this.state.farmTags :
           freeSolo={viewOpen ? true : false}
@@ -683,7 +686,7 @@ class Farms extends Component {
               {...params}
               variant="outlined"
               label="Farm Tags"
-              placeholder="tags..."
+              placeholder="Type or Select a Farm Tag"
               InputProps={
                 viewOpen
                   ? null
@@ -722,33 +725,12 @@ class Farms extends Component {
   // Upon clearing of search queries, or clicking reset button
   // Reset filteredData to the original page data
   resetCards = () => {
-    // help why doesn't it update... but push apply does?
-    console.log("current fd", this.state.filteredData);
-    console.log("current d", this.state.data);
-    //var copyData = this.state.data.map((item) => item);
-    const copyData = this.state.data.slice();
-    console.log("cd pls :( ", copyData);
-    this.setState(
-      {
-        filteredData: copyData,
-      },
-      this.handleResultsRender
-    );
-    // this.setState((prevState) => ({
-    //   filteredData: [...prevState.data],
-    // }));
-    console.log("updated fd", this.state.filteredData);
-    // this.state.filteredData.push.apply([], this.state.data);
-    // var newData = [...this.state.data];
-    // console.log("current nd", this.state.data);
-    // this.setState({
-    //   filteredData: newData,
-    // });
-    // this.setState((state) => {
-    //   const filteredData = state.data.map((item) => item);
-
-    //   return { filteredData };
-    // });
+    this.setState({
+      filteredData: [...this.state.data],
+      nameQuery: "",
+      locationQuery: "",
+      tagsQuery: [],
+    });
   };
 
   // Handles the rendering of filtered produce results into React cards
@@ -1084,9 +1066,6 @@ class Farms extends Component {
                         <MenuItem value={false}>No</MenuItem>
                       </Select>
                     </FormControl>
-                  </Grid>
-                  <Grid item xs={12}>
-                    {this.tagsAutocompleteSearch()}
                   </Grid>
                 </Grid>
                 <div className={classes.tablePadding}>
