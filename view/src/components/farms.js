@@ -70,8 +70,7 @@ const styles = (theme) => ({
     right: "16px",
   },
   clearSearchButton: {
-    left: "8px",
-    bottom: "8px",
+    position: "relative",
   },
   searchBars: {
     marginTop: theme.spacing(3),
@@ -537,7 +536,7 @@ class Farms extends Component {
         <div>
           <Filters render={this.updateCards}>database="farms" </Filters>
           {/* TODO: send filteredData into Filters, get reset button to clear 
-          Filters form, add Address autocomplete to Filters UI}
+          Filters form, }
           <Filters database="farms"> </Filters>
           {/*<Filters render={this.updateCards}>database="farms" </Filters>*/}
         </div>
@@ -588,17 +587,21 @@ class Farms extends Component {
             />
           </AccordionSummary>
           <AccordionDetails>{this.extraFiltersAccordion()}</AccordionDetails>
-          <Grid container spacing={3} allignItems="left">
-            <Button
-              className={classes.clearSearchButton}
-              onClick={this.resetCards}
-              variant="contained"
-              color="primary"
-              size="medium"
-              startIcon={<ClearIcon />}
-            >
-              Clear
-            </Button>
+          <Grid container alignItem="left">
+            <Grid item xs={12}>
+              <Box paddingLeft={2} paddingBottom={2}>
+                <Button
+                  className={classes.clearSearchButton}
+                  onClick={this.resetCards}
+                  variant="contained"
+                  color="primary"
+                  size="medium"
+                  startIcon={<ClearIcon />}
+                >
+                  Clear
+                </Button>
+              </Box>
+            </Grid>
           </Grid>
         </Accordion>
       </div>
