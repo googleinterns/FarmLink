@@ -22,6 +22,9 @@ const styles = (theme) => ({
     left: "8px",
     bottom: "8px",
   },
+  searchBars: {
+    marginTop: theme.spacing(3),
+  },
 });
 
 /*
@@ -103,6 +106,8 @@ class Filters extends Component {
     url += "&";
     url += `minutes=${this.state.minutes}`;
 
+    // remove
+    console.log("sb is", styles.searchBars);
     // axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios.get(url).then((res) => {
       this.setState({ results: res.data });
@@ -124,82 +129,82 @@ class Filters extends Component {
 
   render() {
     return (
-      <Container maxWidth="xl">
-        <Grid container spacing={2} allignItems="left">
-          <Grid item xs={12}>
-            <Address
-              handleLocation={this.handleLocation}
-              location={this.state.location}
-              TextFieldLabel="Type or Select a Location"
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField
-              variant="outlined"
-              label="Distance (Miles)"
-              name="distance"
-              type="number"
-              value={this.state.distance}
-              onChange={this.handleChange}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <Button
-              className={styles.searchButton}
-              onClick={this.filterByDistance}
-              variant="outlined"
-              color="primary"
-              type="number"
-              size="medium"
-              startIcon={<SearchIcon />}
-            >
-              Filter by Distance
-            </Button>
-          </Grid>
-          <Grid item xs={1}>
-            <TextField
-              variant="outlined"
-              label="Days"
-              name="days"
-              type="number"
-              value={this.state.days}
-              onChange={this.handleChange}
-            />
-          </Grid>
-          <Grid item xs={1}>
-            <TextField
-              variant="outlined"
-              label="Hours"
-              name="hours"
-              type="number"
-              value={this.state.hours}
-              onChange={this.handleChange}
-            />
-          </Grid>
-          <Grid item xs={1}>
-            <TextField
-              variant="outlined"
-              label="Minutes"
-              name="minutes"
-              value={this.state.minutes}
-              onChange={this.handleChange}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <Button
-              className={styles.searchButton}
-              onClick={this.filterByTravelTime}
-              variant="outlined"
-              color="primary"
-              type="number"
-              size="medium"
-              startIcon={<SearchIcon />}
-            >
-              Filter by Travel Time
-            </Button>
-          </Grid>
+      <Grid container spacing={3} allignItems="left">
+        <Grid item xs={12}>
+          <Address
+            handleLocation={this.handleLocation}
+            location={this.state.location}
+            searching={true}
+            PlaceholderText="Type or Select a Location to find Nearby Farms"
+            TextFieldLabel="Custom Location"
+          />
         </Grid>
-      </Container>
+        <Grid item xs={2}>
+          <TextField
+            variant="outlined"
+            label="Distance (Miles)"
+            name="distance"
+            type="number"
+            value={this.state.distance}
+            onChange={this.handleChange}
+          />
+        </Grid>
+        <Grid item xs={10}>
+          <Button
+            className={styles.searchButton}
+            onClick={this.filterByDistance}
+            variant="outlined"
+            color="primary"
+            type="number"
+            size="medium"
+            startIcon={<SearchIcon />}
+          >
+            Filter by Distance
+          </Button>
+        </Grid>
+        <Grid item xs={1}>
+          <TextField
+            variant="outlined"
+            label="Days"
+            name="days"
+            type="number"
+            value={this.state.days}
+            onChange={this.handleChange}
+          />
+        </Grid>
+        <Grid item xs={1}>
+          <TextField
+            variant="outlined"
+            label="Hours"
+            name="hours"
+            type="number"
+            value={this.state.hours}
+            onChange={this.handleChange}
+          />
+        </Grid>
+        <Grid item xs={1}>
+          <TextField
+            variant="outlined"
+            label="Mins"
+            name="minutes"
+            value={this.state.minutes}
+            onChange={this.handleChange}
+          />
+        </Grid>
+        <Grid item xs={9}>
+          <Button
+            className={styles.searchButton}
+            onClick={this.filterByTravelTime}
+            variant="outlined"
+            color="primary"
+            type="number"
+            size="medium"
+            startIcon={<SearchIcon />}
+          >
+            Filter by Travel Time
+          </Button>
+        </Grid>
+      </Grid>
     );
   }
 }

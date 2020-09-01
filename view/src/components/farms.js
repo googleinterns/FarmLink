@@ -70,7 +70,6 @@ const styles = (theme) => ({
     right: "16px",
   },
   clearSearchButton: {
-    position: "right",
     left: "8px",
     bottom: "8px",
   },
@@ -536,9 +535,6 @@ class Farms extends Component {
         <div>{this.tagsAutocomplete(false)}</div>
 
         <div>
-          <Typography className={classes.heading}>
-            Find Farms within Custom Distance of a Location
-          </Typography>
           <Filters render={this.updateCards}>database="farms" </Filters>
           {/* TODO: send filteredData into Filters, get reset button to clear 
           Filters form, add Address autocomplete to Filters UI}
@@ -592,16 +588,18 @@ class Farms extends Component {
             />
           </AccordionSummary>
           <AccordionDetails>{this.extraFiltersAccordion()}</AccordionDetails>
-          <Button
-            className={classes.clearSearchButton}
-            onClick={this.resetCards}
-            variant="contained"
-            color="primary"
-            size="medium"
-            startIcon={<ClearIcon />}
-          >
-            Clear
-          </Button>
+          <Grid container spacing={3} allignItems="left">
+            <Button
+              className={classes.clearSearchButton}
+              onClick={this.resetCards}
+              variant="contained"
+              color="primary"
+              size="medium"
+              startIcon={<ClearIcon />}
+            >
+              Clear
+            </Button>
+          </Grid>
         </Accordion>
       </div>
     );
