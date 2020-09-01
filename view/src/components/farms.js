@@ -124,10 +124,6 @@ const styles = (theme) => ({
     marginLeft: 0,
     width: "100%",
   },
-  searchBar: {
-    borderRadius: theme.shape.borderRadius,
-    marginTop: "2px",
-  },
   searchIcon: {
     padding: theme.spacing(0, 2),
     height: "100%",
@@ -688,10 +684,10 @@ class Farms extends Component {
                     display="flex"
                     flexDirection="row"
                     flexWrap="wrap"
-                    p={0}
-                    m={0}
+                    padding={0}
+                    margin={0}
                   >
-                    <Box p={3}>
+                    <Box padding={3}>
                       <Typography className={classes.pos} color="textSecondary">
                         Details:
                       </Typography>
@@ -703,19 +699,25 @@ class Farms extends Component {
                         Location of Farm: {farm.location}
                       </Typography>
                     </Box>
-                    <Box p={3}>
-                      <Typography className={classes.pos} color="textSecondary">
-                        Point of Contact:
-                      </Typography>
-                      <Typography variant="body2" component="p">
-                        Name: {farm.contacts[0]["contactName"]}
-                        <br />
-                        Phone: {farm.contacts[0]["contactPhone"]}
-                        <br />
-                        Email: {farm.contacts[0]["contactEmail"]}
-                      </Typography>
-                    </Box>
-                    <Box p={3}>
+                    {/* TODO(andrewhojel): allow user to choose the point of contact */}
+                    {farm.contacts.length > 0 && (
+                      <Box padding={3}>
+                        <Typography
+                          className={classes.pos}
+                          color="textSecondary"
+                        >
+                          Point of Contact:
+                        </Typography>
+                        <Typography variant="body2" component="p">
+                          Name: {farm.contacts[0]["contactName"]}
+                          <br />
+                          Phone: {farm.contacts[0]["contactPhone"]}
+                          <br />
+                          Email: {farm.contacts[0]["contactEmail"]}
+                        </Typography>
+                      </Box>
+                    )}
+                    <Box padding={3}>
                       <Typography className={classes.pos} color="textSecondary">
                         Logistics:
                       </Typography>
@@ -1056,30 +1058,23 @@ class Farms extends Component {
                 display="flex"
                 flexDirection="row"
                 flexWrap="wrap"
-                p={0}
-                m={0}
+                padding={0}
+                margin={0}
               >
-                <Box p={3}>
+                <Box padding={3}>
                   <Typography className={classes.pos} color="textSecondary">
                     Details:
                   </Typography>
-                  <Typography variant="body2" component="p">
+                  <Typography variant="body2" component="paragraph">
                     Location of Farm: {this.state.location}
                   </Typography>
                 </Box>
-                <Box p={3}>
+                <Box padding={3}>
                   <Typography className={classes.pos} color="textSecondary">
                     Point of Contact:
                   </Typography>
-                  {/* <Typography variant="body2" component="p">
-                    Name: {this.state.contacts[0]["contactName"]}
-                    <br />
-                    Phone: {this.state.contacts[0]["contactPhone"]}
-                    <br />
-                    Email: {this.state.contacts[0]["contactEmail"]}
-                  </Typography> */}
                 </Box>
-                <Box p={3}>
+                <Box padding={3}>
                   <Typography className={classes.pos} color="textSecondary">
                     Logistics:
                   </Typography>
