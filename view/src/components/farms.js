@@ -71,6 +71,11 @@ const styles = (theme) => ({
     bottom: "16px",
     right: "16px",
   },
+  clearSearchButton: {
+    position: "right",
+    bottomLeft: "8px",
+    bottom: "8px",
+  },
   searchBars: {
     marginTop: theme.spacing(3),
   },
@@ -536,7 +541,8 @@ class Farms extends Component {
           <Typography className={classes.heading}>
             Find Farms within Custom Distance of a Location
           </Typography>
-          <Filters render={this.updateCards}>database="farms" </Filters>
+          <Filters database="farms"> </Filters>
+          {/*<Filters render={this.updateCards}>database="farms" </Filters>*/}
         </div>
       </div>
     );
@@ -585,15 +591,15 @@ class Farms extends Component {
             />
           </AccordionSummary>
           <AccordionDetails>{this.extraFiltersAccordion()}</AccordionDetails>
-          <Divider />
           <Button
             onClick={this.resetCards}
             variant="contained"
             color="primary"
+            size="medium"
             classes
           >
             <ClearIcon />
-            <Typography className={classes.heading}> Reset </Typography>
+            <Typography className={classes.heading}> Clear </Typography>
           </Button>
         </Accordion>
       </div>
@@ -602,8 +608,9 @@ class Farms extends Component {
 
   /**
    * Returns tag filtering menu for searching cards.
-   * Re-using the autocomplete for the add new/edit farm form causes issues with setting a conditional
-   * value for Autocomplete value={}, so separating the two is smoother.
+   * Re-using the autocomplete for the add new/edit farm form
+   * causes issues with setting a conditional value for
+   * Autocomplete value={}, so separating the two is smoother.
    */
   tagsAutocomplete = () => {
     const { classes } = this.props;

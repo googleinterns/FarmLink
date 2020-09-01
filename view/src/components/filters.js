@@ -56,10 +56,14 @@ class Filters extends Component {
     url += `locationId=${this.state.locationId}`;
     url += "&";
     url += `distance=${this.state.distance}`;
-
-    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
+    console.log("URL", url);
+    // axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios.get(url).then((res) => {
-      this.setState({ results: res.data });
+      this.setState(
+        { results: res.data },
+        console.log("results[]:", res.data, "res", res)
+      );
+      // make this async next
       return this.props.render(this.state.results);
     });
   };
