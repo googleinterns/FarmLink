@@ -39,8 +39,6 @@ import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import Divider from "@material-ui/core/Divider";
-
 import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -70,6 +68,11 @@ const styles = (theme) => ({
     position: "fixed",
     bottom: "16px",
     right: "16px",
+  },
+  clearSearchButton: {
+    position: "right",
+    left: "8px",
+    bottom: "8px",
   },
   searchBars: {
     marginTop: theme.spacing(3),
@@ -123,8 +126,7 @@ const styles = (theme) => ({
   },
   searchBar: {
     borderRadius: theme.shape.borderRadius,
-    marginRight: 4,
-    marginTop: 2,
+    marginTop: "2px",
   },
   searchIcon: {
     padding: theme.spacing(0, 2),
@@ -229,13 +231,12 @@ class Farms extends Component {
     this.state = {
       // Search states
       data: "",
+      filteredData: [],
       nameQuery: "",
       locationQuery: "",
       tagsQuery: [],
-      filteredData: [],
       allFarmTags: [],
       // Farm states
-      farms: "",
       farmName: "",
       farmId: "",
       farmTags: [],
@@ -245,7 +246,7 @@ class Farms extends Component {
       location: "",
       locationId: "",
       transportation: false,
-      // Farm modifying states
+      // Aggregated tags used for options when editing a specific farm
       unfilteredFarmTags: [],
       // Page states
       errors: [],
@@ -346,7 +347,7 @@ class Farms extends Component {
         );
 
         this.setState({
-          unfilteredFarmTags: this.state.allFarmTags,
+          unfilteredFarmTags: [...this.state.allFarmTags],
         });
       })
       .catch((err) => {
@@ -446,7 +447,7 @@ class Farms extends Component {
 
   /** Update tagQueries and search the cards by tags */
   handleTagFilter = (event, values) => {
-    if (values === []) {
+    if (values.length === 0) {
       return;
     }
     const prevValues = this.state.tagsQuery;
@@ -541,6 +542,8 @@ class Farms extends Component {
           <Filters render={this.updateCards}>database="farms" </Filters>
           {/* TODO: send filteredData into Filters, get reset button to clear 
           Filters form, add Address autocomplete to Filters UI}
+          <Filters database="farms"> </Filters>
+          {/*<Filters render={this.updateCards}>database="farms" </Filters>*/}
         </div>
       </div>
     );
@@ -589,22 +592,27 @@ class Farms extends Component {
             />
           </AccordionSummary>
           <AccordionDetails>{this.extraFiltersAccordion()}</AccordionDetails>
-          <Divider />
           <Button
+            className={classes.clearSearchButton}
             onClick={this.resetCards}
             variant="contained"
             color="primary"
-            classes
+            size="medium"
+            startIcon={<ClearIcon />}
           >
-            <ClearIcon />
-            <Typography className={classes.heading}> Reset </Typography>
+            Clear
           </Button>
         </Accordion>
       </div>
     );
   };
 
-  /** Returns tag filtering menu */
+  /**
+   * Returns tag filtering menu for searching cards.
+   * Re-using the autocomplete for the add new/edit farm form
+   * causes issues with setting a conditional value for
+   * Autocomplete value={}, so separating the two is smoother.
+   */
   tagsAutocomplete = () => {
     const { classes } = this.props;
     const { allFarmTags, tagsQuery } = this.state;
@@ -648,7 +656,7 @@ class Farms extends Component {
 
   /** Updates filteredData with a new array; used with filters.js queries */
   updateCards = (newValues) => {
-    if (newValues === []) {
+    if (newValues.length === 0) {
       return;
     }
     this.setState({
@@ -678,7 +686,7 @@ class Farms extends Component {
       <div>
         <Grid container spacing={2} alignItem="center">
           {filteredData.map((farm) => (
-            <Grid item xs={12} key={farm.farmId}>
+            <Grid item xs={12}>
               <Card className={classes.root} variant="outlined">
                 <CardContent>
                   <Typography variant="h5" component="h2">
@@ -698,10 +706,12 @@ class Farms extends Component {
                       <Typography className={classes.pos} color="textSecondary">
                         Details:
                       </Typography>
-                      <Typography variant="body2" component="p">
-                        Location of Farm: {`${farm.location.substring(0, 30)}`}
-                        <br />
-                        {`${farm.location.substring(30, 78)}`}
+                      <Typography
+                        variant="body2"
+                        component="p"
+                        className={classes.farmLocation}
+                      >
+                        Location of Farm: {farm.location}
                       </Typography>
                     </Box>
                     <Box p={3}>
@@ -709,11 +719,11 @@ class Farms extends Component {
                         Point of Contact:
                       </Typography>
                       <Typography variant="body2" component="p">
-                        Name: {farm.contactName}
+                        Name: {farm.contacts[0]["contactName"]}
                         <br />
-                        Phone: {farm.contactPhone}
+                        Phone: {farm.contacts[0]["contactPhone"]}
                         <br />
-                        Email: {farm.contactEmail}
+                        Email: {farm.contacts[0]["contactEmail"]}
                       </Typography>
                     </Box>
                     <Box p={3}>
@@ -721,7 +731,7 @@ class Farms extends Component {
                         Logistics:
                       </Typography>
                       <Typography variant="body2" component="p">
-                        Have Transportation Means:{" "}
+                        Have Transportation Means:&nbsp;
                         {farm.transportation ? "yes" : "no"}
                         <br />
                         Loading Dock: {farm.loadingDock ? "yes" : "no"}
@@ -732,10 +742,6 @@ class Farms extends Component {
                   </Box>
                 </CardContent>
                 <CardActions>
-                  {/* <Button size="small" color="primary" onClick={() => this.handleViewOpen({ farm })}>
-                                                {" "}
-                                                View{" "}
-                                            </Button> */}
                   <Button
                     size="small"
                     color="primary"

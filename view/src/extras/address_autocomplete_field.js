@@ -175,7 +175,7 @@ export default function AddressAutocompleteField(props) {
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Add a location"
+          label={props.TextFieldLabel ? props.TextFieldLabel : "Add a location"}
           variant="outlined"
           fullWidth
         />
