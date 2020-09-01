@@ -40,7 +40,7 @@ GET /farms/:id
 success response: farm object (documented in POST /farms)
 */
 farmsRoute.get("/:id", auth, (req, res) => {
-  db.doc(`/farms/${req.params.farmId}`)
+  db.doc(`/farms/${req.params.id}`)
     .get()
     .then((doc) => {
       return res.json(doc.data());
@@ -97,13 +97,37 @@ DELETE /farms/:id
 success response: {message: 'Delete successfully'}
 */
 farmsRoute.delete("/:id", auth, (req, res) => {
-  const document = db.doc(`/farms/${req.params.farmId}`);
+  const document = db.doc(`/farms/${req.params.id}`);
   document
     .get()
     .then((doc) => {
       if (!doc.exists) {
         return res.status(404).json({ error: "Farm Object not found" });
       }
+      db.collection("surplus")
+        .where("farmId", "==", doc.id)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            db.collection("deals")
+              .where("surplusId", "==", doc.id)
+              .get()
+              .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                  db.doc(`/deals/${doc.id}`).delete();
+                });
+              });
+            db.doc(`/surplus/${doc.id}`).delete();
+          });
+        });
+      db.collection("deals")
+        .where("farmId", "==", doc.id)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            db.doc(`/deals/${doc.id}`).delete();
+          });
+        });
       return document.delete();
     })
     .then(() => {
@@ -121,7 +145,7 @@ PUT /farms/:id
 success response: {message: 'Updated successfully'}
 */
 farmsRoute.put("/:id", auth, (req, res) => {
-  let document = db.collection("farms").doc(`${req.params.farmId}`);
+  let document = db.collection("farms").doc(`${req.params.id}`);
   document
     .update(req.body)
     .then(() => {

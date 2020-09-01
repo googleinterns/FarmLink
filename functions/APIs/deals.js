@@ -51,7 +51,7 @@ GET /deals/:id
 success response: deal object (documented in POST /deals)
 */
 dealsRoute.get("/:id", auth, (req, res) => {
-  db.doc(`/deals/${req.params.dealId}`)
+  db.doc(`/deals/${req.params.id}`)
     .get()
     .then((doc) => {
       return res.json(doc.data());
@@ -130,7 +130,7 @@ DELETE /deals/:id
 success response: {message: 'Delete successfully'}
 */
 dealsRoute.delete("/:id", auth, (req, res) => {
-  const document = db.doc(`/deals/${req.params.dealId}`);
+  const document = db.doc(`/deals/${req.params.id}`);
   document
     .get()
     .then((doc) => {
@@ -154,7 +154,7 @@ PUT /deals/:id
 success response: {message: 'Updated successfully'}
 */
 dealsRoute.put("/:id", auth, (req, res) => {
-  let document = db.collection("deals").doc(`${req.params.dealId}`);
+  let document = db.collection("deals").doc(`${req.params.id}`);
   document
     .update(req.body)
     .then(() => {

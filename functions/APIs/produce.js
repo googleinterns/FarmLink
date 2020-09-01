@@ -41,7 +41,7 @@ GET /produce/:id
 success response: produce object (documented in POST /produce)
 */
 produceRoute.get("/:id", auth, (req, res) => {
-  db.doc(`/produce/${req.params.produceId}`)
+  db.doc(`/produce/${req.params.id}`)
     .get()
     .then((doc) => {
       return res.json(doc.data());
@@ -70,9 +70,7 @@ success response: produce object (documented in POST /produce)
 produceRoute.post("/", auth, (req, res) => {
   const newProduceItem = {
     name: req.body.name,
-    shippingPresetTemperature: parseFloat(
-      req.body.shippingPresetTemperature
-    ),
+    shippingPresetTemperature: parseFloat(req.body.shippingPresetTemperature),
     shippingMaintenanceTemperatureLow: parseFloat(
       req.body.shippingMaintenanceTemperatureLow
     ),
@@ -102,13 +100,29 @@ DELETE /produce/:id
 success response: {message: 'Delete successfully'}
 */
 produceRoute.delete("/:id", auth, (req, res) => {
-  const document = db.doc(`/produce/${req.params.produceId}`);
+  const document = db.doc(`/produce/${req.params.id}`);
   document
     .get()
     .then((doc) => {
       if (!doc.exists) {
         return res.status(404).json({ error: "Produce Object not found" });
       }
+      db.collection("surplus")
+        .where("produceId", "==", doc.id)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            db.collection("deals")
+              .where("surplusId", "==", doc.id)
+              .get()
+              .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                  db.doc(`/deals/${doc.id}`).delete();
+                });
+              });
+            db.doc(`/surplus/${doc.id}`).delete();
+          });
+        });
       return document.delete();
     })
     .then(() => {
@@ -126,7 +140,7 @@ PUT /produce/:id
 success response: {message: 'Updated successfully'}
 */
 produceRoute.put("/:id", auth, (req, res) => {
-  let document = db.collection("produce").doc(`${req.params.produceId}`);
+  let document = db.collection("produce").doc(`${req.params.id}`);
   document
     .update(req.body)
     .then(() => {

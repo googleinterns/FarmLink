@@ -42,7 +42,7 @@ GET /foodbanks/:id
 success response: food bank object (documented in POST /foodbanks)
 */
 foodbanksRoute.get("/:id", auth, (req, res) => {
-  db.doc(`/foodbanks/${req.params.foodbankId}`)
+  db.doc(`/foodbanks/${req.params.id}`)
     .get()
     .then((doc) => {
       return res.json(doc.data());
@@ -105,15 +105,21 @@ DELETE /foodbanks/:id
 success response: {message: 'Delete successfully'}
 */
 foodbanksRoute.delete("/:id", auth, (req, res) => {
-  const document = db.doc(`/foodbanks/${req.params.foodbankId}`);
+  const document = db.doc(`/foodbanks/${req.params.id}`);
   document
     .get()
     .then((doc) => {
       if (!doc.exists) {
-        return res
-          .status(404)
-          .json({ error: "FoodBank Object not found" });
+        return res.status(404).json({ error: "FoodBank Object not found" });
       }
+      db.collection("deals")
+        .where("foodbankId", "==", doc.id)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            db.doc(`/deals/${doc.id}`).delete();
+          });
+        });
       return document.delete();
     })
     .then(() => {
@@ -131,7 +137,7 @@ PUT /foodbanks/:id
 success response: {message: 'Updated successfully'}
 */
 foodbanksRoute.put("/:id", auth, (req, res) => {
-  let document = db.collection("foodbanks").doc(`${req.params.foodbankId}`);
+  let document = db.collection("foodbanks").doc(`${req.params.id}`);
   document
     .update(req.body)
     .then(() => {

@@ -95,7 +95,7 @@ GET /surplus/:id
 success response: surplus object (documented in POST /surplus)
 */
 surplusRoute.get("/:id", auth, (req, res) => {
-  db.doc(`/surplus/${req.params.surplusId}`)
+  db.doc(`/surplus/${req.params.id}`)
     .get()
     .then((doc) => {
       return res.json(doc.data());
@@ -148,13 +148,21 @@ DELETE /surplus/:id
 success response: {message: 'Delete successfully'}
 */
 surplusRoute.delete("/:id", auth, (req, res) => {
-  const document = db.doc(`/surplus/${req.params.surplusId}`);
+  const document = db.doc(`/surplus/${req.params.id}`);
   document
     .get()
     .then((doc) => {
       if (!doc.exists) {
         return res.status(404).json({ error: "Surplus Object not found" });
       }
+      db.collection("deals")
+        .where("surplusId", "==", doc.id)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            db.doc(`/deals/${doc.id}`).delete();
+          });
+        });
       return document.delete();
     })
     .then(() => {
@@ -172,7 +180,7 @@ PUT /surplus/:id
 success response: {message: 'Updated successfully'}
 */
 surplusRoute.put("/:id", auth, (req, res) => {
-  let document = db.collection("surplus").doc(`${req.params.surplusId}`);
+  let document = db.collection("surplus").doc(`${req.params.id}`);
   document
     .update(req.body)
     .then(() => {
