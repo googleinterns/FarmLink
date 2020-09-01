@@ -59,7 +59,7 @@ class Filters extends Component {
       minutes: "0",
       results: "",
     });
-  }
+  };
 
   handleChange = (event) => {
     this.setState({
@@ -67,7 +67,7 @@ class Filters extends Component {
     });
   };
 
-  filterByDistance = (filteredData) => {
+  filterByDistance = () => {
     let url = "";
     switch (this.props.database) {
       case "foodbanks":
@@ -85,17 +85,10 @@ class Filters extends Component {
     url += "&";
     url += `distance=${this.state.distance}`;
 
-    console.log("url ah", url);
+    const authToken = localStorage.getItem("AuthToken");
+    axios.defaults.headers.common = { Authorization: `${authToken}` };
     axios.get(url).then((res) => {
-      this.setState(
-        { results: res.data },
-        console.log("results[]:", res.data, "res", res),
-        
-      );
-      // make this async next
-      console.log("results[]:", res.data, "res", res);
-      //return <this.props.render(this.state.results)>;
-      // return (<this.props.render(this.state.results)>);
+      this.setState({ results: res.data });
     });
   };
 
@@ -120,7 +113,6 @@ class Filters extends Component {
     url += `hours=${this.state.hours}`;
     url += "&";
     url += `minutes=${this.state.minutes}`;
-
     axios.get(url).then((res) => {
       this.setState({ results: res.data });
       return this.props.render(this.state.results);
@@ -141,10 +133,6 @@ class Filters extends Component {
 
   render() {
     return (
-      <Child
-        clearQueries={this.clearQueries}
-        newResults={this.state.results}
-      />
       <Grid container spacing={3} allignItems="left">
         <Grid item xs={12}>
           <Address
@@ -168,7 +156,7 @@ class Filters extends Component {
         <Grid item xs={10}>
           <Button
             className={styles.searchButton}
-            onClick={this.filterByDistance(props.filteredData)}
+            onClick={this.filterByDistance}
             variant="outlined"
             color="primary"
             type="number"

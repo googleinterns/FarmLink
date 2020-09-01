@@ -532,15 +532,7 @@ class Farms extends Component {
         </div>
 
         <div>{this.tagsAutocomplete(false)}</div>
-
-        <div>
-          <Filters
-            render={this.updateCards(this.props.newResults)}
-            database={"farms"}
-            filteredData={this.state.filteredData}
-            //clearFilterQueries={this.props.clearQueries}
-          ></Filters>
-        </div>
+        <Filters database="farms"></Filters>
       </div>
     );
   };
@@ -1085,13 +1077,6 @@ class Farms extends Component {
                   <Typography className={classes.pos} color="textSecondary">
                     Point of Contact:
                   </Typography>
-                  {/* <Typography variant="body2" component="p">
-                    Name: {this.state.contacts[0]["contactName"]}
-                    <br />
-                    Phone: {this.state.contacts[0]["contactPhone"]}
-                    <br />
-                    Email: {this.state.contacts[0]["contactEmail"]}
-                  </Typography> */}
                 </Box>
                 <Box p={3}>
                   <Typography className={classes.pos} color="textSecondary">
