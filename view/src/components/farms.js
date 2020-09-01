@@ -73,7 +73,7 @@ const styles = (theme) => ({
   },
   clearSearchButton: {
     position: "right",
-    bottomLeft: "8px",
+    left: "8px",
     bottom: "8px",
   },
   searchBars: {
@@ -592,14 +592,14 @@ class Farms extends Component {
           </AccordionSummary>
           <AccordionDetails>{this.extraFiltersAccordion()}</AccordionDetails>
           <Button
+            className={classes.clearSearchButton}
             onClick={this.resetCards}
             variant="contained"
             color="primary"
             size="medium"
-            classes
+            startIcon={<ClearIcon />}
           >
-            <ClearIcon />
-            <Typography className={classes.heading}> Clear </Typography>
+            Clear
           </Button>
         </Accordion>
       </div>
