@@ -534,11 +534,12 @@ class Farms extends Component {
         <div>{this.tagsAutocomplete(false)}</div>
 
         <div>
-          <Filters render={this.updateCards}>database="farms" </Filters>
-          {/* TODO: send filteredData into Filters, get reset button to clear 
-          Filters form, }
-          <Filters database="farms"> </Filters>
-          {/*<Filters render={this.updateCards}>database="farms" </Filters>*/}
+          <Filters
+            render={this.updateCards(this.props.newResults)}
+            database={"farms"}
+            filteredData={this.state.filteredData}
+            //clearFilterQueries={this.props.clearQueries}
+          ></Filters>
         </div>
       </div>
     );
@@ -667,6 +668,7 @@ class Farms extends Component {
 
   /** Reset filteredData to the original page data, upon clicking reset */
   resetCards = () => {
+    this.props.clearQueries();
     this.setState(
       {
         filteredData: [...this.state.data],

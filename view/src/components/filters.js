@@ -49,13 +49,25 @@ class Filters extends Component {
     };
   }
 
+  clearQueries = () => {
+    this.setState({
+      location: "",
+      locationId: "",
+      distance: "0",
+      days: "0",
+      hours: "0",
+      minutes: "0",
+      results: "",
+    });
+  }
+
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
     });
   };
 
-  filterByDistance = () => {
+  filterByDistance = (filteredData) => {
     let url = "";
     switch (this.props.database) {
       case "foodbanks":
@@ -73,14 +85,17 @@ class Filters extends Component {
     url += "&";
     url += `distance=${this.state.distance}`;
 
-    console.log("url :( ", url);
+    console.log("url ah", url);
     axios.get(url).then((res) => {
       this.setState(
         { results: res.data },
-        console.log("results[]:", res.data, "res", res)
+        console.log("results[]:", res.data, "res", res),
+        
       );
       // make this async next
-      //return this.props.render(this.state.results);
+      console.log("results[]:", res.data, "res", res);
+      //return <this.props.render(this.state.results)>;
+      // return (<this.props.render(this.state.results)>);
     });
   };
 
@@ -106,9 +121,6 @@ class Filters extends Component {
     url += "&";
     url += `minutes=${this.state.minutes}`;
 
-    // remove
-    console.log("sb is", styles.searchBars);
-    // axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios.get(url).then((res) => {
       this.setState({ results: res.data });
       return this.props.render(this.state.results);
@@ -129,6 +141,10 @@ class Filters extends Component {
 
   render() {
     return (
+      <Child
+        clearQueries={this.clearQueries}
+        newResults={this.state.results}
+      />
       <Grid container spacing={3} allignItems="left">
         <Grid item xs={12}>
           <Address
@@ -152,7 +168,7 @@ class Filters extends Component {
         <Grid item xs={10}>
           <Button
             className={styles.searchButton}
-            onClick={this.filterByDistance}
+            onClick={this.filterByDistance(props.filteredData)}
             variant="outlined"
             color="primary"
             type="number"
