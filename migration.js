@@ -89,9 +89,9 @@ function migrateDeals(auth) {
       if (err) return console.log("The API returned an error: " + err);
       const rows = res.data.values;
       if (rows.length) {
-        var row = rows[0];
-        var columns = {};
-        for (var i = 0; i < row.length; i++) {
+        let row = rows[0];
+        let columns = {};
+        for (let i = 0; i < row.length; i++) {
           switch (row[i]) {
             case "Farm Name":
               columns["Farm Name"] = i;
@@ -145,7 +145,7 @@ function migrateDeals(auth) {
         }
         rows.forEach((row, index) => {
           if (index != 0) {
-            var produce = {
+            let produce = {
               name: row[columns["Produce Type"]],
               shippingPresetTemperature: "",
               shippingMaintenanceTemperatureLow: "",
@@ -154,7 +154,7 @@ function migrateDeals(auth) {
               price: "",
               pricePaid: "",
             };
-            var farm = {
+            let farm = {
               farmName: row[columns["Farm Name"]],
               location: row[columns["Farm Location"]],
               hours: "",
@@ -170,7 +170,7 @@ function migrateDeals(auth) {
               forklift: "",
               farmTags: [],
             };
-            var foodbank = {
+            let foodbank = {
               foodbankName: row[columns["Food Bank Name"]],
               location: row[columns["Food Bank Location"]],
               hours: "",
@@ -188,13 +188,13 @@ function migrateDeals(auth) {
               refrigerationSpaceAvailable: "",
               foodbankTags: [],
             };
-            var surplus = {
+            let surplus = {
               available: "",
               cost: "",
               totalQuantityAvailable: row[columns["Produce Quantity"]],
               packagingType: "",
             };
-            var deal = {
+            let deal = {
               farmContactKey: 0,
               foodbankContactKey: 0,
               farmlinkContactName: "",
