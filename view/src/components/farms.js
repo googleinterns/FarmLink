@@ -72,9 +72,7 @@ const styles = (theme) => ({
     right: "16px",
   },
   clearSearchButton: {
-    position: "right",
-    left: "8px",
-    bottom: "8px",
+    position: "relative",
   },
   searchBars: {
     marginTop: theme.spacing(3),
@@ -449,7 +447,7 @@ class Farms extends Component {
 
   /** Update tagQueries and search the cards by tags */
   handleTagFilter = (event, values) => {
-    if (values === []) {
+    if (values.length === 0) {
       return;
     }
     const prevValues = this.state.tagsQuery;
@@ -534,16 +532,8 @@ class Farms extends Component {
             )}
           />
         </div>
-
         <div>{this.tagsAutocomplete(false)}</div>
-
-        <div>
-          <Typography className={classes.heading}>
-            Find Farms within Custom Distance of a Location
-          </Typography>
-          <Filters database="farms"> </Filters>
-          {/*<Filters render={this.updateCards}>database="farms" </Filters>*/}
-        </div>
+        <Filters database="farms"> </Filters>
       </div>
     );
   };
@@ -655,7 +645,7 @@ class Farms extends Component {
 
   /** Updates filteredData with a new array; used with filters.js queries */
   updateCards = (newValues) => {
-    if (newValues === []) {
+    if (newValues.length === 0) {
       return;
     }
     this.setState({
