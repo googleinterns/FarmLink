@@ -5,7 +5,7 @@ In this README file we will briefly explain how to get this application up and r
 ## Step #1: Clone the Repository
 In a terminal, navigate to the directory where you would like to clone the repository. Then in your browser, navigate to the main page of the repository, press the green code button, and then copy the link under "Clone with HTTPS".
 
-Now enter the following command into terminal:
+Now enter the following command into your terminal:
 
     git clone https://hostname/YOUR_USERNAME/YOUR-REPOSITORY
 At this point all the folders within the repository should have successfully downloaded locally.
