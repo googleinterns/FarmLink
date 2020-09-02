@@ -96,32 +96,32 @@ At this point, the repository and Firebase should be set up. We hope you enjoy u
 
 # Appendix
 
-# Repository Structure
+## Repository Structure
 
 Here is a very basic description of the repository structure:
 * `~/farmlink/functions` > contains all of the Cloud Functions (handle all of the CRUD operations / backend)
 * `~/farmlink/view` > contains the React Application (handles all of the frontend of the application)
 
-# Development Tips
+## Development Tips
 
-## Back-End
+### Back-End
 
     cd functions
     firebase serve
 
-## Front-End
+### Front-End
 
     cd view
     npm start
 
-# Deployment Tips
+## Deployment Tips
 
-## Back-End
+### Back-End
 
     cd functions
     firebase deploy
 
-## Front-End
+### Front-End
 
     cd view
     npm run build
