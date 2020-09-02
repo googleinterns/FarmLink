@@ -12,7 +12,7 @@ At this point all the folders within the repository should have successfully dow
 ## Step #2: Download Dependencies 
 If you haven't installed npm, navigate to this [download tutorial](https://www.npmjs.com/get-npm) and do so before continuing.
 
-Now navigate to the view directory within the code base an run the following command:
+Now, navigate to the view directory within the codebase and run the following command:
 
     ~/farmlink/view npm install
 
