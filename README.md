@@ -1,3 +1,5 @@
+# FarmLink
+Our capstone project is a web application that helps FarmLink, a non-profit organization that moves food surplus from farms around the country to food banks in need, automate the process of matching a food bank with a farm.
 # How to get application running!
 In this README file we will briefly explain how to get this application up and running on your computer. Feel free to reach out to the contributors to the repo for any further assistance.
 ## Step #1: Clone the Repository
@@ -75,3 +77,19 @@ At this point everything should be set up in terms of the repository and Firebas
 To finish everything off, here is a very basic description of the repository structure:
 * `~/farmlink/functions` > contains all of the Cloud Functions (handle all of the CRUD operations / backend)
 * `~/farmlink/view` > contains the React Application (handles all of the frontend of the application)
+# Development Tips
+## Back-End
+    cd functions
+    firebase serve
+## Front-End
+    cd view
+    npm start
+
+# Deployment Tips
+## Back-End
+    cd functions
+    firebase deploy
+## Front-End
+    cd view
+    npm run build
+    firebase deploy
