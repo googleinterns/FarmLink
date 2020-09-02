@@ -19,6 +19,7 @@ Now repeat the process in the functions directory:
 Now you can test if the React application runs by running the following command in the view directory (if it doesn't run, you will likely need to download a missing dependency)
 
     ~/farmlink/functions npm start
+
 If it runs, then you are good to go onto the next step!
 
 ## Step #3: Setup Firebase
