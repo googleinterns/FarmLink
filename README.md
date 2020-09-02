@@ -2,7 +2,9 @@
 Our capstone project is a web application that helps FarmLink, a non-profit organization that moves food surplus from farms around the country to food banks in need, by automating the process of matching a food bank with a farm.
 # How to get application running!
 In this README file we will briefly explain how to get this application up and running on your computer. Feel free to reach out to the contributors to the repo for any further assistance.
+
 ## Step #1: Clone the Repository
+
 In a terminal, navigate to the directory where you would like to clone the repository. Then in your browser, navigate to the main page of the repository, press the green code button, and then copy the link under "Clone with HTTPS".
 
 Go to this [GitHub Tutorial](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) to learn more about how to clone a repository.
