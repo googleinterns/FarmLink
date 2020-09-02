@@ -546,7 +546,7 @@ class Foodbank extends Component {
     return (
       <div>
         <Grid container spacing={2} alignItem="center">
-          {this.state.foodbanks.map((foodbank) => (
+          {this.state.filteredData.map((foodbank) => (
             <Grid item xs={12}>
               <Card
                 className={classes.root}
