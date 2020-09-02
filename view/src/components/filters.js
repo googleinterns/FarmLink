@@ -85,8 +85,6 @@ class Filters extends Component {
     url += "&";
     url += `distance=${this.state.distance}`;
 
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
     axios.get(url).then((res) => {
       this.setState({ results: res.data });
     });

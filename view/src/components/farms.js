@@ -39,6 +39,7 @@ import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+
 import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -92,7 +93,7 @@ const styles = (theme) => ({
     margin: "0 2px",
     transform: "scale(0.8)",
   },
-  pos: {
+  position: {
     marginBottom: "12px",
   },
   uiProgess: {
@@ -121,10 +122,6 @@ const styles = (theme) => ({
     borderRadius: theme.shape.borderRadius,
     marginLeft: 0,
     width: "100%",
-  },
-  searchBar: {
-    borderRadius: theme.shape.borderRadius,
-    marginTop: "2px",
   },
   searchIcon: {
     padding: theme.spacing(0, 2),
@@ -163,7 +160,7 @@ const styles = (theme) => ({
   },
 });
 
-/** Place holder for contact table data pulled from database */
+/** Structure for contacts table */
 let tableState = {
   columns: [
     { title: "Role", field: "contactRole" },
@@ -271,156 +268,7 @@ class Farms extends Component {
     this.updateCards = this.updateCards.bind(this);
   }
 
-  /**
-   * Given an event, this function updates a state (the target of the event)
-   * with a new value
-   * @param event The event that is attempting to update a state
-   */
-  handleChange = (event) => {
-    this.setState({
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  /** Combine all tags in filteredData items to update tags that user can select */
-  populateAllFarmTags = () => {
-    const { filteredData } = this.state;
-    var populatedTags = [];
-    filteredData.map((data) =>
-      populatedTags.push.apply(populatedTags, data.farmTags)
-    );
-    // Get unique tags only
-    const populatedUniqueTags = [...new Set(populatedTags)];
-
-    this.setState({
-      allFarmTags: populatedUniqueTags,
-    });
-  };
-
-  /** Used to update tags in form for modifying or adding an item */
-  onTagsChange = (event, values) => {
-    this.setState({
-      // Farm state
-      farmTags: values,
-    });
-  };
-
-  changeContacts = (data) => {
-    this.setState({ contacts: data });
-  };
-
-  /** Used to update location from address autocomplete component */
-  handleLocation = (newValue) => {
-    if (newValue === null) {
-      return;
-    }
-    this.setState({
-      // Farm states
-      location: newValue.description,
-      locationId: newValue.place_id,
-    });
-  };
-
-  /** Returns the authentication token stored in local storage */
-  getAuth = () => {
-    authMiddleWare(this.props.history);
-    return localStorage.getItem("AuthToken");
-  };
-
-  /** Load in all of the current farms when the component has mounted */
-  componentDidMount() {
-    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
-    axios
-      .get("/farms")
-      .then((response) => {
-        this.setState(
-          {
-            // Farm state
-            data: response.data,
-            filteredData: response.data,
-            // Page state
-            uiLoading: false,
-          },
-          this.populateAllFarmTags
-        );
-
-        this.setState({
-          unfilteredFarmTags: [...this.state.allFarmTags],
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-
-  /**
-   * Takes a farm object as an input and deletes the given farm
-   * object from the database
-   * @param data A farm object
-   */
-  handleDelete(data) {
-    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
-    let farmId = data.farm.farmId;
-    axios
-      .delete(`farms/${farmId}`)
-      .then(() => {
-        this.props.alert("success", "Farm successfully deleted!");
-        window.location.reload();
-      })
-      .catch((err) => {
-        console.error(err);
-        this.props.alert(
-          "error",
-          "An error occurred when attempting to delete the Farm!"
-        );
-      });
-  }
-
-  /**
-   * Takes a farm object as an input and opens a dialog page to
-   * allow the user to update the attributes of the farm object
-   * @param data A farm object
-   */
-  handleEditClick(data) {
-    this.setState({
-      // Farm states
-      farmName: data.farm.farmName,
-      farmId: data.farm.farmId,
-      contacts: data.farm.contacts,
-      farmTags: data.farm.farmTags,
-      forklift: data.farm.forklift,
-      loadingDock: data.farm.loadingDock,
-      location: data.farm.location,
-      locationId: data.farm.locationId,
-      transportation: data.farm.transportation,
-      // Page states
-      buttonType: "Edit",
-      open: true,
-    });
-    tableState.data = data.farm.contacts;
-  }
-
-  /**
-   * Takes a farm object as an input and opens a popup with all the
-   * information about the farm (currently not being used -> will be
-   * updated to show augmented information)
-   * @param data A farm object
-   */
-  handleViewOpen(data) {
-    this.setState({
-      // Farm states
-      farmName: data.farm.farmName,
-      contacts: data.farm.contacts,
-      farmTags: data.farm.farmTags,
-      forklift: data.farm.forklift,
-      loadingDock: data.farm.loadingDock,
-      location: data.farm.location,
-      locationId: data.farm.locationId,
-      transportation: data.farm.transportation,
-      // Page states
-      viewOpen: true,
-    });
-  }
+  /** Begin functions for sorting menu on top of the page */
 
   /** Update a stringQuery and search the cards by the specified query variable */
   handleStringSearch = (queryName, event) => {
@@ -496,7 +344,6 @@ class Farms extends Component {
 
   /** Returns additional search features that are collapsed at first glance */
   extraFiltersAccordion = () => {
-    const { classes } = this.props;
     const { locationQuery, filteredData } = this.state;
 
     return (
@@ -530,7 +377,6 @@ class Farms extends Component {
             )}
           />
         </div>
-
         <div>{this.tagsAutocomplete(false)}</div>
         <Filters database="farms"></Filters>
       </div>
@@ -694,11 +540,14 @@ class Farms extends Component {
                     display="flex"
                     flexDirection="row"
                     flexWrap="wrap"
-                    p={0}
-                    m={0}
+                    padding={0}
+                    margin={0}
                   >
-                    <Box p={3}>
-                      <Typography className={classes.pos} color="textSecondary">
+                    <Box padding={3}>
+                      <Typography
+                        className={classes.position}
+                        color="textSecondary"
+                      >
                         Details:
                       </Typography>
                       <Typography
@@ -709,20 +558,29 @@ class Farms extends Component {
                         Location of Farm: {farm.location}
                       </Typography>
                     </Box>
-                    <Box p={3}>
-                      <Typography className={classes.pos} color="textSecondary">
-                        Point of Contact:
-                      </Typography>
-                      <Typography variant="body2" component="p">
-                        Name: {farm.contacts[0]["contactName"]}
-                        <br />
-                        Phone: {farm.contacts[0]["contactPhone"]}
-                        <br />
-                        Email: {farm.contacts[0]["contactEmail"]}
-                      </Typography>
-                    </Box>
-                    <Box p={3}>
-                      <Typography className={classes.pos} color="textSecondary">
+                    {/* TODO(andrewhojel): allow user to choose the point of contact */}
+                    {farm.contacts.length > 0 && (
+                      <Box padding={3}>
+                        <Typography
+                          className={classes.position}
+                          color="textSecondary"
+                        >
+                          Point of Contact:
+                        </Typography>
+                        <Typography variant="body2" component="p">
+                          Name: {farm.contacts[0]["contactName"]}
+                          <br />
+                          Phone: {farm.contacts[0]["contactPhone"]}
+                          <br />
+                          Email: {farm.contacts[0]["contactEmail"]}
+                        </Typography>
+                      </Box>
+                    )}
+                    <Box padding={3}>
+                      <Typography
+                        className={classes.position}
+                        color="textSecondary"
+                      >
                         Logistics:
                       </Typography>
                       <Typography variant="body2" component="p">
@@ -759,6 +617,160 @@ class Farms extends Component {
       </div>
     );
   };
+
+  /** End functions for sorting menu on top of the page */
+
+  /**
+   * Given an event, this function updates a state (the target of the event)
+   * with a new value
+   * @param event The event that is attempting to update a state
+   */
+  handleChange = (event) => {
+    this.setState({
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  /** Combine all tags in filteredData items to update tags that user can select */
+  populateAllFarmTags = () => {
+    const { filteredData } = this.state;
+    var populatedTags = [];
+    filteredData.map((data) =>
+      populatedTags.push.apply(populatedTags, data.farmTags)
+    );
+    // Get unique tags only
+    const populatedUniqueTags = [...new Set(populatedTags)];
+
+    this.setState({
+      allFarmTags: populatedUniqueTags,
+    });
+  };
+
+  /** Used to update tags in form for modifying or adding an item */
+  onTagsChange = (event, values) => {
+    this.setState({
+      // Farm state
+      farmTags: values,
+    });
+  };
+
+  /** Updates the contacts table */
+  changeContacts = (data) => {
+    this.setState({ contacts: data });
+  };
+
+  /** Used to update location from address autocomplete component */
+  handleLocation = (newValue) => {
+    if (newValue === null) {
+      return;
+    }
+    this.setState({
+      // Farm states
+      location: newValue.description,
+      locationId: newValue.place_id,
+    });
+  };
+
+  /** Returns the authentication token stored in local storage */
+  getAuth = () => {
+    authMiddleWare(this.props.history);
+    return localStorage.getItem("AuthToken");
+  };
+
+  /** Load in all of the current farms when the component has mounted */
+  componentDidMount() {
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
+    axios
+      .get("/farms")
+      .then((response) => {
+        this.setState(
+          {
+            // Farm state
+            data: response.data,
+            filteredData: response.data,
+            // Page state
+            uiLoading: false,
+          },
+          this.populateAllFarmTags
+        );
+
+        this.setState({
+          unfilteredFarmTags: [...this.state.allFarmTags],
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
+
+  /**
+   * Takes a farm object as an input and deletes the given farm
+   * object from the database
+   * @param data A farm object
+   */
+  handleDelete(data) {
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
+    let farmId = data.farm.farmId;
+    axios
+      .delete(`farms/${farmId}`)
+      .then(() => {
+        this.props.alert("success", "Farm successfully deleted!");
+        window.location.reload();
+      })
+      .catch((err) => {
+        console.error(err);
+        this.props.alert(
+          "error",
+          "An error occurred when attempting to delete the Farm!"
+        );
+      });
+  }
+
+  /**
+   * Takes a farm object as an input and opens a dialog page to
+   * allow the user to update the attributes of the farm object
+   * @param data A farm object
+   */
+  handleEditClick(data) {
+    this.setState({
+      // Farm states
+      farmName: data.farm.farmName,
+      farmId: data.farm.farmId,
+      contacts: data.farm.contacts,
+      farmTags: data.farm.farmTags,
+      forklift: data.farm.forklift,
+      loadingDock: data.farm.loadingDock,
+      location: data.farm.location,
+      locationId: data.farm.locationId,
+      transportation: data.farm.transportation,
+      // Page states
+      buttonType: "Edit",
+      open: true,
+    });
+    tableState.data = data.farm.contacts;
+  }
+
+  /**
+   * Takes a farm object as an input and opens a popup with all the
+   * information about the farm (currently not being used -> will be
+   * updated to show augmented information)
+   * @param data A farm object
+   */
+  handleViewOpen(data) {
+    this.setState({
+      // Farm states
+      farmName: data.farm.farmName,
+      contacts: data.farm.contacts,
+      farmTags: data.farm.farmTags,
+      forklift: data.farm.forklift,
+      loadingDock: data.farm.loadingDock,
+      location: data.farm.location,
+      locationId: data.farm.locationId,
+      transportation: data.farm.transportation,
+      // Page states
+      viewOpen: true,
+    });
+  }
 
   render() {
     const DialogTitle = withStyles(styles)((props) => {
@@ -1062,24 +1074,25 @@ class Farms extends Component {
                 display="flex"
                 flexDirection="row"
                 flexWrap="wrap"
-                p={0}
-                m={0}
+                padding={0}
+                margin={0}
               >
-                <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
+                <Box padding={3}>
+                  <Typography
+                    className={classes.position}
+                    color="textSecondary"
+                  >
                     Details:
                   </Typography>
                   <Typography variant="body2" component="p">
                     Location of Farm: {this.state.location}
                   </Typography>
                 </Box>
-                <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
-                    Point of Contact:
-                  </Typography>
-                </Box>
-                <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
+                <Box padding={3}>
+                  <Typography
+                    className={classes.position}
+                    color="textSecondary"
+                  >
                     Logistics:
                   </Typography>
                   <Typography variant="body2" component="p">

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 import Address from "../extras/address_autocomplete_field";
 import CardSkeletons from "../extras/skeleton";
+import CustomTable from "../extras/table";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
@@ -32,7 +33,6 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import PropTypes from "prop-types";
 import MaskedInput from "react-text-mask";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 
@@ -133,7 +133,21 @@ const styles = (theme) => ({
   formText: {
     marginBottom: "16px",
   },
+  tablePadding: {
+    marginTop: "24px",
+  },
 });
+
+/** Structure for contacts table */
+let tableState = {
+  columns: [
+    { title: "Role", field: "contactRole" },
+    { title: "Name", field: "contactName" },
+    { title: "Email", field: "contactEmail" },
+    { title: "Phone Number", field: "contactPhone" },
+  ],
+  data: [],
+};
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -193,11 +207,9 @@ class Foodbank extends Component {
       foodbankName: "",
       location: "",
       locationId: "",
-      hours: "",
+      // TODO(andrewhojel): add the hours feature
       foodbankId: "",
-      contactPhone: "(1  )    -    ",
-      contactName: "",
-      contactEmail: "",
+      contacts: [],
       forklift: false,
       pallet: false,
       loadingDock: false,
@@ -214,6 +226,7 @@ class Foodbank extends Component {
       selectedCard: "",
     };
 
+    this.onTagsChange = this.onTagsChange.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
@@ -233,9 +246,13 @@ class Foodbank extends Component {
   /** Used to update tags in form */
   onTagsChange = (event, values) => {
     this.setState({
-      // food bank state
-      farmTags: values,
+      foodbankTags: values,
     });
+  };
+
+  /** Updates the contacts table */
+  changeContacts = (data) => {
+    this.setState({ contacts: data });
   };
 
   /** Used to update location from address autocomplete component */
@@ -306,9 +323,7 @@ class Foodbank extends Component {
    * @param data A food bank object
    */
   handleDelete(data) {
-    authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     let foodbankId = data.foodbank.foodbankId;
     axios
       .delete(`foodbanks/${foodbankId}`)
@@ -341,11 +356,9 @@ class Foodbank extends Component {
       foodbankName: data.foodbank.foodbankName,
       location: data.foodbank.location,
       locationId: data.foodbank.locationId,
-      hours: data.foodbank.hours,
+      // TODO(andrewhojel): add the hours feature
       foodbankId: data.foodbank.foodbankId,
-      contactPhone: data.foodbank.contactPhone,
-      contactName: data.foodbank.contactName,
-      contactEmail: data.foodbank.contactEmail,
+      contacts: data.foodbank.contacts,
       forklift: data.foodbank.forklift,
       pallet: data.foodbank.pallet,
       loadingDock: data.foodbank.loadingDock,
@@ -356,6 +369,7 @@ class Foodbank extends Component {
       buttonType: "Edit",
       open: true,
     });
+    tableState.data = data.foodbank.contacts;
   }
 
   /**
@@ -370,10 +384,8 @@ class Foodbank extends Component {
       foodbankName: data.foodbank.foodbankName,
       location: data.foodbank.location,
       locationId: data.foodbank.locationId,
-      hours: data.foodbank.hours,
-      contactPhone: data.foodbank.contactPhone,
-      contactName: data.foodbank.contactName,
-      contactEmail: data.foodbank.contactEmail,
+      // TODO(andrewhojel): add the hours feature
+      contacts: data.foodbank.contacts,
       forklift: data.foodbank.forklift,
       pallet: data.foodbank.pallet,
       loadingDock: data.foodbank.loadingDock,
@@ -421,11 +433,9 @@ class Foodbank extends Component {
         foodbankName: "",
         location: "",
         locationId: "",
-        hours: "",
+        // TODO(andrewhojel): add the hours feature
         foodbankId: "",
-        contactPhone: "(1  )    -    ",
-        contactName: "",
-        contactEmail: "",
+        contacts: [],
         forklift: false,
         pallet: false,
         loadingDock: false,
@@ -435,6 +445,7 @@ class Foodbank extends Component {
         // page state
         open: true,
       });
+      tableState.data = [];
     };
 
     /**
@@ -449,10 +460,8 @@ class Foodbank extends Component {
         foodbankName: this.state.foodbankName,
         location: this.state.location,
         locationId: this.state.locationId,
-        hours: this.state.hours,
-        contactPhone: this.state.contactPhone,
-        contactName: this.state.contactName,
-        contactEmail: this.state.contactEmail,
+        // TODO(andrewhojel): add the hours feature
+        contacts: this.state.contacts,
         forklift: this.state.forklift,
         pallet: this.state.pallet,
         loadingDock: this.state.loadingDock,
@@ -599,58 +608,9 @@ class Foodbank extends Component {
                     />
                     {/* can we get the hours from the location query? */}
                   </Grid>
-                  <Grid item xs={3}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="contactName"
-                      label="Point of Contact - Name"
-                      name="contactName"
-                      type="text"
-                      autoComplete="contactName"
-                      helperText={errors.contactName}
-                      value={this.state.contactName}
-                      error={errors.contactName ? true : false}
-                      onChange={this.handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <FormControl fullWidth>
-                      <InputLabel variant="outlined" htmlFor="contactPhone">
-                        Point of Contact - Phone
-                      </InputLabel>
-                      <OutlinedInput
-                        label="Point of Contact - Phone"
-                        value={this.state.contactPhone}
-                        onChange={this.handleChange}
-                        helperText={errors.contactPhone}
-                        error={errors.contactPhone ? true : false}
-                        name="contactPhone"
-                        id="contactPhone"
-                        inputComponent={TextMaskCustom}
-                      />
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="contactEmail"
-                      label="Point of Contact - Email"
-                      name="contactEmail"
-                      type="email"
-                      autoComplete="contactEmail"
-                      helperText={errors.contactEmail}
-                      value={this.state.contactEmail}
-                      error={errors.contactEmail ? true : false}
-                      onChange={this.handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                     <FormControl variant="outlined" fullWidth>
-                      <InputLabel htmlFor="outlined-age-native-simple">
+                      <InputLabel htmlFor="outlined-loadingDoc">
                         Loading Dock Present
                       </InputLabel>
                       <Select
@@ -659,7 +619,7 @@ class Foodbank extends Component {
                         label="Loading Dock Present"
                         inputProps={{
                           name: "loadingDock",
-                          id: "outlined-age-native-simple",
+                          id: "outlined-loadingDoc",
                         }}
                       >
                         <MenuItem value={true}>Yes</MenuItem>
@@ -667,9 +627,9 @@ class Foodbank extends Component {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                     <FormControl variant="outlined" fullWidth>
-                      <InputLabel htmlFor="outlined-age-native-simple">
+                      <InputLabel htmlFor="outlined-forklift">
                         Forklift Present
                       </InputLabel>
                       <Select
@@ -678,7 +638,7 @@ class Foodbank extends Component {
                         label="Forklift Present"
                         inputProps={{
                           name: "forklift",
-                          id: "outlined-age-native-simple",
+                          id: "outlined-forklift",
                         }}
                       >
                         <MenuItem value={true}>Yes</MenuItem>
@@ -686,9 +646,9 @@ class Foodbank extends Component {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                     <FormControl variant="outlined" fullWidth>
-                      <InputLabel htmlFor="outlined-age-native-simple">
+                      <InputLabel htmlFor="outlined-pallet">
                         Pallet Present
                       </InputLabel>
                       <Select
@@ -697,7 +657,7 @@ class Foodbank extends Component {
                         label="Pallet Present"
                         inputProps={{
                           name: "pallet",
-                          id: "outlined-age-native-simple",
+                          id: "outlined-pallet",
                         }}
                       >
                         <MenuItem value={true}>Yes</MenuItem>
@@ -705,7 +665,7 @@ class Foodbank extends Component {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={6}>
                     <TextField
                       variant="outlined"
                       required
@@ -728,7 +688,7 @@ class Foodbank extends Component {
                       onChange={this.handleChange}
                     />
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={6}>
                     <TextField
                       variant="outlined"
                       required
@@ -775,6 +735,14 @@ class Foodbank extends Component {
                     />
                   </Grid>
                 </Grid>
+                <div className={classes.tablePadding}>
+                  <CustomTable
+                    title="Food Bank Contacts"
+                    tableState={tableState}
+                    data={this.state.contacts}
+                    changeContacts={this.changeContacts}
+                  />
+                </div>
               </form>
             </Container>
           </Dialog>
@@ -848,21 +816,26 @@ class Foodbank extends Component {
                             Max Load Size (in pallets): {foodbank.maxLoadSize}
                           </Typography>
                         </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Point of Contact:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Name: {foodbank.contactName}
-                            <br />
-                            Phone: {foodbank.contactPhone}
-                            <br />
-                            Email: {foodbank.contactEmail}
-                          </Typography>
-                        </Box>
+                        {/* TODO(andrewhojel): allow user to choose the point of contact! */}
+                        {foodbank.contacts.length > 0 && (
+                          <Box p={3}>
+                            <Typography
+                              className={classes.pos}
+                              color="textSecondary"
+                            >
+                              Point of Contact:
+                            </Typography>
+                            <Typography variant="body2" component="p">
+                              Role: {foodbank.contacts[0]["contactRole"]}
+                              <br />
+                              Name: {foodbank.contacts[0]["contactName"]}
+                              <br />
+                              Phone: {foodbank.contacts[0]["contactPhone"]}
+                              <br />
+                              Email: {foodbank.contacts[0]["contactEmail"]}
+                            </Typography>
+                          </Box>
+                        )}
                         <Box p={3}>
                           <Typography
                             className={classes.pos}
@@ -878,22 +851,7 @@ class Foodbank extends Component {
                             Loading Dock: {foodbank.loadingDock ? "yes" : "no"}
                           </Typography>
                         </Box>
-                        {/* --> this will be implemented when we get hours from Place API <--
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Hours of Operation:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Monday-Friday: 9am - 5pm
-                            <br />
-                            Saturday: 10am - 4pm
-                            <br />
-                            Sunday: closed
-                          </Typography>
-                        </Box> */}
+                        {/* DETERMINE(andrewhojel): do we include hours of foodbanks? */}
                       </Box>
                     </CardContent>
                     <CardActions>
@@ -975,18 +933,6 @@ class Foodbank extends Component {
                     {this.state.refrigerationSpaceAvailable}
                     <br />
                     Max Load Size (in pallets): {this.state.maxLoadSize}
-                  </Typography>
-                </Box>
-                <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
-                    Point of Contact:
-                  </Typography>
-                  <Typography variant="body2" component="p">
-                    Name: {this.state.contactName}
-                    <br />
-                    Phone: {this.state.contactPhone}
-                    <br />
-                    Email: {this.state.contactEmail}
                   </Typography>
                 </Box>
                 <Box p={3}>
