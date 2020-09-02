@@ -59,7 +59,7 @@ And run: `firebase login --reauth`
 ## Step #4: Setup Firebase Authentication
 Go to the **Project Settings > General** in Firebase Console and select the web application icon (which should contain `</>` in the icon). Now follow the process for making the web application. At the end of the process you will click **continue to console** and see a `.json` with the firebase config. Paste the contents of this `.json` into the `config.js` file in the **functions > util** directory of the application repository.
 ## Step #5: Setup Cloud Storage
-Go to **Firebase console > Storage** and click the **Get started** button (follow the directions to set up Cloud Storage)
+Go to **Firebase console > Storage** and click the **Get started** button. Follow the directions to set up Cloud Storage.
 
 Now go to the **Rules** tab and update the rules to the following:
 
