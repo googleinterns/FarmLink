@@ -3,8 +3,8 @@ import { ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import React from "react";
 
-import login from "./pages/login";
-import signup from "./pages/signup";
+import login from "./pages/user-login";
+import signup from "./pages/user-signup";
 import home from "./pages/home";
 
 const theme = createMuiTheme({
@@ -24,8 +24,8 @@ function App() {
     <MuiThemeProvider theme={theme}>
       <Router>
         <Switch>
-          <Route exact path="/login" component={login} />
-          <Route exact path="/signup" component={signup} />
+          <Route exact path="/user-login" component={login} />
+          <Route exact path="/user-signup" component={signup} />
           <Route exact path="/" component={home} />
         </Switch>
       </Router>

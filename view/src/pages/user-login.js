@@ -56,13 +56,13 @@ class Login extends Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.UI.errors) {
-      this.setState({
-        errors: nextProps.UI.errors,
-      });
-    }
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   if (nextProps.UI.errors) {
+  //     this.setState({
+  //       errors: nextProps.UI.errors,
+  //     });
+  //   }
+  // }
 
   handleChange = (event) => {
     this.setState({
@@ -78,7 +78,7 @@ class Login extends Component {
       password: this.state.password,
     };
     axios
-      .post("/login", userData)
+      .post("/api/login", userData)
       .then((response) => {
         console.log(response);
         localStorage.setItem("AuthToken", `Bearer ${response.data.token}`);

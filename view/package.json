@@ -42,5 +42,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://us-central1-farmlink-48502.cloudfunctions.net/api"
+  "proxy": "https://us-central1-farmlink-48502.cloudfunctions.net"
 }

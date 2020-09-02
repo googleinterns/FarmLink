@@ -144,7 +144,7 @@ class Home extends Component {
   /** Logs the user out of the web application (by removing bearer token from local storage) */
   logoutHandler = (event) => {
     localStorage.removeItem("AuthToken");
-    this.props.history.push("/login");
+    this.props.history.push("/user-login");
   };
 
   /** Determines whether "selected" CSS should be applied to a page. Only applies to current page. */
@@ -204,7 +204,7 @@ class Home extends Component {
   componentDidMount() {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
-      .get("/user")
+      .get("/api/user")
       .then((response) => {
         console.log(response.data)
         this.setState({
@@ -223,7 +223,7 @@ class Home extends Component {
       .catch((error) => {
         if (error) { //rror.response.status === 403) {
           console.log(error);
-          this.props.history.push("/login");
+          this.props.history.push("/user-login");
         }
         console.error(error);
         this.setState({ errorMsg: "Error in retrieving the data" });

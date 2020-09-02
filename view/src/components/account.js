@@ -106,7 +106,7 @@ class Account extends Component {
       })
       .catch((error) => {
         if (error.response.status === 403) {
-          this.props.history.push("/login");
+          this.props.history.push("/user-login");
         }
         console.error(error);
         this.setState({ errorMsg: "Error in retrieving the data" });
@@ -147,7 +147,7 @@ class Account extends Component {
       })
       .catch((error) => {
         if (error.response.status === 403) {
-          this.props.history.push("/login");
+          this.props.history.push("/user-login");
         }
         console.error(error);
         this.setState({
@@ -175,7 +175,7 @@ class Account extends Component {
       })
       .catch((error) => {
         if (error.response.status === 403) {
-          this.props.history.push("/login");
+          this.props.history.push("/user-login");
         }
         console.error(error);
         this.setState({
