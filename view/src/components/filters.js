@@ -70,7 +70,7 @@ class Filters extends Component {
   filterByDistance = () => {
     let url = "";
     switch (this.props.database) {
-      case "c":
+      case "foodbanks":
         url = "/queryFoodBanksByDistance";
         break;
       case "farms":
