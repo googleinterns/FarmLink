@@ -7,6 +7,7 @@ In a terminal, navigate to the directory where you would like to clone the repos
 
 Go to this [GitHub Tutorial](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) to learn more about how to clone a repository.
 ## Step #2: Download Dependencies 
+
 If you haven't installed npm, navigate to this [download tutorial](https://www.npmjs.com/get-npm) and do so before continuing.
 
 Now, navigate to the `view` directory within the codebase and run the following command:
