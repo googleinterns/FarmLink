@@ -12,7 +12,10 @@ const TOKEN_PATH = "token.json";
 
 // Load client secrets from a local file.
 fs.readFile("credentials.json", (err, content) => {
-  if (err) return console.log("Error loading client secret file:", err);
+  if (err) {
+    console.error("Error loading client secret file:", err);
+    return;
+  }
   // Authorize a client with credentials, then call the Google Sheets API.
   authorize(JSON.parse(content), migrateDeals);
 });
@@ -33,7 +36,9 @@ function authorize(credentials, callback) {
 
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {
-    if (err) return getNewToken(oAuth2Client, callback);
+    if (err) {
+      return getNewToken(oAuth2Client, callback);
+    }
     oAuth2Client.setCredentials(JSON.parse(token));
     callback(oAuth2Client);
   });
@@ -58,15 +63,20 @@ function getNewToken(oAuth2Client, callback) {
   rl.question("Enter the code from that page here: ", (code) => {
     rl.close();
     oAuth2Client.getToken(code, (err, token) => {
-      if (err)
-        return console.error(
+      if (err) {
+        console.error(
           "Error while trying to retrieve access token",
           err
         );
+        return;
+      }
       oAuth2Client.setCredentials(token);
       // Store the token to disk for later program executions
       fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
-        if (err) return console.error(err);
+        if (err) {
+          console.error(err);
+          return;
+        }
         console.log("Token stored to", TOKEN_PATH);
       });
       callback(oAuth2Client);
@@ -86,61 +96,36 @@ function migrateDeals(auth) {
       range: "",
     },
     (err, res) => {
-      if (err) return console.log("The API returned an error: " + err);
+      if (err) {
+        console.error("The API returned an error: " + err);
+        return;
+      }
       const rows = res.data.values;
-      if (rows.length) {
-        let row = rows[0];
-        let columns = {};
-        for (let i = 0; i < row.length; i++) {
-          switch (row[i]) {
-            case "Farm Name":
-              columns["Farm Name"] = i;
-              break;
-            case "Farm Location":
-              columns["Farm Location"] = i;
-              break;
-            case "Farm Contact Name":
-              columns["Farm Contact Name"] = i;
-              break;
-            case "Farm Contact Phone":
-              columns["Farm Contact Phone"] = i;
-              break;
-            case "Farm Contact Email":
-              columns["Farm Contact Email"] = i;
-              break;
-            case "Food Bank Name":
-              columns["Food Bank Name"] = i;
-              break;
-            case "Food Bank Location":
-              columns["Food Bank Location"] = i;
-              break;
-            case "Food Bank Contact Name":
-              columns["Food Bank Contact Name"] = i;
-              break;
-            case "Food Bank Contact Phone":
-              columns["Food Bank Contact Phone"] = i;
-              break;
-            case "Food Bank Contact Email":
-              columns["Food Bank Contact Email"] = i;
-              break;
-            case "Delivery Date":
-              columns["Delivery Date"] = i;
-              break;
-            case "Produce Type":
-              columns["Produce Type"] = i;
-              break;
-            case "Produce Quantity":
-              columns["Produce Quantity"] = i;
-              break;
-            case "$ to Farm":
-              columns["$ to Farm"] = i;
-              break;
-            case "$ Shipping":
-              columns["$ Shipping"] = i;
-              break;
-            case "$ in Total":
-              columns["$ in Total"] = i;
-              break;
+      if (!rows.length) {
+        console.log("No data found.");
+      } else {
+        const headerRow = rows[0];
+        let columns = {
+          "Farm Name": undefined,
+          "Farm Location": undefined,
+          "Farm Contact Name": undefined,
+          "Farm Contact Phone": undefined,
+          "Farm Contact Email": undefined,
+          "Food Bank Name": undefined,
+          "Food Bank Location": undefined,
+          "Food Bank Contact Name": undefined,
+          "Food Bank Contact Phone": undefined,
+          "Food Bank Contact Email": undefined,
+          "Delivery Date": undefined,
+          "Produce Type": undefined,
+          "Produce Quantity": undefined,
+          "$ to Farm": undefined,
+          "$ Shipping": undefined,
+          "$ in Total": undefined,
+        };
+        for (let i = 0; i < headerRow.length; i++) {
+          if (headerRow[i] in columns) {
+            columns[headerRow[i]] = i;
           }
         }
         rows.forEach((row, index) => {
@@ -230,14 +215,24 @@ function migrateDeals(auth) {
                           .then((doc) => {
                             deal["surplusId"] = doc.id;
                             db.collection("deals").add(deal);
+                          })
+                          .catch((err) => {
+                            console.log(err);
                           });
+                      })
+                      .catch((err) => {
+                        console.log(err);
                       });
+                  })
+                  .catch((err) => {
+                    console.log(err);
                   });
+              })
+              .catch((err) => {
+                console.log(err);
               });
           }
         });
-      } else {
-        console.log("No data found.");
       }
     }
   );
