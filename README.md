@@ -46,6 +46,7 @@ Go to the database tab in Firebase console and create a database set to `test mo
 If you would like to test Firebase Firestore locally, run `firebase serve` in the functions directory. We recommend using [Postman](https://www.postman.com/) as a tool for testing the APIs.
 
 If you get an error regarding credentials when you run `firebase serve`, then use the following steps to fix it:
+
 1. Go to the **Project Settings** tab in the Firebase Console
 2. Go to the **Service Accounts tab**
 3. There will be an option of **Generating a New Key**. Click on that option and it will download a file with a `.json` extension.
