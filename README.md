@@ -11,11 +11,12 @@ In this README file we will briefly explain how to get this application up and r
 In a terminal, navigate to the directory where you would like to clone the repository. Then in your browser, navigate to the main page of the repository, press the green code button, and then copy the link under "Clone with HTTPS".
 
 Go to this [GitHub Tutorial](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) to learn more about how to clone a repository.
+
 ## Step #2: Download Dependencies 
 
 If you haven't installed npm, navigate to this [download tutorial](https://www.npmjs.com/get-npm) and do so before continuing.
 
-Now, navigate to the `view` directory within the codebase and run the following command:
+Now, navigate to the `view` directory within the codebase and run the following command (The command below assumes that the name of the directory you cloned into is `farmlink`. If it is not, replace farmlink in all paths with the name you gave the directory):
 
     ~/farmlink/view npm install
 
@@ -73,7 +74,9 @@ And run: `firebase login --reauth`
 ## Step #4: Setup Firebase Authentication
 
 Go to the **Project Settings > General** in Firebase Console and select the web application icon (which should contain `</>` in the icon). Now follow the process for making the web application. At the end of the process you will click **Continue to Console** and see a `.json` with the firebase config. Paste the contents of this `.json` into the `config.js` file in the **functions > util** directory of the application repository.
+
 ## Step #5: Setup Cloud Storage
+
 Go to **Firebase Console > Storage** and click the **Get Started** button. Follow the directions to set up Cloud Storage.
 
 Now go to the **Rules** tab and update the rules to the following:
@@ -90,8 +93,11 @@ Now go to the **Rules** tab and update the rules to the following:
 ## Finished!
 
 At this point, the repository and Firebase should be set up. We hope you enjoy using our code and feel free to reach out to the contributors with any questions. 
+
 # Appendix
+
 # Repository Structure
+
 Here is a very basic description of the repository structure:
 * `~/farmlink/functions` > contains all of the Cloud Functions (handle all of the CRUD operations / backend)
 * `~/farmlink/view` > contains the React Application (handles all of the frontend of the application)
