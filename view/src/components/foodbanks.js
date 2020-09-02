@@ -366,36 +366,40 @@ class Foodbank extends Component {
 
     return (
       <div>
-        <div>
-          <Autocomplete
-            id="location-search"
-            options={filteredData.map((data) => data.location)}
-            value={locationQuery}
-            onSelect={(e) => this.handleStringSearch("locationQuery", e)}
-            fullWidth={true}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Food Bank Locations"
-                placeholder="Type or Select a Location"
-                variant="outlined"
-                onChange={(e) => this.handleStringSearch("locationQuery", e)}
-                InputProps={{
-                  ...params.InputProps,
-                  startAdornment: (
-                    <>
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                      {params.InputProps.startAdornment}
-                    </>
-                  ),
-                }}
-              />
-            )}
-          />
-        </div>
-        <div>{this.tagsAutocomplete(false)}</div>
+        <Grid container spacing={3} alignItem="left">
+          <Grid item xs={6}>
+            <Autocomplete
+              id="location-search"
+              options={filteredData.map((data) => data.location)}
+              value={locationQuery}
+              onSelect={(e) => this.handleStringSearch("locationQuery", e)}
+              fullWidth={true}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Food Bank Locations"
+                  placeholder="Type or Select a Location"
+                  variant="outlined"
+                  onChange={(e) => this.handleStringSearch("locationQuery", e)}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            {this.tagsAutocomplete()}
+          </Grid>
+        </Grid>
         <Filters database="foodbanks"></Filters>
       </div>
     );
@@ -479,7 +483,6 @@ class Foodbank extends Component {
 
     return (
       <Autocomplete
-        className={classes.searchBars}
         multiple
         id="tags-search"
         onChange={this.handleTagFilter}

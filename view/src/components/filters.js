@@ -141,7 +141,7 @@ class Filters extends Component {
             TextFieldLabel="Custom Location"
           />
         </Grid>
-        <Grid item xs={2}>
+        <Grid item xs={3}>
           <TextField
             variant="outlined"
             label="Distance (Miles)"
@@ -151,7 +151,7 @@ class Filters extends Component {
             onChange={this.handleChange}
           />
         </Grid>
-        <Grid item xs={10}>
+        <Grid item xs={3}>
           <Button
             className={styles.searchButton}
             onClick={this.filterByDistance}
@@ -193,7 +193,7 @@ class Filters extends Component {
             onChange={this.handleChange}
           />
         </Grid>
-        <Grid item xs={9}>
+        <Grid item xs={3}>
           <Button
             className={styles.searchButton}
             onClick={this.filterByTravelTime}
