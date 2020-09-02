@@ -291,6 +291,21 @@ class Farms extends Component {
     this.state.tagsQuery.map((item) => this.simpleSearch("tags-search", item));
   };
 
+  /** Combine all tags in filteredData items to update tags that user can select */
+  populateAllFarmTags = () => {
+    const { filteredData } = this.state;
+    var populatedTags = [];
+    filteredData.map((data) =>
+      populatedTags.push.apply(populatedTags, data.farmTags)
+    );
+    // Get unique tags only
+    const populatedUniqueTags = [...new Set(populatedTags)];
+
+    this.setState({
+      allFarmTags: populatedUniqueTags,
+    });
+  };
+
   /** Update tagQueries and search the cards by tags */
   handleTagFilter = (event, values) => {
     if (values.length === 0) {
@@ -518,6 +533,8 @@ class Farms extends Component {
     );
   };
 
+  /** End functions for sorting menu on top of the page */
+
   /** Renders filtered produce results into Material-UI cards */
   handleResultsRender = () => {
     const { classes } = this.props;
@@ -618,8 +635,6 @@ class Farms extends Component {
     );
   };
 
-  /** End functions for sorting menu on top of the page */
-
   /**
    * Given an event, this function updates a state (the target of the event)
    * with a new value
@@ -628,21 +643,6 @@ class Farms extends Component {
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
-    });
-  };
-
-  /** Combine all tags in filteredData items to update tags that user can select */
-  populateAllFarmTags = () => {
-    const { filteredData } = this.state;
-    var populatedTags = [];
-    filteredData.map((data) =>
-      populatedTags.push.apply(populatedTags, data.farmTags)
-    );
-    // Get unique tags only
-    const populatedUniqueTags = [...new Set(populatedTags)];
-
-    this.setState({
-      allFarmTags: populatedUniqueTags,
     });
   };
 
@@ -700,6 +700,7 @@ class Farms extends Component {
       })
       .catch((err) => {
         console.error(err);
+        this.props.alert("error", "Error loading in the farms!");
       });
   }
 
@@ -956,6 +957,7 @@ class Farms extends Component {
                     <Address
                       handleLocation={this.handleLocation}
                       location={this.state.location}
+                      searching={false}
                     />
                   </Grid>
                   <Grid item xs={4}>
