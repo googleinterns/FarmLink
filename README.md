@@ -5,15 +5,11 @@ In this README file we will briefly explain how to get this application up and r
 ## Step #1: Clone the Repository
 In a terminal, navigate to the directory where you would like to clone the repository. Then in your browser, navigate to the main page of the repository, press the green code button, and then copy the link under "Clone with HTTPS".
 
-Now enter the following command into your terminal:
-
-    git clone https://hostname/YOUR_USERNAME/YOUR-REPOSITORY
-
-At this point all the folders within the repository should have successfully downloaded locally.
+Go to this [GitHub Tutorial](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) to learn more about how to clone a repository.
 ## Step #2: Download Dependencies 
 If you haven't installed npm, navigate to this [download tutorial](https://www.npmjs.com/get-npm) and do so before continuing.
 
-Now, navigate to the view directory within the codebase and run the following command:
+Now, navigate to the `view` directory within the codebase and run the following command:
 
     ~/farmlink/view npm install
 
@@ -25,7 +21,7 @@ Now you can test if the React application runs by running the following command 
     ~/farmlink/functions npm start
 If it runs, then you are good to go onto the next step!
 ## Step #3: Setup Firebase
-Create a project in Firebase and run the following after doing so:
+Create a project in Firebase (go to this [tutorial](https://firebase.google.com/docs/projects/learn-more) to learn how) and run the following after doing so:
 
     ~/farmlink/functions npm install -g firebase-tools
     firebase init
@@ -38,9 +34,9 @@ Once you have run `firebase init`, answer the prompts as follows:
     Select a default Firebase project for this directory
     => application_name 
     Do you want to use ESLint to catch probable bugs and enforce style?
-    => N
+    => No
     Do you want to install dependencies with npm now?
-    => Y
+    => Yes
 After this, you should see the following message:
 
     ✔ Firebase initialization complete!
@@ -51,16 +47,16 @@ If you would like to test Firebase Firestore locally, run `firebase serve` in th
 
 If you get an error regarding credentials when you run `firebase serve`, then use the following steps to fix it:
 1. Go to the **Project Settings** tab in the Firebase Console
-2. Go to the **service accounts tab**
-3. There will be an option of **Generating a new key**. Click on that option and it will download a file with a `.json` extension.
+2. Go to the **Service Accounts tab**
+3. There will be an option of **Generating a New Key**. Click on that option and it will download a file with a `.json` extension.
 4. Use the command below to connect these credentials 
 `export GOOGLE_APPLICATION_CREDENTIALS="/home/user/Downloads/[FILE_NAME].json`
 
 And run: `firebase login --reauth`
 ## Step #4: Setup Firebase Authentication
-Go to the **Project Settings > General** in Firebase Console and select the web application icon (which should contain `</>` in the icon). Now follow the process for making the web application. At the end of the process you will click **continue to console** and see a `.json` with the firebase config. Paste the contents of this `.json` into the `config.js` file in the **functions > util** directory of the application repository.
+Go to the **Project Settings > General** in Firebase Console and select the web application icon (which should contain `</>` in the icon). Now follow the process for making the web application. At the end of the process you will click **Continue to Console** and see a `.json` with the firebase config. Paste the contents of this `.json` into the `config.js` file in the **functions > util** directory of the application repository.
 ## Step #5: Setup Cloud Storage
-Go to **Firebase console > Storage** and click the **Get started** button. Follow the directions to set up Cloud Storage.
+Go to **Firebase Console > Storage** and click the **Get Started** button. Follow the directions to set up Cloud Storage.
 
 Now go to the **Rules** tab and update the rules to the following:
 
@@ -74,8 +70,9 @@ Now go to the **Rules** tab and update the rules to the following:
 	}
 ## Finished!
 At this point, the repository and Firebase should be set up. We hope you enjoy using our code and feel free to reach out to the contributors with any questions. 
-
-To finish everything off, here is a very basic description of the repository structure:
+# Appendix
+# Repository Structure
+Here is a very basic description of the repository structure:
 * `~/farmlink/functions` > contains all of the Cloud Functions (handle all of the CRUD operations / backend)
 * `~/farmlink/view` > contains the React Application (handles all of the frontend of the application)
 # Development Tips
