@@ -40,7 +40,9 @@ Once you have run `firebase init`, answer the prompts as follows:
 After this, you should see the following message:
 
     ✔ Firebase initialization complete!
+
 ## Step #3: Setup Firebase Firestore
+
 Go to the database tab in Firebase console and create a database set to `test mode` and choose `us-central` as your hosting location.
 
 If you would like to test Firebase Firestore locally, run `firebase serve` in the functions directory. We recommend using [Postman](https://www.postman.com/) as a tool for testing the APIs.
