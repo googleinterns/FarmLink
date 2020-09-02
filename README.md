@@ -92,6 +92,7 @@ To finish everything off, here is a very basic description of the repository str
 # Deployment Tips
 
 ## Back-End
+
     cd functions
     firebase deploy
 ## Front-End
