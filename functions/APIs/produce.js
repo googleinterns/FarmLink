@@ -1,10 +1,10 @@
 const { db } = require("../util/admin");
 
-/*
-read a list of all produce
-GET /produce
-success response: array of produce objects (documented in POST /produce)
-*/
+/**
+ * Read a list of all produce.
+ * GET /produce
+ * Success response: array of produce objects (documented in POST /produce)
+ */
 exports.getAllProduce = (request, response) => {
   db.collection("produce")
     .get()
@@ -32,11 +32,11 @@ exports.getAllProduce = (request, response) => {
     });
 };
 
-/*
-read a specific produce
-GET /produce/:id
-success response: produce object (documented in POST /produce)
-*/
+/**
+ * Read a specific produce.
+ * GET /produce/:id
+ * Success response: produce object (documented in POST /produce)
+ */
 exports.getOneProduce = (request, response) => {
   db.doc(`/produce/${request.params.produceId}`)
     .get()
@@ -49,10 +49,10 @@ exports.getOneProduce = (request, response) => {
     });
 };
 
-/*
-create a new produce
-POST /produce
-data params:
+/**
+ * Create a new produce.
+ * POST /produce
+ * Data params:
 {
     name: [string],
     shippingPresetTemperature: [number],
@@ -62,8 +62,8 @@ data params:
     price: [number],
     pricePaid: [number]
 }
-success response: produce object (documented in POST /produce)
-*/
+ * Success response: produce object (documented in POST /produce)
+ */
 exports.postOneProduce = (request, response) => {
   const newProduceItem = {
     name: request.body.name,
@@ -93,11 +93,11 @@ exports.postOneProduce = (request, response) => {
     });
 };
 
-/*
-delete a specific produce
-DELETE /produce/:id
-success response: {message: 'Delete successfull'}
-*/
+/**
+ * Delete a specific produce and surplus and deals that refer to the produce.
+ * DELETE /produce/:id
+ * Success response: {message: 'Delete successfull'}
+ */
 exports.deleteProduce = (request, response) => {
   const document = db.doc(`/produce/${request.params.produceId}`);
   document
@@ -133,11 +133,11 @@ exports.deleteProduce = (request, response) => {
     });
 };
 
-/*
-update a specific produce
-PUT /produce/:id
-success response: {message: 'Updated successfully'}
-*/
+/**
+ * Update a specific produce.
+ * PUT /produce/:id
+ * Success response: {message: 'Updated successfully'}
+ */
 exports.editProduce = (request, response) => {
   let document = db.collection("produce").doc(`${request.params.produceId}`);
   document

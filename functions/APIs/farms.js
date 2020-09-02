@@ -1,10 +1,10 @@
 const { db } = require("../util/admin");
 
-/*
-read a list of all farms
-GET /farms
-success response: array of farm objects (documented in POST /farms)
-*/
+/**
+ * Read a list of all farms.
+ * GET /farms
+ * Success response: array of farm objects (documented in POST /farms)
+ */
 exports.getAllFarms = (request, response) => {
   db.collection("farms")
     .get()
@@ -32,11 +32,11 @@ exports.getAllFarms = (request, response) => {
     });
 };
 
-/*
-read a specific farm
-GET /farms/:id
-success response: farm object (documented in POST /farms)
-*/
+/**
+ * Read a specific farm.
+ * GET /farms/:id
+ * Success response: farm object (documented in POST /farms)
+ */
 exports.getOneFarm = (request, response) => {
   db.doc(`/farms/${request.params.farmId}`)
     .get()
@@ -49,10 +49,10 @@ exports.getOneFarm = (request, response) => {
     });
 };
 
-/*
-create a new farm
-POST /farms
-data params:
+/**
+ * Create a new farm.
+ * POST /farms
+ * Data params:
 {
     farmName: [string],
     location: [string],
@@ -63,8 +63,8 @@ data params:
     forklift: [boolean],
     farmTags: [array]
 }
-success response: farm object (documented in POST /farms)
-*/
+ * Success response: farm object (documented in POST /farms)
+ */
 exports.postOneFarm = (request, response) => {
   const newFarmItem = {
     farmName: request.body.farmName,
@@ -90,11 +90,11 @@ exports.postOneFarm = (request, response) => {
     });
 };
 
-/*
-delete a specific farm
-DELETE /farms/:id
-success response: {message: 'Delete successfull'}
-*/
+/**
+ * Delete a specific farm and surplus and deals that refer to the farm.
+ * DELETE /farms/:id
+ * Success response: {message: 'Delete successfull'}
+ */
 exports.deleteFarm = (request, response) => {
   const document = db.doc(`/farms/${request.params.farmId}`);
   document
@@ -138,11 +138,11 @@ exports.deleteFarm = (request, response) => {
     });
 };
 
-/*
-update a specific farm
-PUT /farms/:id
-success response: {message: 'Updated successfully'}
-*/
+/**
+ * Update a specific farm.
+ * PUT /farms/:id
+ * Success response: {message: 'Updated successfully'}
+ */
 exports.editFarm = (request, response) => {
   let document = db.collection("farms").doc(`${request.params.farmId}`);
   document

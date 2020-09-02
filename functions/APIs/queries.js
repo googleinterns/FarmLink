@@ -3,7 +3,7 @@ const axios = require('axios');
 const _ = require('lodash');
 require('dotenv').config();
 
-//calculate distances between farms and food banks
+// Calculate distances between farms and food banks.
 function calculateDistances(data, request) {
     return new Promise(function(resolve, reject) {
         const url = new URL("https://maps.googleapis.com/maps/api/distancematrix/json");
@@ -30,7 +30,7 @@ function calculateDistances(data, request) {
     })
 }
 
-//calculate travel times between farms and food banks
+// Calculate travel times between farms and food banks.
 function calculateTravelTimes(data, request) {
     return new Promise(function(resolve, reject) {
         const url = new URL("https://maps.googleapis.com/maps/api/distancematrix/json");
@@ -64,17 +64,17 @@ function calculateTravelTimes(data, request) {
     })
 }
 
-//convert time from days, hours, and minutes to minutes
+// Convert time from days, hours, and minutes to minutes.
 function convertTime(days, hours, minutes) {
     return (24 * 60 * days) + (60 * hours) + minutes;
 }
 
-/*
-find food banks that are a specific distance from a farm
-GET /queryFoodBanksByDistance
-URL params: locationId, distance (miles)
-success response: array of food bank objects
-*/
+/**
+ * Find food banks that are a specific distance from a farm.
+ * GET /queryFoodBanksByDistance
+ * URL params: locationId, distance (miles)
+ * Success response: array of food bank objects
+ */
 exports.queryFoodBanksByDistance = (request, response) => {
     db.collection('foodbanks').get()
     .then((data) => {
@@ -101,12 +101,12 @@ exports.queryFoodBanksByDistance = (request, response) => {
     });
 }
 
-/*
-find farms that are a specific distance from a food bank
-GET /queryFarmsByDistance
-URL params: locationId, distance (miles)
-success response: array of farm objects
-*/
+/**
+ * Find farms that are a specific distance from a food bank.
+ * GET /queryFarmsByDistance
+ * URL params: locationId, distance (miles)
+ * Success response: array of farm objects
+ */
 exports.queryFarmsByDistance = (request, response) => {
     db.collection('farms').get()
     .then((data) => {
@@ -133,12 +133,12 @@ exports.queryFarmsByDistance = (request, response) => {
     });
 }
 
-/*
-find farms with surplus that are a specific distance from a food bank
-GET /querySurplusByDistance
-URL params: locationId, distance (miles)
-success response: array of surplus objects
-*/
+/**
+ * Find farms with surplus that are a specific distance from a food bank.
+ * GET /querySurplusByDistance
+ * URL params: locationId, distance (miles)
+ * Success response: array of surplus objects
+ */
 exports.querySurplusByDistance = (request, response) => {
     db.collection('surplus').get()
     .then((data) => {
@@ -188,12 +188,12 @@ exports.querySurplusByDistance = (request, response) => {
     });
 }
 
-/*
-find food banks that are a specific travel time from a farm
-GET /queryFoodBanksByTravelTime
-URL params: locationId, days, hours, minutes
-success response: array of food bank objects
-*/
+/**
+ * Find food banks that are a specific travel time from a farm.
+ * GET /queryFoodBanksByTravelTime
+ * URL params: locationId, days, hours, minutes
+ * Success response: array of food bank objects
+ */
 exports.queryFoodBanksByTravelTime = (request, response) => {
     db.collection('foodbanks').get()
     .then((data) => {
@@ -220,12 +220,12 @@ exports.queryFoodBanksByTravelTime = (request, response) => {
     });
 }
 
-/*
-find farms that are a specific travel time from a food bank
-GET /queryFarmsByTravelTime
-URL params: locationId, days, hours, minutes
-success response: array of farm objects
-*/
+/**
+ * Find farms that are a specific travel time from a food bank.
+ * GET /queryFarmsByTravelTime
+ * URL params: locationId, days, hours, minutes
+ * Success response: array of farm objects
+ */
 exports.queryFarmsByTravelTime = (request, response) => {
     db.collection('farms').get()
     .then((data) => {
@@ -252,12 +252,12 @@ exports.queryFarmsByTravelTime = (request, response) => {
     });
 }
 
-/*
-find farms with surplus that are a specific travel time from a food bank
-GET /querySurplusByTravelTime
-URL params: locationId, days, hours, minutes
-success response: array of surplus objects
-*/
+/**
+ * Find farms with surplus that are a specific travel time from a food bank.
+ * GET /querySurplusByTravelTime
+ * URL params: locationId, days, hours, minutes
+ * Success response: array of surplus objects
+ */
 exports.querySurplusByTravelTime = (request, response) => {
     db.collection('surplus').get()
     .then((data) => {
