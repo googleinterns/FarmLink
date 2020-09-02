@@ -37,6 +37,7 @@ Once you have run `firebase init`, answer the prompts as follows:
     => No
     Do you want to install dependencies with npm now?
     => Yes
+
 After this, you should see the following message:
 
     ✔ Firebase initialization complete!
