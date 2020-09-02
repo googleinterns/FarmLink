@@ -16,6 +16,7 @@ Now, navigate to the `view` directory within the codebase and run the following 
 Now repeat the process in the functions directory:
 
     ~/farmlink/functions npm install
+
 Now you can test if the React application runs by running the following command in the view directory (if it doesn't run, you will likely need to download a missing dependency)
 
     ~/farmlink/functions npm start
