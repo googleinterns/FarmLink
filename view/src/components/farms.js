@@ -521,7 +521,6 @@ class Farms extends Component {
 
   /** Reset filteredData to the original page data, upon clicking reset */
   resetCards = () => {
-    this.props.clearQueries();
     this.setState(
       {
         filteredData: [...this.state.data],
