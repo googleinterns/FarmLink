@@ -1,5 +1,5 @@
 # FarmLink
-Our capstone project is a web application that helps FarmLink, a non-profit organization that moves food surplus from farms around the country to food banks in need, automate the process of matching a food bank with a farm.
+Our capstone project is a web application that helps FarmLink, a non-profit organization that moves food surplus from farms around the country to food banks in need, by automating the process of matching a food bank with a farm.
 # How to get application running!
 In this README file we will briefly explain how to get this application up and running on your computer. Feel free to reach out to the contributors to the repo for any further assistance.
 ## Step #1: Clone the Repository
