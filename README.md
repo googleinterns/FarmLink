@@ -50,7 +50,8 @@ If you get an error regarding credentials when you run `firebase serve`, then us
 2. Go to the **Service Accounts tab**
 3. There will be an option of **Generating a New Key**. Click on that option and it will download a file with a `.json` extension.
 4. Use the command below to connect these credentials 
-`export GOOGLE_APPLICATION_CREDENTIALS="/home/user/Downloads/[FILE_NAME].json`
+
+    export GOOGLE_APPLICATION_CREDENTIALS="/home/user/Downloads/[FILE_NAME].json
 
 And run: `firebase login --reauth`
 
