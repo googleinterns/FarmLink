@@ -113,6 +113,14 @@ exports.deleteFoodBank = (request, response) => {
           .status(404)
           .json({ error: "FoodBank Object not found" });
       }
+      db.collection("deals")
+        .where("foodbankId", "==", doc.id)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            db.doc(`/deals/${doc.id}`).delete();
+          });
+        });
       return document.delete();
     })
     .then(() => {

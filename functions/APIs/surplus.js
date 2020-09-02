@@ -152,6 +152,14 @@ exports.deleteSurplus = (request, response) => {
       if (!doc.exists) {
         return response.status(404).json({ error: "Surplus Object not found" });
       }
+      db.collection("deals")
+        .where("surplusId", "==", doc.id)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            db.doc(`/deals/${doc.id}`).delete();
+          });
+        });
       return document.delete();
     })
     .then(() => {

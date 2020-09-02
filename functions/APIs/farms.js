@@ -103,6 +103,30 @@ exports.deleteFarm = (request, response) => {
       if (!doc.exists) {
         return response.status(404).json({ error: "Farm Object not found" });
       }
+      db.collection("surplus")
+        .where("farmId", "==", doc.id)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            db.collection("deals")
+              .where("surplusId", "==", doc.id)
+              .get()
+              .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                  db.doc(`/deals/${doc.id}`).delete();
+                });
+              });
+            db.doc(`/surplus/${doc.id}`).delete();
+          });
+        });
+      db.collection("deals")
+        .where("farmId", "==", doc.id)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            db.doc(`/deals/${doc.id}`).delete();
+          });
+        });
       return document.delete();
     })
     .then(() => {
