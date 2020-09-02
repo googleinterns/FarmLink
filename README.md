@@ -80,6 +80,7 @@ To finish everything off, here is a very basic description of the repository str
 * `~/farmlink/view` > contains the React Application (handles all of the frontend of the application)
 # Development Tips
 ## Back-End
+
     cd functions
     firebase serve
 ## Front-End
