@@ -90,6 +90,7 @@ To finish everything off, here is a very basic description of the repository str
     npm start
 
 # Deployment Tips
+
 ## Back-End
     cd functions
     firebase deploy
