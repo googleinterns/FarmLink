@@ -72,7 +72,7 @@ Now go to the **Rules** tab and update the rules to the following:
 		}
 	}
 ## Finished!
-At this point everything should be set up in terms of the repository and Firebase. We hope you enjoy using our code and feel free to reach out to the contributors with any questions. 
+At this point, the repository and Firebase should be set up. We hope you enjoy using our code and feel free to reach out to the contributors with any questions. 
 
 To finish everything off, here is a very basic description of the repository structure:
 * `~/farmlink/functions` > contains all of the Cloud Functions (handle all of the CRUD operations / backend)
