@@ -83,7 +83,9 @@ To finish everything off, here is a very basic description of the repository str
 
     cd functions
     firebase serve
+
 ## Front-End
+
     cd view
     npm start
 
