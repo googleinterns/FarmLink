@@ -3,7 +3,7 @@ Our capstone project is a web application that helps FarmLink, a non-profit orga
 # How to get application running!
 In this README file we will briefly explain how to get this application up and running on your computer. Feel free to reach out to the contributors to the repo for any further assistance.
 ## Step #1: Clone the Repository
-Navigate to the directory where you would like to clone the repository. Then navigate to the main page of the repository, press the green code button, and then copy the link under "Clone with HTTPS".
+In a terminal, navigate to the directory where you would like to clone the repository. Then in your browser, navigate to the main page of the repository, press the green code button, and then copy the link under "Clone with HTTPS".
 
 Now enter the following command into terminal:
 
