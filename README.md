@@ -8,6 +8,7 @@ In a terminal, navigate to the directory where you would like to clone the repos
 Now enter the following command into your terminal:
 
     git clone https://hostname/YOUR_USERNAME/YOUR-REPOSITORY
+
 At this point all the folders within the repository should have successfully downloaded locally.
 ## Step #2: Download Dependencies 
 If you haven't installed npm, navigate to this [download tutorial](https://www.npmjs.com/get-npm) and do so before continuing.
