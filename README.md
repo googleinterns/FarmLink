@@ -16,7 +16,7 @@ Go to this [GitHub Tutorial](https://docs.github.com/en/github/creating-cloning-
 
 If you haven't installed npm, navigate to this [download tutorial](https://www.npmjs.com/get-npm) and do so before continuing.
 
-Now, navigate to the `view` directory within the codebase and run the following command (The command below assumes that the name of the directory you cloned into is `farmlink`. If it is not, replace farmlink in all paths with the name you gave the directory):
+Now, navigate to the `view` directory within the codebase and run the following command. (The commands below assume that the directory you cloned into is `~/farmlink`. If it is not, replace `~/farmlink` in all paths with the path to the directory):
 
     ~/farmlink/view npm install
 
