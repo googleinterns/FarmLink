@@ -25,6 +25,7 @@ Create a project in Firebase (go to this [tutorial](https://firebase.google.com/
 
     ~/farmlink/functions npm install -g firebase-tools
     firebase init
+
 Once you have run `firebase init`, answer the prompts as follows:
 
     Which Firebase CLI features do you want to set up for this folder? 
