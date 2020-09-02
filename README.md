@@ -95,7 +95,9 @@ To finish everything off, here is a very basic description of the repository str
 
     cd functions
     firebase deploy
+
 ## Front-End
+
     cd view
     npm run build
     firebase deploy
