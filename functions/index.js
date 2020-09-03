@@ -1,7 +1,8 @@
 //index.js
 
 const functions = require("firebase-functions");
-const app = require("express")();
+const express = require("express");
+const app = express();
 const auth = require("./util/auth");
 
 const {
@@ -47,8 +48,6 @@ const {
   queryFarmsByTravelTime,
   querySurplusByTravelTime,
 } = require("./APIs/queries");
-
-exports.api = functions.https.onRequest(app);
 
 app.get("/produce", auth, getAllProduce);
 app.get("/produce/:produceId", auth, getOneProduce);
@@ -101,3 +100,5 @@ app.post("/signup", signUpUser);
 app.post("/user/image", auth, uploadProfilePhoto);
 app.get("/user", auth, getUserDetail);
 app.post("/user", auth, updateUserDetails);
+
+exports.api = functions.https.onRequest(app);

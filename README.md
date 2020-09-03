@@ -129,6 +129,12 @@ Here is a very basic description of the repository structure:
     npm run build
     firebase deploy
 
+## Deployment Notes
+
+- Run `npm run build` and change the public directory from build to view/build in firebase.json in order to upload the folder that contains the Hosting assets.
+- Configure the web application as a single-page app in order to rewrite React Router URLs to /index.html.
+- Rewrite API URLs to the Cloud Function.
+
 ## Database Migration
 Create a Google Sheet with the following headers in the first row:<br/>
 - Farm Name

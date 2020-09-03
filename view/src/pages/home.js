@@ -144,7 +144,7 @@ class Home extends Component {
   /** Logs the user out of the web application (by removing bearer token from local storage) */
   logoutHandler = (event) => {
     localStorage.removeItem("AuthToken");
-    this.props.history.push("/login");
+    this.props.history.push("/user-login");
   };
 
   /** Determines whether "selected" CSS should be applied to a page. Only applies to current page. */
@@ -221,7 +221,8 @@ class Home extends Component {
       })
       .catch((error) => {
         if (error.response.status === 403) {
-          this.props.history.push("/login");
+          console.log(error);
+          this.props.history.push("/user-login");
         }
         console.error(error);
         this.setState({ errorMsg: "Error in retrieving the data" });
