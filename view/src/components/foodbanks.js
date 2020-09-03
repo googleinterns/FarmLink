@@ -223,6 +223,8 @@ class Foodbank extends Component {
       filteredData: [],
       nameQuery: "",
       locationQuery: "",
+      loadSizeQuery: 0,
+      fridgeSpaceQuery: 0,
       tagsQuery: [],
       allTags: [],
       // Aggregated tags used for options when editing a specific item
@@ -260,7 +262,7 @@ class Foodbank extends Component {
     this.handleStringSearch = this.handleStringSearch.bind(this);
     this.simpleSearch = this.simpleSearch.bind(this);
 
-    this.populateAllFTags = this.populateAllTags.bind(this);
+    this.populateAllTags = this.populateAllTags.bind(this);
     this.handleTagFilter = this.handleTagFilter.bind(this);
     this.searchTagQuery = this.searchTagQuery.bind(this);
 
@@ -328,6 +330,64 @@ class Foodbank extends Component {
     }
   };
 
+  /** Filters for minimum load size and available refridgeration space */
+  capacityFilters = () => {
+    return (
+      <Grid container spacing={3} alignItem="left">
+        <Grid item xs={3}>
+          <TextField
+            variant="outlined"
+            label="Fridge Space (Pallets)"
+            name="fridgeSpaceQuery"
+            type="number"
+            value={this.state.fridgeSpaceQuery}
+            onChange={this.handleChange}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <Button
+            className={styles.searchButton}
+            onClick={() =>
+              this.simpleSearch("fridgeSpaceQuery", this.state.fridgeSpaceQuery)
+            }
+            variant="outlined"
+            color="primary"
+            type="number"
+            size="medium"
+            startIcon={<SearchIcon />}
+          >
+            Filter by Min Fridge Space
+          </Button>
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            variant="outlined"
+            label="Load Size (Pallets)"
+            name="loadSizeQuery"
+            type="number"
+            value={this.state.loadSizeQuery}
+            onChange={this.handleChange}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <Button
+            className={styles.searchButton}
+            onClick={() =>
+              this.simpleSearch("loadSizeQuery", this.state.loadSizeQuery)
+            }
+            variant="outlined"
+            color="primary"
+            type="number"
+            size="medium"
+            startIcon={<SearchIcon />}
+          >
+            Filter by Min Load Size
+          </Button>
+        </Grid>
+      </Grid>
+    );
+  };
+
   /** Makes appropriate search by field and query of the data, updates filtered page states */
   simpleSearch = (field, query) => {
     var multiFilteredData = [];
@@ -348,6 +408,16 @@ class Foodbank extends Component {
           item.foodbankTags.includes(query)
         );
         break;
+      case "loadSizeQuery":
+        multiFilteredData = this.state.filteredData.filter(
+          (item) => parseInt(item.maxLoadSize) > query
+        );
+        break;
+      case "fridgeSpaceQuery":
+        multiFilteredData = this.state.filteredData.filter(
+          (item) => parseInt(item.refrigerationSpaceAvailable) > query
+        );
+        break;
     }
 
     this.setState(
@@ -359,6 +429,7 @@ class Foodbank extends Component {
 
   /** Returns additional search features that are collapsed at first glance */
   extraFiltersAccordion = () => {
+    const { classes } = this.props;
     const { locationQuery, filteredData } = this.state;
 
     return (
@@ -398,6 +469,7 @@ class Foodbank extends Component {
           </Grid>
         </Grid>
         <Filters database="foodbanks"></Filters>
+        {this.capacityFilters()}
       </div>
     );
   };
@@ -533,6 +605,8 @@ class Foodbank extends Component {
         filteredData: [...this.state.foodbanks],
         nameQuery: "",
         locationQuery: "",
+        loadSizeQuery: 0,
+        fridgeSpaceQuery: 0,
         tagsQuery: [],
       },
       this.populateAllTags
