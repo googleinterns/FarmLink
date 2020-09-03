@@ -12,12 +12,12 @@ describe("POST /produce", () => {
     request(app)
       .post("/produce")
       .send(produce)
-      .expect((res) => {
-        expect(res.text).not.toBeNull();
+      .expect((response) => {
+        expect(response.text).not.toBeNull();
       })
-      .end(function (err, res) {
-        if (err) return done(err);
-        id = JSON.parse(res.text).id;
+      .end((error, response) => {
+        if (error) return done(error);
+        id = JSON.parse(response.text).id;
         done();
       });
   });
@@ -27,11 +27,11 @@ describe("GET /produce", () => {
   it("read a list of all produce", (done) => {
     request(app)
       .get("/produce")
-      .expect((res) => {
-        expect(res.text).not.toBeNull();
+      .expect((response) => {
+        expect(response.text).not.toBeNull();
       })
-      .end(function (err, res) {
-        if (err) return done(err);
+      .end((error, response) => {
+        if (error) return done(error);
         done();
       });
   });
@@ -41,11 +41,11 @@ describe("GET /produce/:id", () => {
   it("read a specific produce", (done) => {
     request(app)
       .get(`/produce/${id}`)
-      .expect((res) => {
-        expect(res.text).not.toBeNull();
+      .expect((response) => {
+        expect(response.text).not.toBeNull();
       })
-      .end(function (err, res) {
-        if (err) return done(err);
+      .end((error, response) => {
+        if (error) return done(error);
         done();
       });
   });
@@ -56,11 +56,11 @@ describe("PUT /produce/:id", () => {
     request(app)
       .put(`/produce/${id}`)
       .send(produce)
-      .expect((res) => {
-        expect(res.text).not.toBeNull();
+      .expect((response) => {
+        expect(response.text).not.toBeNull();
       })
-      .end(function (err, res) {
-        if (err) return done(err);
+      .end((error, response) => {
+        if (error) return done(error);
         done();
       });
   });
@@ -70,11 +70,11 @@ describe("DELETE /produce/:id", () => {
   it("delete a specific produce", (done) => {
     request(app)
       .delete(`/produce/${produce.id}`)
-      .expect((res) => {
-        expect(res.text).not.toBeNull();
+      .expect((response) => {
+        expect(response.text).not.toBeNull();
       })
-      .end(function (err, res) {
-        if (err) return done(err);
+      .end((error, response) => {
+        if (error) return done(error);
         done();
       });
   });
