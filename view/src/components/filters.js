@@ -137,7 +137,7 @@ class Filters extends Component {
             handleLocation={this.handleLocation}
             location={this.state.location}
             searching={true}
-            PlaceholderText="Type or Select a Location to find Nearby Farms"
+            PlaceholderText="Type or Select a Location to Search Nearby"
             TextFieldLabel="Custom Location"
           />
         </Grid>
