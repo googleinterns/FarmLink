@@ -223,6 +223,8 @@ class Foodbank extends Component {
       filteredData: [],
       nameQuery: "",
       locationQuery: "",
+      loadSizeQuery: 0,
+      fridgeSpaceQuery: 0,
       tagsQuery: [],
       allTags: [],
       // Aggregated tags used for options when editing a specific item
@@ -328,9 +330,41 @@ class Foodbank extends Component {
     }
   };
 
+  /** Filters for minimum load size and available refridgeration space */
+  capacityFilters = () => {
+    return (
+      <Grid container spacing={3} alignItem="left">
+        <Grid item xs={3}>
+          <TextField
+            variant="outlined"
+            label="Load Size (Pallets)"
+            name="loadSizeQuery"
+            type="number"
+            value={this.state.loadSizeQuery}
+            onChange={this.handleChange}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <Button
+            className={styles.searchButton}
+            onClick={(e) => this.handleStringSearch("loadSizeQuery", e)}
+            variant="outlined"
+            color="primary"
+            type="number"
+            size="medium"
+            startIcon={<SearchIcon />}
+          >
+            Filter by Min Load Size
+          </Button>
+        </Grid>
+      </Grid>
+    );
+  };
+
   /** Makes appropriate search by field and query of the data, updates filtered page states */
   simpleSearch = (field, query) => {
     var multiFilteredData = [];
+    console.log("query", query);
 
     switch (field) {
       case "nameQuery":
@@ -346,6 +380,11 @@ class Foodbank extends Component {
       case "tags-search":
         multiFilteredData = this.state.filteredData.filter((item) =>
           item.foodbankTags.includes(query)
+        );
+        break;
+      case "loadSizeQuery":
+        multiFilteredData = this.state.filteredData.filter(
+          (item) => parseInt(item.maxLoadSize) > query
         );
         break;
     }
@@ -447,7 +486,10 @@ class Foodbank extends Component {
               )}
             />
           </AccordionSummary>
-          <AccordionDetails>{this.extraFiltersAccordion()}</AccordionDetails>
+          <AccordionDetails>
+            {this.extraFiltersAccordion()}
+            {this.capacityFilters()}
+          </AccordionDetails>
           <Grid container alignItem="left">
             <Grid item xs={12}>
               <Box paddingLeft={2} paddingBottom={2}>
