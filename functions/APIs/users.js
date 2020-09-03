@@ -1,6 +1,5 @@
-const express = require("express");
-const authRoute = express.Router();
-const auth = require("../util/auth");
+// users.js
+
 const { admin, db } = require("../util/admin");
 const config = require("../util/config");
 
@@ -11,14 +10,14 @@ firebase.initializeApp(config);
 const { validateLoginData, validateSignUpData } = require("../util/validators");
 
 // Login
-authRoute.post("/login", (req, res) => {
+exports.loginUser = (request, response) => {
   const user = {
-    email: req.body.email,
-    password: req.body.password,
+    email: request.body.email,
+    password: request.body.password,
   };
 
   const { valid, errors } = validateLoginData(user);
-  if (!valid) return res.status(400).json(errors);
+  if (!valid) return response.status(400).json(errors);
 
   firebase
     .auth()
@@ -27,38 +26,38 @@ authRoute.post("/login", (req, res) => {
       return data.user.getIdToken();
     })
     .then((token) => {
-      return res.json({ token });
+      return response.json({ token });
     })
     .catch((error) => {
       console.error(error);
-      return res
+      return response
         .status(403)
         .json({ general: "wrong credentials, please try again" });
     });
-});
+};
 
-authRoute.post("/signup", (req, res) => {
+exports.signUpUser = (request, response) => {
   const newUser = {
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    phoneNumber: req.body.phoneNumber,
-    country: req.body.country,
-    password: req.body.password,
-    confirmPassword: req.body.confirmPassword,
-    username: req.body.username,
+    firstName: request.body.firstName,
+    lastName: request.body.lastName,
+    email: request.body.email,
+    phoneNumber: request.body.phoneNumber,
+    country: request.body.country,
+    password: request.body.password,
+    confirmPassword: request.body.confirmPassword,
+    username: request.body.username,
   };
 
   const { valid, errors } = validateSignUpData(newUser);
 
-  if (!valid) return res.status(400).json(errors);
+  if (!valid) return response.status(400).json(errors);
 
   let token, userId;
   db.doc(`/users/${newUser.username}`)
     .get()
     .then((doc) => {
       if (doc.exists) {
-        return res
+        return response
           .status(400)
           .json({ username: "this username is already taken" });
       } else {
@@ -86,21 +85,21 @@ authRoute.post("/signup", (req, res) => {
       return db.doc(`/users/${newUser.username}`).set(userCredentials);
     })
     .then(() => {
-      return res.status(201).json({ token });
+      return response.status(201).json({ token });
     })
     .catch((err) => {
       console.error(err);
       if (err.code === "auth/email-already-in-use") {
-        return res.status(400).json({ email: "Email already in use" });
+        return response.status(400).json({ email: "Email already in use" });
       } else {
-        return res
+        return response
           .status(500)
           .json({ general: "Something went wrong, please try again" });
       }
     });
-});
+};
 
-function deleteImage(imageName) {
+deleteImage = (imageName) => {
   const bucket = admin.storage().bucket();
   const path = `${imageName}`;
   return bucket
@@ -115,22 +114,22 @@ function deleteImage(imageName) {
 };
 
 // Upload profile picture
-authRoute.post("/user/image", auth, (req, res) => {
+exports.uploadProfilePhoto = (request, response) => {
   const BusBoy = require("busboy");
   const path = require("path");
   const os = require("os");
   const fs = require("fs");
-  const busboy = new BusBoy({ headers: req.headers });
+  const busboy = new BusBoy({ headers: request.headers });
 
   let imageFileName;
   let imageToBeUploaded = {};
 
   busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
     if (mimetype !== "image/png" && mimetype !== "image/jpeg") {
-      return res.status(400).json({ error: "Wrong file type submited" });
+      return response.status(400).json({ error: "Wrong file type submited" });
     }
     const imageExtension = filename.split(".")[filename.split(".").length - 1];
-    imageFileName = `${req.user.username}.${imageExtension}`;
+    imageFileName = `${request.user.username}.${imageExtension}`;
     const filePath = path.join(os.tmpdir(), imageFileName);
     imageToBeUploaded = { filePath, mimetype };
     file.pipe(fs.createWriteStream(filePath));
@@ -150,50 +149,48 @@ authRoute.post("/user/image", auth, (req, res) => {
       })
       .then(() => {
         const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageFileName}?alt=media`;
-        return db.doc(`/users/${req.user.username}`).update({
+        return db.doc(`/users/${request.user.username}`).update({
           imageUrl,
         });
       })
       .then(() => {
-        return res.json({ message: "Image uploaded successfully" });
+        return response.json({ message: "Image uploaded successfully" });
       })
       .catch((error) => {
         console.error(error);
-        return res.status(500).json({ error: error.code });
+        return response.status(500).json({ error: error.code });
       });
   });
-  busboy.end(req.rawBody);
-});
+  busboy.end(request.rawBody);
+};
 
-authRoute.get("/user", auth, (req, res) => {
+exports.getUserDetail = (request, response) => {
   let userData = {};
-  db.doc(`/users/${req.user.username}`)
+  db.doc(`/users/${request.user.username}`)
     .get()
     .then((doc) => {
       if (doc.exists) {
         userData.userCredentials = doc.data();
-        return res.json(userData);
+        return response.json(userData);
       }
     })
     .catch((error) => {
       console.error(error);
-      return res.status(500).json({ error: error.code });
+      return response.status(500).json({ error: error.code });
     });
-});
+};
 
-authRoute.post("/user", auth, (req, res) => {
-  let document = db.collection("users").doc(`${req.user.username}`);
+exports.updateUserDetails = (request, response) => {
+  let document = db.collection("users").doc(`${request.user.username}`);
   document
-    .update(req.body)
+    .update(request.body)
     .then(() => {
-      res.json({ message: "Updated successfully" });
+      response.json({ message: "Updated successfully" });
     })
     .catch((error) => {
       console.error(error);
-      return res.status(500).json({
+      return response.status(500).json({
         message: "Cannot Update the value",
       });
     });
-});
-
-module.exports = authRoute;
+};

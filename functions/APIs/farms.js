@@ -1,6 +1,3 @@
-const express = require("express");
-const farmsRoute = express.Router();
-const auth = require("../util/auth");
 const { db } = require("../util/admin");
 
 /*
@@ -8,7 +5,7 @@ read a list of all farms
 GET /farms
 success response: array of farm objects (documented in POST /farms)
 */
-farmsRoute.get("/", auth, (req, res) => {
+exports.getAllFarms = (request, response) => {
   db.collection("farms")
     .get()
     .then((data) => {
@@ -26,30 +23,30 @@ farmsRoute.get("/", auth, (req, res) => {
           farmTags: doc.data().farmTags,
         });
       });
-      return res.json(farms);
+      return response.json(farms);
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
+};
 
 /*
 read a specific farm
 GET /farms/:id
 success response: farm object (documented in POST /farms)
 */
-farmsRoute.get("/:id", auth, (req, res) => {
-  db.doc(`/farms/${req.params.farmId}`)
+exports.getOneFarm = (request, response) => {
+  db.doc(`/farms/${request.params.farmId}`)
     .get()
     .then((doc) => {
-      return res.json(doc.data());
+      return response.json(doc.data());
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
+};
 
 /*
 create a new farm
@@ -67,70 +64,68 @@ data params:
 }
 success response: farm object (documented in POST /farms)
 */
-farmsRoute.post("/", auth, (req, res) => {
+exports.postOneFarm = (request, response) => {
   const newFarmItem = {
-    farmName: req.body.farmName,
-    location: req.body.location,
-    hours: req.body.hours,
-    transportation: req.body.transportation === "true",
-    contacts: req.body.contacts,
-    loadingDock: req.body.loadingDock === "true",
-    forklift: req.body.forklift === "true",
-    farmTags: req.body.farmTags,
+    farmName: request.body.farmName,
+    location: request.body.location,
+    hours: request.body.hours,
+    transportation: request.body.transportation === "true",
+    contacts: request.body.contacts,
+    loadingDock: request.body.loadingDock === "true",
+    forklift: request.body.forklift === "true",
+    farmTags: request.body.farmTags,
   };
   db.collection("farms")
     .add(newFarmItem)
     .then((doc) => {
-      let resFarmItem = newFarmItem;
-      resFarmItem.id = doc.id;
-      return res.json(resFarmItem);
+      let responseFarmItem = newFarmItem;
+      responseFarmItem.id = doc.id;
+      return response.json(responseFarmItem);
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
+};
 
 /*
 delete a specific farm
 DELETE /farms/:id
-success response: {message: 'Delete successfully'}
+success response: {message: 'Delete successfull'}
 */
-farmsRoute.delete("/:id", auth, (req, res) => {
-  const document = db.doc(`/farms/${req.params.farmId}`);
+exports.deleteFarm = (request, response) => {
+  const document = db.doc(`/farms/${request.params.farmId}`);
   document
     .get()
     .then((doc) => {
       if (!doc.exists) {
-        return res.status(404).json({ error: "Farm Object not found" });
+        return response.status(404).json({ error: "Farm Object not found" });
       }
       return document.delete();
     })
     .then(() => {
-      res.json({ message: "Delete successfully" });
+      response.json({ message: "Delete successfull" });
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
+};
 
 /*
 update a specific farm
 PUT /farms/:id
 success response: {message: 'Updated successfully'}
 */
-farmsRoute.put("/:id", auth, (req, res) => {
-  let document = db.collection("farms").doc(`${req.params.farmId}`);
+exports.editFarm = (request, response) => {
+  let document = db.collection("farms").doc(`${request.params.farmId}`);
   document
-    .update(req.body)
+    .update(request.body)
     .then(() => {
-      res.json({ message: "Updated successfully" });
+      response.json({ message: "Updated successfully" });
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
-
-module.exports = farmsRoute;
+};

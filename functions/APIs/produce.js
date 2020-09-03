@@ -1,6 +1,3 @@
-const express = require("express");
-const produceRoute = express.Router();
-const auth = require("../util/auth");
 const { db } = require("../util/admin");
 
 /*
@@ -8,7 +5,7 @@ read a list of all produce
 GET /produce
 success response: array of produce objects (documented in POST /produce)
 */
-produceRoute.get("/", auth, (req, res) => {
+exports.getAllProduce = (request, response) => {
   db.collection("produce")
     .get()
     .then((data) => {
@@ -27,30 +24,30 @@ produceRoute.get("/", auth, (req, res) => {
           pricePaid: doc.data().pricePaid,
         });
       });
-      return res.json(produce);
+      return response.json(produce);
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
+};
 
 /*
 read a specific produce
 GET /produce/:id
 success response: produce object (documented in POST /produce)
 */
-produceRoute.get("/:id", auth, (req, res) => {
-  db.doc(`/produce/${req.params.produceId}`)
+exports.getOneProduce = (request, response) => {
+  db.doc(`/produce/${request.params.produceId}`)
     .get()
     .then((doc) => {
-      return res.json(doc.data());
+      return response.json(doc.data());
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
+};
 
 /*
 create a new produce
@@ -67,75 +64,73 @@ data params:
 }
 success response: produce object (documented in POST /produce)
 */
-produceRoute.post("/", auth, (req, res) => {
+exports.postOneProduce = (request, response) => {
   const newProduceItem = {
-    name: req.body.name,
+    name: request.body.name,
     shippingPresetTemperature: parseFloat(
-      req.body.shippingPresetTemperature
+      request.body.shippingPresetTemperature
     ),
     shippingMaintenanceTemperatureLow: parseFloat(
-      req.body.shippingMaintenanceTemperatureLow
+      request.body.shippingMaintenanceTemperatureLow
     ),
     shippingMaintenanceTemperatureHigh: parseFloat(
-      req.body.shippingMaintenanceTemperatureHigh
+      request.body.shippingMaintenanceTemperatureHigh
     ),
-    amountMoved: parseFloat(req.body.amountMoved),
-    price: parseFloat(req.body.price),
-    pricePaid: parseFloat(req.body.pricePaid),
+    amountMoved: parseFloat(request.body.amountMoved),
+    price: parseFloat(request.body.price),
+    pricePaid: parseFloat(request.body.pricePaid),
   };
   db.collection("produce")
     .add(newProduceItem)
     .then((doc) => {
-      let resProduceItem = newProduceItem;
-      resProduceItem.id = doc.id;
-      return res.json(resProduceItem);
+      let responseProduceItem = newProduceItem;
+      responseProduceItem.id = doc.id;
+      return response.json(responseProduceItem);
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
+};
 
 /*
 delete a specific produce
 DELETE /produce/:id
-success response: {message: 'Delete successfully'}
+success response: {message: 'Delete successfull'}
 */
-produceRoute.delete("/:id", auth, (req, res) => {
-  const document = db.doc(`/produce/${req.params.produceId}`);
+exports.deleteProduce = (request, response) => {
+  const document = db.doc(`/produce/${request.params.produceId}`);
   document
     .get()
     .then((doc) => {
       if (!doc.exists) {
-        return res.status(404).json({ error: "Produce Object not found" });
+        return response.status(404).json({ error: "Produce Object not found" });
       }
       return document.delete();
     })
     .then(() => {
-      res.json({ message: "Delete successfully" });
+      response.json({ message: "Delete successfull" });
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
+};
 
 /*
 update a specific produce
 PUT /produce/:id
 success response: {message: 'Updated successfully'}
 */
-produceRoute.put("/:id", auth, (req, res) => {
-  let document = db.collection("produce").doc(`${req.params.produceId}`);
+exports.editProduce = (request, response) => {
+  let document = db.collection("produce").doc(`${request.params.produceId}`);
   document
-    .update(req.body)
+    .update(request.body)
     .then(() => {
-      res.json({ message: "Updated successfully" });
+      response.json({ message: "Updated successfully" });
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
-
-module.exports = produceRoute;
+};

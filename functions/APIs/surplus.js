@@ -1,6 +1,3 @@
-const express = require("express");
-const surplusRoute = express.Router();
-const auth = require("../util/auth");
 const { db } = require("../util/admin");
 
 /*
@@ -8,7 +5,7 @@ read a list of all surplus
 GET /surplus
 success response: array of surplus objects (documented in POST /surplus)
 */
-surplusRoute.get("/", auth, (req, res) => {
+exports.getAllSurplus = (request, response) => {
   db.collection("surplus")
     .get()
     .then((data) => {
@@ -77,7 +74,7 @@ surplusRoute.get("/", auth, (req, res) => {
 
       Promise.all(surplus.map(queryProduceAndFarms))
         .then((results) => {
-          return res.json(results);
+          return response.json(results);
         })
         .catch((err) => {
           console.log(err);
@@ -85,26 +82,26 @@ surplusRoute.get("/", auth, (req, res) => {
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
+};
 
 /*
 read a specific surplus
 GET /surplus/:id
 success response: surplus object (documented in POST /surplus)
 */
-surplusRoute.get("/:id", auth, (req, res) => {
-  db.doc(`/surplus/${req.params.surplusId}`)
+exports.getOneSurplus = (request, response) => {
+  db.doc(`/surplus/${request.params.surplusId}`)
     .get()
     .then((doc) => {
-      return res.json(doc.data());
+      return response.json(doc.data());
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
+};
 
 /*
 create a new surplus
@@ -120,68 +117,66 @@ data params:
 }
 success response: surplus object (documented in POST /surplus)
 */
-surplusRoute.post("/", auth, (req, res) => {
+exports.postOneSurplus = (request, response) => {
   const newSurplusItem = {
-    produceId: req.body.produceId,
-    originFarmId: req.body.originFarmId,
-    available: req.body.available === "true",
-    cost: parseFloat(req.body.cost),
-    totalQuantityAvailable: parseFloat(req.body.totalQuantityAvailable),
-    packagingType: req.body.packagingType,
+    produceId: request.body.produceId,
+    originFarmId: request.body.originFarmId,
+    available: request.body.available === "true",
+    cost: parseFloat(request.body.cost),
+    totalQuantityAvailable: parseFloat(request.body.totalQuantityAvailable),
+    packagingType: request.body.packagingType,
   };
   db.collection("surplus")
     .add(newSurplusItem)
     .then((doc) => {
-      let resSurplusItem = newSurplusItem;
-      resSurplusItem.id = doc.id;
-      return res.json(resSurplusItem);
+      let responseSurplusItem = newSurplusItem;
+      responseSurplusItem.id = doc.id;
+      return response.json(responseSurplusItem);
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
+};
 
 /*
 delete a specific surplus
 DELETE /surplus/:id
-success response: {message: 'Delete successfully'}
+success response: {message: 'Delete successfull'}
 */
-surplusRoute.delete("/:id", auth, (req, res) => {
-  const document = db.doc(`/surplus/${req.params.surplusId}`);
+exports.deleteSurplus = (request, response) => {
+  const document = db.doc(`/surplus/${request.params.surplusId}`);
   document
     .get()
     .then((doc) => {
       if (!doc.exists) {
-        return res.status(404).json({ error: "Surplus Object not found" });
+        return response.status(404).json({ error: "Surplus Object not found" });
       }
       return document.delete();
     })
     .then(() => {
-      res.json({ message: "Delete successfully" });
+      response.json({ message: "Delete successfull" });
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
+};
 
 /*
 update a specific surplus
 PUT /surplus/:id
 success response: {message: 'Updated successfully'}
 */
-surplusRoute.put("/:id", auth, (req, res) => {
-  let document = db.collection("surplus").doc(`${req.params.surplusId}`);
+exports.editSurplus = (request, response) => {
+  let document = db.collection("surplus").doc(`${request.params.surplusId}`);
   document
-    .update(req.body)
+    .update(request.body)
     .then(() => {
-      res.json({ message: "Updated successfully" });
+      response.json({ message: "Updated successfully" });
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ error: err.code });
+      return response.status(500).json({ error: err.code });
     });
-});
-
-module.exports = surplusRoute;
+};
