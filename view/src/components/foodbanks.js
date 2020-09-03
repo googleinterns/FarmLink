@@ -331,6 +331,7 @@ class Foodbank extends Component {
   /** Makes appropriate search by field and query of the data, updates filtered page states */
   simpleSearch = (field, query) => {
     var multiFilteredData = [];
+    const parsedQuery = query.toLowerCase();
 
     switch (field) {
       case "nameQuery":
@@ -356,10 +357,12 @@ class Foodbank extends Component {
       this.populateAllTags
     );
   };
+  };
 
   /** Returns additional search features that are collapsed at first glance */
   extraFiltersAccordion = () => {
-    const { locationQuery, filteredData } = this.state;
+    const { classes } = this.props;
+    const { nameQuery, filteredData } = this.state;
 
     return (
       <div>

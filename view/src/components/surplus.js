@@ -29,6 +29,10 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ClearIcon from "@material-ui/icons/Clear";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Chip from "@material-ui/core/Chip";
+import TextField from "@material-ui/core/TextField";
 
 import axios from "axios";
 import dayjs from "dayjs";
@@ -267,53 +271,55 @@ class Surplus extends Component {
   /** Makes appropriate search by field and query of the data, updates filtered page states */
   simpleSearch = (field, query) => {
     var multiFilteredData = [];
+    const parsedQuery = query.toLowerCase();
 
     switch (field) {
-      case "nameQuery":
+      case "farmNameQuery":
         multiFilteredData = this.state.filteredData.filter((item) =>
-          item.foodbankName.toLowerCase().includes(query.toLowerCase())
+          item.originFarmName.toLowerCase().includes(parsedQuery)
         );
         break;
-      case "locationQuery":
+      case "produceNameQuery":
         multiFilteredData = this.state.filteredData.filter((item) =>
-          item.location.toLowerCase().includes(query.toLowerCase())
+          item.produceName.toLowerCase().includes(parsedQuery)
         );
         break;
-      case "tags-search":
+      case "originFarmContactNameQuery":
         multiFilteredData = this.state.filteredData.filter((item) =>
-          item.foodbankTags.includes(query)
+          item.originFarmContactName.toLowerCase().includes(parsedQuery)
         );
         break;
     }
 
-    this.setState(
-      { filteredData: multiFilteredData },
-      // Update tags with newly filtered data
-      this.populateAllTags
-    );
+    this.setState({ filteredData: multiFilteredData });
   };
 
   /** Returns additional search features that are collapsed at first glance */
   extraFiltersAccordion = () => {
-    const { locationQuery, filteredData } = this.state;
-
+    const {
+      produceNameQuery,
+      originFarmContactNameQuery,
+      filteredData,
+    } = this.state;
     return (
       <div>
         <Grid container spacing={3} alignItem="left">
           <Grid item xs={6}>
             <Autocomplete
-              id="location-search"
-              options={filteredData.map((data) => data.location)}
-              value={locationQuery}
-              onSelect={(e) => this.handleStringSearch("locationQuery", e)}
+              id="produce-search"
+              options={filteredData.map((data) => data.produceName)}
+              value={produceNameQuery}
+              onSelect={(e) => this.handleStringSearch("produceNameQuery", e)}
               fullWidth={true}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Food Bank Locations"
-                  placeholder="Type or Select a Location"
+                  label="Produce Names"
+                  placeholder="Type or Select a Produce Name"
                   variant="outlined"
-                  onChange={(e) => this.handleStringSearch("locationQuery", e)}
+                  onChange={(e) =>
+                    this.handleStringSearch("produceNameQuery", e)
+                  }
                   InputProps={{
                     ...params.InputProps,
                     startAdornment: (
@@ -330,10 +336,39 @@ class Surplus extends Component {
             />
           </Grid>
           <Grid item xs={6}>
-            {this.tagsAutocomplete()}
+            <Autocomplete
+              id="contact-search"
+              options={filteredData.map((data) => data.originFarmContactName)}
+              value={originFarmContactNameQuery}
+              onSelect={(e) =>
+                this.handleStringSearch("originFarmContactNameQuery", e)
+              }
+              fullWidth={true}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Farm Contact Names"
+                  placeholder="Type or Select a Farm Contact Name"
+                  variant="outlined"
+                  onChange={(e) =>
+                    this.handleStringSearch("originFarmContactNameQuery", e)
+                  }
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+            />
           </Grid>
         </Grid>
-        <Filters database="foodbanks"></Filters>
       </div>
     );
   };
@@ -342,7 +377,6 @@ class Surplus extends Component {
   filteringAccordion = () => {
     const { classes } = this.props;
     const { nameQuery, filteredData } = this.state;
-
     return (
       <div>
         <Accordion>
@@ -354,19 +388,19 @@ class Surplus extends Component {
             <Autocomplete
               id="nameQuery"
               options={[
-                ...new Set(filteredData.map((data) => data.foodbankName)),
+                ...new Set(filteredData.map((data) => data.originFarmName)),
               ]}
               value={nameQuery}
-              onSelect={(e) => this.handleStringSearch("nameQuery", e)}
+              onSelect={(e) => this.handleStringSearch("farmNameQuery", e)}
               fullWidth={true}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   label="Foodbank Names"
-                  placeholder="Type or Select a Food Bank Name"
+                  placeholder="Type or Select a Farm Name"
                   variant="outlined"
-                  name="nameQuery"
-                  onChange={(e) => this.handleStringSearch("nameQuery", e)}
+                  name="farmNameQuery"
+                  onChange={(e) => this.handleStringSearch("farmNameQuery", e)}
                   InputProps={{
                     ...params.InputProps,
                     startAdornment: (
@@ -480,106 +514,109 @@ class Surplus extends Component {
     const { classes } = this.props;
     const { filteredData } = this.state;
 
-    return <div>
-       {this.state.surplusObjects.map((surplus) => (
-                <Grid item xs={12}>
-                  <Card
-                    className={classes.root}
-                    raised={surplus.surplusId === this.state.selectedCard}
-                    variant={
-                      surplus.surplusId === this.state.selectedCard
-                        ? "elevation"
-                        : "outlined"
-                    }
+    return (
+      <div>
+        <Grid container spacing={2} alignItem="center">
+          {this.state.filteredData.map((surplus) => (
+            <Grid item xs={12}>
+              <Card
+                className={classes.root}
+                raised={surplus.surplusId === this.state.selectedCard}
+                variant={
+                  surplus.surplusId === this.state.selectedCard
+                    ? "elevation"
+                    : "outlined"
+                }
+              >
+                <CardContent>
+                  <Typography variant="h5" component="h2">
+                    {surplus.totalQuantityAvailable} lbs of{" "}
+                    {surplus.produceName} from {surplus.originFarmName}
+                  </Typography>
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    flexWrap="wrap"
+                    padding={0}
+                    margin={0}
                   >
-                    <CardContent>
-                      <Typography variant="h5" component="h2">
-                        {surplus.totalQuantityAvailable} lbs of{" "}
-                        {surplus.produceName} from {surplus.originFarmName}
-                      </Typography>
-                      <Box
-                        display="flex"
-                        flexDirection="row"
-                        flexWrap="wrap"
-                        padding={0}
-                        margin={0}
+                    <Box padding={3}>
+                      <Typography
+                        className={classes.position}
+                        color="textSecondary"
                       >
-                        <Box padding={3}>
-                          <Typography
-                            className={classes.position}
-                            color="textSecondary"
-                          >
-                            Logistics:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Origin: {surplus.originFarmName}
-                            <br />
-                            Packing Type: {surplus.packagingType}
-                            <br />
-                            Available: {surplus.available ? "yes" : "no"}
-                          </Typography>
-                        </Box>
-                        <Box padding={3}>
-                          <Typography
-                            className={classes.position}
-                            color="textSecondary"
-                          >
-                            Details:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Type of Produce: {surplus.produceName}
-                            <br />
-                            Total Quantity Available (lbs):{" "}
-                            {surplus.totalQuantityAvailable}
-                            <br />
-                            Cost (USD / lb): {surplus.cost}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                    <CardActions>
-                      {!this.props.inStepper && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => this.handleViewOpen({ surplus })}
-                        >
-                          View
-                        </Button>
-                      )}
-                      {!this.props.inStepper && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => this.handleEditClick({ surplus })}
-                        >
-                          Edit
-                        </Button>
-                      )}
-                      {!this.props.inStepper && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => this.handleDelete({ surplus })}
-                        >
-                          Delete
-                        </Button>
-                      )}
-                      {this.props.inStepper && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => this.handleSelect({ surplus })}
-                        >
-                          Select
-                        </Button>
-                      )}
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
+                        Logistics:
+                      </Typography>
+                      <Typography variant="body2" component="p">
+                        Origin: {surplus.originFarmName}
+                        <br />
+                        Packing Type: {surplus.packagingType}
+                        <br />
+                        Available: {surplus.available ? "yes" : "no"}
+                      </Typography>
+                    </Box>
+                    <Box padding={3}>
+                      <Typography
+                        className={classes.position}
+                        color="textSecondary"
+                      >
+                        Details:
+                      </Typography>
+                      <Typography variant="body2" component="p">
+                        Type of Produce: {surplus.produceName}
+                        <br />
+                        Total Quantity Available (lbs):{" "}
+                        {surplus.totalQuantityAvailable}
+                        <br />
+                        Cost (USD / lb): {surplus.cost}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+                <CardActions>
+                  {!this.props.inStepper && (
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => this.handleViewOpen({ surplus })}
+                    >
+                      View
+                    </Button>
+                  )}
+                  {!this.props.inStepper && (
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => this.handleEditClick({ surplus })}
+                    >
+                      Edit
+                    </Button>
+                  )}
+                  {!this.props.inStepper && (
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => this.handleDelete({ surplus })}
+                    >
+                      Delete
+                    </Button>
+                  )}
+                  {this.props.inStepper && (
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => this.handleSelect({ surplus })}
+                    >
+                      Select
+                    </Button>
+                  )}
+                </CardActions>
+              </Card>
             </Grid>
-    </div>;
+          ))}
+        </Grid>
+      </div>
+    );
   };
 
   /**
@@ -872,7 +909,7 @@ class Surplus extends Component {
                 {this.filteringAccordion()}
               </Grid>
             </Grid>
-              {this.handleResultsRender()}
+            {this.handleResultsRender()}
           </Container>
 
           <Dialog
