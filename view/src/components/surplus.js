@@ -226,7 +226,6 @@ class Surplus extends Component {
   simpleSearch = (field, query) => {
     var multiFilteredData = [];
     const parsedQuery = query.toLowerCase();
-    console.log("ss query is", parsedQuery);
 
     switch (field) {
       case "farmNameQuery":
