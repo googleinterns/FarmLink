@@ -187,7 +187,7 @@ export default function AddressAutocompleteField(props) {
           fullWidth
           InputProps={
             !props.searching
-              ? null
+              ? { ...params.InputProps }
               : {
                   ...params.InputProps,
                   startAdornment: (
