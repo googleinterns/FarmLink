@@ -337,6 +337,31 @@ class Foodbank extends Component {
         <Grid item xs={3}>
           <TextField
             variant="outlined"
+            label="Fridge Space (Pallets)"
+            name="fridgeSpaceQuery"
+            type="number"
+            value={this.state.fridgeSpaceQuery}
+            onChange={this.handleChange}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <Button
+            className={styles.searchButton}
+            onClick={() =>
+              this.simpleSearch("fridgeSpaceQuery", this.state.fridgeSpaceQuery)
+            }
+            variant="outlined"
+            color="primary"
+            type="number"
+            size="medium"
+            startIcon={<SearchIcon />}
+          >
+            Filter by Min Refrigeration Space
+          </Button>
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            variant="outlined"
             label="Load Size (Pallets)"
             name="loadSizeQuery"
             type="number"
@@ -347,7 +372,9 @@ class Foodbank extends Component {
         <Grid item xs={3}>
           <Button
             className={styles.searchButton}
-            onClick={(e) => this.handleStringSearch("loadSizeQuery", e)}
+            onClick={() =>
+              this.simpleSearch("loadSizeQuery", this.state.loadSizeQuery)
+            }
             variant="outlined"
             color="primary"
             type="number"
@@ -385,6 +412,11 @@ class Foodbank extends Component {
       case "loadSizeQuery":
         multiFilteredData = this.state.filteredData.filter(
           (item) => parseInt(item.maxLoadSize) > query
+        );
+        break;
+      case "fridgeSpaceQuery":
+        multiFilteredData = this.state.filteredData.filter(
+          (item) => parseInt(item.refrigerationSpaceAvailable) > query
         );
         break;
     }
@@ -438,6 +470,7 @@ class Foodbank extends Component {
           </Grid>
         </Grid>
         <Filters database="foodbanks"></Filters>
+        {this.capacityFilters()}
       </div>
     );
   };
@@ -486,10 +519,7 @@ class Foodbank extends Component {
               )}
             />
           </AccordionSummary>
-          <AccordionDetails>
-            {this.extraFiltersAccordion()}
-            {this.capacityFilters()}
-          </AccordionDetails>
+          <AccordionDetails>{this.extraFiltersAccordion()}</AccordionDetails>
           <Grid container alignItem="left">
             <Grid item xs={12}>
               <Box paddingLeft={2} paddingBottom={2}>
@@ -576,6 +606,8 @@ class Foodbank extends Component {
         filteredData: [...this.state.foodbanks],
         nameQuery: "",
         locationQuery: "",
+        loadSizeQuery: 0,
+        fridgeSpaceQuery: 0,
         tagsQuery: [],
       },
       this.populateAllTags
