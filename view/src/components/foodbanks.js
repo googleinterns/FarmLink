@@ -269,8 +269,6 @@ class Foodbank extends Component {
     this.updateCards = this.updateCards.bind(this);
   }
 
-  /** Begin functions for sorting menu on top of the page */
-
   /** TODO(fatimazali): Create re-usable search filtering component */
 
   /** Update a stringQuery and search the cards by the specified query variable */
@@ -278,15 +276,14 @@ class Foodbank extends Component {
     // queryName is used instead of event.target.name or event.target.id
     // since both onChange and onSelect call this function with id and name
     const { value } = event.target;
-    if (value === "") {
-      return;
+    if (value) {
+      this.setState(
+        {
+          [queryName]: value,
+        },
+        this.simpleSearch(queryName, value)
+      );
     }
-    this.setState(
-      {
-        [queryName]: value,
-      },
-      this.simpleSearch(queryName, value)
-    );
   };
 
   /** Search the cards by the current tagQueries. */
@@ -294,10 +291,10 @@ class Foodbank extends Component {
     this.state.tagsQuery.map((item) => this.simpleSearch("tags-search", item));
   };
 
-  /** Combine all tags in filteredData items to update tags that user can select */
+  /** Combine all tags in filteredData items to update tags that users can select */
   populateAllTags = () => {
     const { filteredData } = this.state;
-    var populatedTags = [];
+    let populatedTags = [];
     filteredData.map((data) =>
       populatedTags.push.apply(populatedTags, data.foodbankTags)
     );
@@ -311,7 +308,7 @@ class Foodbank extends Component {
 
   /** Update tagQueries and search the cards by tags */
   handleTagFilter = (event, values) => {
-    if (values.length === 0) {
+    if (values && values.length === 0) {
       return;
     }
     const prevValues = this.state.tagsQuery;
@@ -519,7 +516,9 @@ class Foodbank extends Component {
 
   /** Updates filteredData with a new array; used with filters.js queries */
   updateCards = (newValues) => {
-    if (newValues.length === 0) {
+    // newValues comes from filters.js and will be an array currently
+    // If adding more functionality to updateCards(), add more boundary value checks
+    if (newValues && newValues.length === 0) {
       return;
     }
     this.setState({
@@ -540,7 +539,6 @@ class Foodbank extends Component {
     );
   };
 
-  /** End functions for sorting menu on top of the page */
   /** Renders filtered produce results into Material-UI cards */
   handleResultsRender = () => {
     const { classes } = this.props;

@@ -275,15 +275,14 @@ class Farms extends Component {
     // queryName is used instead of event.target.name or event.target.id
     // since both onChange and onSelect call this function with id and name
     const { value } = event.target;
-    if (value === "") {
-      return;
+    if (value) {
+      this.setState(
+        {
+          [queryName]: value,
+        },
+        this.simpleSearch(queryName, value)
+      );
     }
-    this.setState(
-      {
-        [queryName]: value,
-      },
-      this.simpleSearch(queryName, value)
-    );
   };
 
   /** Search the cards by the current tagQueries. */
