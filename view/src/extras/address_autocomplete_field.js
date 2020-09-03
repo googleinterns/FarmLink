@@ -2,6 +2,8 @@ import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import SearchIcon from "@material-ui/icons/Search";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
@@ -34,6 +36,9 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     color: theme.palette.text.secondary,
     marginRight: theme.spacing(2),
+  },
+  searchBars: {
+    marginTop: theme.spacing(3),
   },
 }));
 
@@ -161,6 +166,7 @@ export default function AddressAutocompleteField(props) {
       includeInputInList
       filterSelectedOptions
       value={value}
+      className={props.searching ? classes.searchBars : null}
       onChange={(event, newValue) => {
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
@@ -175,9 +181,25 @@ export default function AddressAutocompleteField(props) {
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Add a location"
+          label={props.searching ? props.TextFieldLabel : "Add a location"}
+          placeholder={props.searching ? props.PlaceholderText : ""}
           variant="outlined"
           fullWidth
+          InputProps={
+            !props.searching
+              ? { ...params.InputProps }
+              : {
+                  ...params.InputProps,
+                  startAdornment: (
+                    <>
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                      {params.InputProps.startAdornment}
+                    </>
+                  ),
+                }
+          }
         />
       )}
       renderOption={handleOptionsRender}

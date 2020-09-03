@@ -275,20 +275,34 @@ class Farms extends Component {
     // queryName is used instead of event.target.name or event.target.id
     // since both onChange and onSelect call this function with id and name
     const { value } = event.target;
-    if (value === "") {
-      return;
+    if (value) {
+      this.setState(
+        {
+          [queryName]: value,
+        },
+        this.simpleSearch(queryName, value)
+      );
     }
-    this.setState(
-      {
-        [queryName]: value,
-      },
-      this.simpleSearch(queryName, value)
-    );
   };
 
   /** Search the cards by the current tagQueries. */
   searchTagQuery = () => {
     this.state.tagsQuery.map((item) => this.simpleSearch("tags-search", item));
+  };
+
+  /** Combine all tags in filteredData items to update tags that user can select */
+  populateAllFarmTags = () => {
+    const { filteredData } = this.state;
+    var populatedTags = [];
+    filteredData.map((data) =>
+      populatedTags.push.apply(populatedTags, data.farmTags)
+    );
+    // Get unique tags only
+    const populatedUniqueTags = [...new Set(populatedTags)];
+
+    this.setState({
+      allFarmTags: populatedUniqueTags,
+    });
   };
 
   /** Update tagQueries and search the cards by tags */
@@ -378,7 +392,7 @@ class Farms extends Component {
           />
         </div>
         <div>{this.tagsAutocomplete(false)}</div>
-        <Filters database="farms"> </Filters>
+        <Filters database="farms"></Filters>
       </div>
     );
   };
@@ -426,16 +440,22 @@ class Farms extends Component {
             />
           </AccordionSummary>
           <AccordionDetails>{this.extraFiltersAccordion()}</AccordionDetails>
-          <Button
-            className={classes.clearSearchButton}
-            onClick={this.resetCards}
-            variant="contained"
-            color="primary"
-            size="medium"
-            startIcon={<ClearIcon />}
-          >
-            Clear
-          </Button>
+          <Grid container alignItem="left">
+            <Grid item xs={12}>
+              <Box paddingLeft={2} paddingBottom={2}>
+                <Button
+                  className={classes.clearSearchButton}
+                  onClick={this.resetCards}
+                  variant="contained"
+                  color="primary"
+                  size="medium"
+                  startIcon={<ClearIcon />}
+                >
+                  Clear
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
         </Accordion>
       </div>
     );
@@ -510,6 +530,8 @@ class Farms extends Component {
       this.populateAllFarmTags
     );
   };
+
+  /** End functions for sorting menu on top of the page */
 
   /** Renders filtered produce results into Material-UI cards */
   handleResultsRender = () => {
@@ -611,8 +633,6 @@ class Farms extends Component {
     );
   };
 
-  /** End functions for sorting menu on top of the page */
-
   /**
    * Given an event, this function updates a state (the target of the event)
    * with a new value
@@ -621,21 +641,6 @@ class Farms extends Component {
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
-    });
-  };
-
-  /** Combine all tags in filteredData items to update tags that user can select */
-  populateAllFarmTags = () => {
-    const { filteredData } = this.state;
-    var populatedTags = [];
-    filteredData.map((data) =>
-      populatedTags.push.apply(populatedTags, data.farmTags)
-    );
-    // Get unique tags only
-    const populatedUniqueTags = [...new Set(populatedTags)];
-
-    this.setState({
-      allFarmTags: populatedUniqueTags,
     });
   };
 
@@ -693,6 +698,7 @@ class Farms extends Component {
       })
       .catch((err) => {
         console.error(err);
+        this.props.alert("error", "Error loading in the farms!");
       });
   }
 
@@ -949,6 +955,7 @@ class Farms extends Component {
                     <Address
                       handleLocation={this.handleLocation}
                       location={this.state.location}
+                      searching={false}
                     />
                   </Grid>
                   <Grid item xs={4}>
