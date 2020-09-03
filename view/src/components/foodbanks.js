@@ -260,7 +260,7 @@ class Foodbank extends Component {
     this.handleStringSearch = this.handleStringSearch.bind(this);
     this.simpleSearch = this.simpleSearch.bind(this);
 
-    this.populateAllFTags = this.populateAllTags.bind(this);
+    this.populateAllTags = this.populateAllTags.bind(this);
     this.handleTagFilter = this.handleTagFilter.bind(this);
     this.searchTagQuery = this.searchTagQuery.bind(this);
 
