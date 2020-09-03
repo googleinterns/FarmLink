@@ -356,7 +356,7 @@ class Foodbank extends Component {
             size="medium"
             startIcon={<SearchIcon />}
           >
-            Filter by Min Refrigeration Space
+            Filter by Min Fridge Space
           </Button>
         </Grid>
         <Grid item xs={3}>
@@ -391,7 +391,6 @@ class Foodbank extends Component {
   /** Makes appropriate search by field and query of the data, updates filtered page states */
   simpleSearch = (field, query) => {
     var multiFilteredData = [];
-    console.log("query", query);
 
     switch (field) {
       case "nameQuery":
