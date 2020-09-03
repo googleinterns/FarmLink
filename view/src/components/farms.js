@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Address from "../extras/address_autocomplete_field";
 import CardSkeletons from "../extras/skeleton";
 import CustomTable from "../extras/table";
+import Filters from "./filters";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
@@ -20,12 +21,13 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
-import InputBase from "@material-ui/core/InputBase";
 import Chip from "@material-ui/core/Chip";
 import SearchIcon from "@material-ui/icons/Search";
+import ClearIcon from "@material-ui/icons/Clear";
 import Box from "@material-ui/core/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import InputLabel from "@material-ui/core/InputLabel";
+import InputAdornment from "@material-ui/core/InputAdornment";
 import FormControl from "@material-ui/core/FormControl";
 import PropTypes from "prop-types";
 import MaskedInput from "react-text-mask";
@@ -33,6 +35,10 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
+import Accordion from "@material-ui/core/Accordion";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import axios from "axios";
 import dayjs from "dayjs";
@@ -64,10 +70,19 @@ const styles = (theme) => ({
     bottom: "16px",
     right: "16px",
   },
+  clearSearchButton: {
+    position: "relative",
+  },
+  searchBars: {
+    marginTop: theme.spacing(3),
+  },
   form: {
     width: "calc(100% - 32px)",
     marginLeft: "12px",
     marginTop: theme.spacing(3),
+  },
+  divider: {
+    padding: theme.spacing(2),
   },
   toolbar: theme.mixins.toolbar,
   root: {
@@ -78,7 +93,7 @@ const styles = (theme) => ({
     margin: "0 2px",
     transform: "scale(0.8)",
   },
-  pos: {
+  position: {
     marginBottom: "12px",
   },
   uiProgess: {
@@ -117,6 +132,15 @@ const styles = (theme) => ({
     alignItems: "center",
     justifyContent: "center",
   },
+  clearIcon: {
+    padding: theme.spacing(0, 2),
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   inputRoot: {
     color: "inherit",
   },
@@ -136,12 +160,7 @@ const styles = (theme) => ({
   },
 });
 
-const TAG_EXAMPLES = [
-  { title: "Black Owned" },
-  { title: "Great Environmental Rating" },
-];
-
-/** Place holder for contact table data pulled from database */
+/** Structure for contacts table */
 let tableState = {
   columns: [
     { title: "Role", field: "contactRole" },
@@ -205,8 +224,14 @@ class Farms extends Component {
     super(props);
 
     this.state = {
+      // Search states
+      data: "",
+      filteredData: [],
+      nameQuery: "",
+      locationQuery: "",
+      tagsQuery: [],
+      allFarmTags: [],
       // Farm states
-      farms: "",
       farmName: "",
       farmId: "",
       farmTags: [],
@@ -216,6 +241,8 @@ class Farms extends Component {
       location: "",
       locationId: "",
       transportation: false,
+      // Aggregated tags used for options when editing a specific farm
+      unfilteredFarmTags: [],
       // Page states
       errors: [],
       open: false, //  Used for opening the farm edit/create dialog (form)
@@ -228,7 +255,383 @@ class Farms extends Component {
     this.handleDelete = this.handleDelete.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
+
+    this.handleStringSearch = this.handleStringSearch.bind(this);
+    this.simpleSearch = this.simpleSearch.bind(this);
+
+    this.populateAllFarmTags = this.populateAllFarmTags.bind(this);
+    this.handleTagFilter = this.handleTagFilter.bind(this);
+    this.searchTagQuery = this.searchTagQuery.bind(this);
+
+    this.handleResultsRender = this.handleResultsRender.bind(this);
+    this.resetCards = this.resetCards.bind(this);
+    this.updateCards = this.updateCards.bind(this);
   }
+
+  /** Begin functions for sorting menu on top of the page */
+
+  /** Update a stringQuery and search the cards by the specified query variable */
+  handleStringSearch = (queryName, event) => {
+    // queryName is used instead of event.target.name or event.target.id
+    // since both onChange and onSelect call this function with id and name
+    const { value } = event.target;
+    if (value) {
+      this.setState(
+        {
+          [queryName]: value,
+        },
+        this.simpleSearch(queryName, value)
+      );
+    }
+  };
+
+  /** Search the cards by the current tagQueries. */
+  searchTagQuery = () => {
+    this.state.tagsQuery.map((item) => this.simpleSearch("tags-search", item));
+  };
+
+  /** Combine all tags in filteredData items to update tags that user can select */
+  populateAllFarmTags = () => {
+    const { filteredData } = this.state;
+    var populatedTags = [];
+    filteredData.map((data) =>
+      populatedTags.push.apply(populatedTags, data.farmTags)
+    );
+    // Get unique tags only
+    const populatedUniqueTags = [...new Set(populatedTags)];
+
+    this.setState({
+      allFarmTags: populatedUniqueTags,
+    });
+  };
+
+  /** Update tagQueries and search the cards by tags */
+  handleTagFilter = (event, values) => {
+    if (values.length === 0) {
+      return;
+    }
+    const prevValues = this.state.tagsQuery;
+    // If the user has removed one of the previous tags, reset all search queries
+    if (values.length < prevValues.length) {
+      this.resetCards();
+    } else {
+      this.setState(
+        {
+          // Search state
+          tagsQuery: [...values],
+        },
+        // Use callback to ensure that tagsQuery has updated before searching tags
+        // Avoid adding parameters: it causes timing issues with the callback
+        this.searchTagQuery
+      );
+    }
+  };
+
+  /** Makes appropriate search by field and query of the data, updates filtered page states */
+  simpleSearch = (field, query) => {
+    var multiFilteredData = [];
+
+    switch (field) {
+      case "nameQuery":
+        multiFilteredData = this.state.filteredData.filter((farm) =>
+          farm.farmName.toLowerCase().includes(query.toLowerCase())
+        );
+        break;
+      case "locationQuery":
+        multiFilteredData = this.state.filteredData.filter((farm) =>
+          farm.location.toLowerCase().includes(query.toLowerCase())
+        );
+        break;
+      case "tags-search":
+        multiFilteredData = this.state.filteredData.filter((farm) =>
+          farm.farmTags.includes(query)
+        );
+        break;
+    }
+
+    this.setState(
+      { filteredData: multiFilteredData },
+      // Update farm tags with newly filtered data
+      this.populateAllFarmTags
+    );
+  };
+
+  /** Returns additional search features that are collapsed at first glance */
+  extraFiltersAccordion = () => {
+    const { locationQuery, filteredData } = this.state;
+
+    return (
+      <div>
+        <div>
+          <Autocomplete
+            id="location-search"
+            options={filteredData.map((data) => data.location)}
+            value={locationQuery}
+            onSelect={(e) => this.handleStringSearch("locationQuery", e)}
+            fullWidth={true}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Farm Locations"
+                placeholder="Type or Select a Location"
+                variant="outlined"
+                onChange={(e) => this.handleStringSearch("locationQuery", e)}
+                InputProps={{
+                  ...params.InputProps,
+                  startAdornment: (
+                    <>
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                      {params.InputProps.startAdornment}
+                    </>
+                  ),
+                }}
+              />
+            )}
+          />
+        </div>
+        <div>{this.tagsAutocomplete(false)}</div>
+        <Filters database="farms"></Filters>
+      </div>
+    );
+  };
+
+  /** Returns the accordion menu that contains all search and filtering options */
+  filteringAccordion = () => {
+    const { classes } = this.props;
+    const { nameQuery, filteredData } = this.state;
+
+    return (
+      <div>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Autocomplete
+              id="nameQuery"
+              options={[...new Set(filteredData.map((data) => data.farmName))]}
+              value={nameQuery}
+              onSelect={(e) => this.handleStringSearch("nameQuery", e)}
+              fullWidth={true}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Farm Names"
+                  placeholder="Type or Select a Farm Name"
+                  variant="outlined"
+                  name="nameQuery"
+                  onChange={(e) => this.handleStringSearch("nameQuery", e)}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </AccordionSummary>
+          <AccordionDetails>{this.extraFiltersAccordion()}</AccordionDetails>
+          <Grid container alignItem="left">
+            <Grid item xs={12}>
+              <Box paddingLeft={2} paddingBottom={2}>
+                <Button
+                  className={classes.clearSearchButton}
+                  onClick={this.resetCards}
+                  variant="contained"
+                  color="primary"
+                  size="medium"
+                  startIcon={<ClearIcon />}
+                >
+                  Clear
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
+        </Accordion>
+      </div>
+    );
+  };
+
+  /**
+   * Returns tag filtering menu for searching cards.
+   * Re-using the autocomplete for the add new/edit farm form
+   * causes issues with setting a conditional value for
+   * Autocomplete value={}, so separating the two is smoother.
+   */
+  tagsAutocomplete = () => {
+    const { classes } = this.props;
+    const { allFarmTags, tagsQuery } = this.state;
+
+    return (
+      <Autocomplete
+        className={classes.searchBars}
+        multiple
+        id="tags-search"
+        onChange={this.handleTagFilter}
+        options={allFarmTags}
+        value={tagsQuery}
+        fullWidth
+        renderTags={(value, getTagProps) =>
+          value.map((option, index) => (
+            <Chip label={option} {...getTagProps({ index })} />
+          ))
+        }
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            label="Farm Tags"
+            placeholder="Type or Select a Farm Tag"
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: (
+                <>
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                  {params.InputProps.startAdornment}
+                </>
+              ),
+            }}
+          />
+        )}
+      />
+    );
+  };
+
+  /** Updates filteredData with a new array; used with filters.js queries */
+  updateCards = (newValues) => {
+    if (newValues.length === 0) {
+      return;
+    }
+    this.setState({
+      filteredData: [...newValues],
+    });
+  };
+
+  /** Reset filteredData to the original page data, upon clicking reset */
+  resetCards = () => {
+    this.setState(
+      {
+        filteredData: [...this.state.data],
+        nameQuery: "",
+        locationQuery: "",
+        tagsQuery: [],
+      },
+      this.populateAllFarmTags
+    );
+  };
+
+  /** End functions for sorting menu on top of the page */
+
+  /** Renders filtered produce results into Material-UI cards */
+  handleResultsRender = () => {
+    const { classes } = this.props;
+    const { filteredData } = this.state;
+
+    return (
+      <div>
+        <Grid container spacing={2} alignItem="center">
+          {filteredData.map((farm) => (
+            <Grid item xs={12}>
+              <Card className={classes.root} variant="outlined">
+                <CardContent>
+                  <Typography variant="h5" component="h2">
+                    {farm.farmName}
+                  </Typography>
+                  {farm.farmTags.map((tag) => (
+                    <Chip className={classes.chip} label={tag} size="small" />
+                  ))}
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    flexWrap="wrap"
+                    padding={0}
+                    margin={0}
+                  >
+                    <Box padding={3}>
+                      <Typography
+                        className={classes.position}
+                        color="textSecondary"
+                      >
+                        Details:
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        component="p"
+                        className={classes.farmLocation}
+                      >
+                        Location of Farm: {farm.location}
+                      </Typography>
+                    </Box>
+                    {/* TODO(andrewhojel): allow user to choose the point of contact */}
+                    {farm.contacts.length > 0 && (
+                      <Box padding={3}>
+                        <Typography
+                          className={classes.position}
+                          color="textSecondary"
+                        >
+                          Point of Contact:
+                        </Typography>
+                        <Typography variant="body2" component="p">
+                          Name: {farm.contacts[0]["contactName"]}
+                          <br />
+                          Phone: {farm.contacts[0]["contactPhone"]}
+                          <br />
+                          Email: {farm.contacts[0]["contactEmail"]}
+                        </Typography>
+                      </Box>
+                    )}
+                    <Box padding={3}>
+                      <Typography
+                        className={classes.position}
+                        color="textSecondary"
+                      >
+                        Logistics:
+                      </Typography>
+                      <Typography variant="body2" component="p">
+                        Have Transportation Means:&nbsp;
+                        {farm.transportation ? "yes" : "no"}
+                        <br />
+                        Loading Dock: {farm.loadingDock ? "yes" : "no"}
+                        <br />
+                        Forklift: {farm.forklift ? "yes" : "no"}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+                <CardActions>
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => this.handleEditClick({ farm })}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => this.handleDelete({ farm })}
+                  >
+                    Delete
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </div>
+    );
+  };
 
   /**
    * Given an event, this function updates a state (the target of the event)
@@ -241,7 +644,7 @@ class Farms extends Component {
     });
   };
 
-  /** Used to update tags in form */
+  /** Used to update tags in form for modifying or adding an item */
   onTagsChange = (event, values) => {
     this.setState({
       // Farm state
@@ -249,6 +652,7 @@ class Farms extends Component {
     });
   };
 
+  /** Updates the contacts table */
   changeContacts = (data) => {
     this.setState({ contacts: data });
   };
@@ -271,21 +675,30 @@ class Farms extends Component {
     return localStorage.getItem("AuthToken");
   };
 
-  /** Load in all of the current todos when the component has mounted */
+  /** Load in all of the current farms when the component has mounted */
   componentDidMount() {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
       .get("/farms")
       .then((response) => {
+        this.setState(
+          {
+            // Farm state
+            data: response.data,
+            filteredData: response.data,
+            // Page state
+            uiLoading: false,
+          },
+          this.populateAllFarmTags
+        );
+
         this.setState({
-          // Farm state
-          farms: response.data,
-          // Page state
-          uiLoading: false,
+          unfilteredFarmTags: [...this.state.allFarmTags],
         });
       })
       .catch((err) => {
         console.error(err);
+        this.props.alert("error", "Error loading in the farms!");
       });
   }
 
@@ -386,7 +799,7 @@ class Farms extends Component {
     dayjs.extend(relativeTime);
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
-
+    const { unfilteredFarmTags } = this.state;
     /** Set all states to generic value when opening a dialog page */
     const handleAddClick = () => {
       this.setState({
@@ -414,7 +827,7 @@ class Farms extends Component {
       authMiddleWare(this.props.history);
       event.preventDefault();
       const newFarm = {
-        // farm states
+        // Farm states
         farmName: this.state.farmName,
         contacts: this.state.contacts,
         farmTags: this.state.farmTags,
@@ -542,6 +955,7 @@ class Farms extends Component {
                     <Address
                       handleLocation={this.handleLocation}
                       location={this.state.location}
+                      searching={false}
                     />
                   </Grid>
                   <Grid item xs={4}>
@@ -606,7 +1020,7 @@ class Farms extends Component {
                       multiple
                       id="farmTags"
                       onChange={this.onTagsChange}
-                      options={TAG_EXAMPLES.map((option) => option.title)} // need to create aggregated tags array
+                      options={unfilteredFarmTags}
                       defaultValue={this.state.farmTags}
                       freeSolo
                       renderTags={(value, getTagProps) =>
@@ -639,110 +1053,10 @@ class Farms extends Component {
           <Container maxWidth="lg">
             <Grid container spacing={2} alignItem="center">
               <Grid item xs={12}>
-                <div className={classes.search}>
-                  <div className={classes.searchIcon}>
-                    <SearchIcon />
-                  </div>
-                  <InputBase
-                    fullWidth={true}
-                    placeholder="Search…"
-                    classes={{
-                      root: classes.inputRoot,
-                      input: classes.inputInput,
-                    }}
-                    inputProps={{ "aria-label": "search" }}
-                  />
-                </div>
+                {this.filteringAccordion()}
               </Grid>
-              {this.state.farms.map((farm) => (
-                <Grid item xs={12}>
-                  <Card className={classes.root} variant="outlined">
-                    <CardContent>
-                      <Typography variant="h5" component="h2">
-                        {farm.farmName}
-                      </Typography>
-                      {farm.farmTags.map((tag) => (
-                        <Chip
-                          className={classes.chip}
-                          label={tag}
-                          size="small"
-                        />
-                      ))}
-                      <Box
-                        display="flex"
-                        flexDirection="row"
-                        flexWrap="wrap"
-                        p={0}
-                        m={0}
-                      >
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Details:
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            component="p"
-                            className={classes.farmLocation}
-                          >
-                            Location of Farm: {farm.location}
-                          </Typography>
-                        </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Point of Contact:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Name: {farm.contacts[0]["contactName"]}
-                            <br />
-                            Phone: {farm.contacts[0]["contactPhone"]}
-                            <br />
-                            Email: {farm.contacts[0]["contactEmail"]}
-                          </Typography>
-                        </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Logistics:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Have Transportation Means:
-                            {farm.transportation ? "yes" : "no"}
-                            <br />
-                            Loading Dock: {farm.loadingDock ? "yes" : "no"}
-                            <br />
-                            Forklift: {farm.forklift ? "yes" : "no"}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                    <CardActions>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleEditClick({ farm })}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => this.handleDelete({ farm })}
-                      >
-                        Delete
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
             </Grid>
+            {this.handleResultsRender()}
           </Container>
 
           <Dialog
@@ -760,31 +1074,25 @@ class Farms extends Component {
                 display="flex"
                 flexDirection="row"
                 flexWrap="wrap"
-                p={0}
-                m={0}
+                padding={0}
+                margin={0}
               >
-                <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
+                <Box padding={3}>
+                  <Typography
+                    className={classes.position}
+                    color="textSecondary"
+                  >
                     Details:
                   </Typography>
                   <Typography variant="body2" component="p">
                     Location of Farm: {this.state.location}
                   </Typography>
                 </Box>
-                <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
-                    Point of Contact:
-                  </Typography>
-                  {/* <Typography variant="body2" component="p">
-                    Name: {this.state.contacts[0]["contactName"]}
-                    <br />
-                    Phone: {this.state.contacts[0]["contactPhone"]}
-                    <br />
-                    Email: {this.state.contacts[0]["contactEmail"]}
-                  </Typography> */}
-                </Box>
-                <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
+                <Box padding={3}>
+                  <Typography
+                    className={classes.position}
+                    color="textSecondary"
+                  >
                     Logistics:
                   </Typography>
                   <Typography variant="body2" component="p">

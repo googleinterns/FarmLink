@@ -2,6 +2,8 @@ import React, { Component } from "react";
 
 import Address from "../extras/address_autocomplete_field";
 import CardSkeletons from "../extras/skeleton";
+import CustomTable from "../extras/table";
+import Filters from "./filters";
 
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
@@ -32,19 +34,18 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import PropTypes from "prop-types";
 import MaskedInput from "react-text-mask";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
+import Accordion from "@material-ui/core/Accordion";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ClearIcon from "@material-ui/icons/Clear";
 
 import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { authMiddleWare } from "../util/auth";
-
-const TAG_EXAMPLES = [
-  { title: "High Food Insecurity" },
-  { title: "Major City" },
-];
 
 const styles = (theme) => ({
   content: {
@@ -85,7 +86,7 @@ const styles = (theme) => ({
     margin: "0 2px",
     transform: "scale(0.8)",
   },
-  pos: {
+  position: {
     marginBottom: "12px",
   },
   dialogStyle: {
@@ -133,7 +134,36 @@ const styles = (theme) => ({
   formText: {
     marginBottom: "16px",
   },
+  tablePadding: {
+    marginTop: "24px",
+  },
+  clearSearchButton: {
+    position: "relative",
+  },
+  searchBars: {
+    marginTop: theme.spacing(3),
+  },
+  clearIcon: {
+    padding: theme.spacing(0, 2),
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
+
+/** Structure for contacts table */
+let tableState = {
+  columns: [
+    { title: "Role", field: "contactRole" },
+    { title: "Name", field: "contactName" },
+    { title: "Email", field: "contactEmail" },
+    { title: "Phone Number", field: "contactPhone" },
+  ],
+  data: [],
+};
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -188,36 +218,537 @@ class Foodbank extends Component {
     super(props);
 
     this.state = {
-      // food bank states
+      // Search states
       foodbanks: "",
+      filteredData: [],
+      nameQuery: "",
+      locationQuery: "",
+      loadSizeQuery: 0,
+      fridgeSpaceQuery: 0,
+      tagsQuery: [],
+      allTags: [],
+      // Aggregated tags used for options when editing a specific item
+      unfilteredTags: [],
+      // Food bank states
       foodbankName: "",
       location: "",
       locationId: "",
-      hours: "",
+      // TODO(andrewhojel): add the hours feature
       foodbankId: "",
-      contactPhone: "(1  )    -    ",
-      contactName: "",
-      contactEmail: "",
+      contacts: [],
       forklift: false,
       pallet: false,
       loadingDock: false,
       maxLoadSize: "",
       refrigerationSpaceAvailable: "",
       foodbankTags: [],
-      // page states
+      // Page states
       errors: [],
-      open: false, // used for opening food banks edit/create dialog (form)
+      open: false,
+      // Used for opening food banks edit/create dialog (form)
       uiLoading: true,
       buttonType: "",
-      viewOpen: false, // used for opening food banks view dialog
+      viewOpen: false,
+      // Used for opening food banks view dialog
       reloadCards: false,
       selectedCard: "",
     };
 
+    this.onTagsChange = this.onTagsChange.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleViewOpen = this.handleViewOpen.bind(this);
+
+    this.handleStringSearch = this.handleStringSearch.bind(this);
+    this.simpleSearch = this.simpleSearch.bind(this);
+
+    this.populateAllTags = this.populateAllTags.bind(this);
+    this.handleTagFilter = this.handleTagFilter.bind(this);
+    this.searchTagQuery = this.searchTagQuery.bind(this);
+
+    this.handleResultsRender = this.handleResultsRender.bind(this);
+    this.resetCards = this.resetCards.bind(this);
+    this.updateCards = this.updateCards.bind(this);
   }
+
+  /** TODO(fatimazali): Create re-usable search filtering component */
+
+  /** Update a stringQuery and search the cards by the specified query variable */
+  handleStringSearch = (queryName, event) => {
+    // queryName is used instead of event.target.name or event.target.id
+    // since both onChange and onSelect call this function with id and name
+    const { value } = event.target;
+    if (value) {
+      this.setState(
+        {
+          [queryName]: value,
+        },
+        this.simpleSearch(queryName, value)
+      );
+    }
+  };
+
+  /** Search the cards by the current tagQueries. */
+  searchTagQuery = () => {
+    this.state.tagsQuery.map((item) => this.simpleSearch("tags-search", item));
+  };
+
+  /** Combine all tags in filteredData items to update tags that users can select */
+  populateAllTags = () => {
+    const { filteredData } = this.state;
+    let populatedTags = [];
+    filteredData.map((data) =>
+      populatedTags.push.apply(populatedTags, data.foodbankTags)
+    );
+    // Get unique tags only
+    const populatedUniqueTags = [...new Set(populatedTags)];
+
+    this.setState({
+      allTags: populatedUniqueTags,
+    });
+  };
+
+  /** Update tagQueries and search the cards by tags */
+  handleTagFilter = (event, values) => {
+    if (values && values.length === 0) {
+      return;
+    }
+    const prevValues = this.state.tagsQuery;
+    // If the user has removed one of the previous tags, reset all search queries
+    if (values.length < prevValues.length) {
+      this.resetCards();
+    } else {
+      this.setState(
+        {
+          // Search state
+          tagsQuery: [...values],
+        },
+        // Use callback to ensure that tagsQuery has updated before searching tags
+        // Avoid adding parameters: it causes timing issues with the callback
+        this.searchTagQuery
+      );
+    }
+  };
+
+  /** Filters for minimum load size and available refridgeration space */
+  capacityFilters = () => {
+    return (
+      <Grid container spacing={3} alignItem="left">
+        <Grid item xs={3}>
+          <TextField
+            variant="outlined"
+            label="Fridge Space (Pallets)"
+            name="fridgeSpaceQuery"
+            type="number"
+            value={this.state.fridgeSpaceQuery}
+            onChange={this.handleChange}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <Button
+            className={styles.searchButton}
+            onClick={() =>
+              this.simpleSearch("fridgeSpaceQuery", this.state.fridgeSpaceQuery)
+            }
+            variant="outlined"
+            color="primary"
+            type="number"
+            size="medium"
+            startIcon={<SearchIcon />}
+          >
+            Filter by Min Fridge Space
+          </Button>
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            variant="outlined"
+            label="Load Size (Pallets)"
+            name="loadSizeQuery"
+            type="number"
+            value={this.state.loadSizeQuery}
+            onChange={this.handleChange}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <Button
+            className={styles.searchButton}
+            onClick={() =>
+              this.simpleSearch("loadSizeQuery", this.state.loadSizeQuery)
+            }
+            variant="outlined"
+            color="primary"
+            type="number"
+            size="medium"
+            startIcon={<SearchIcon />}
+          >
+            Filter by Min Load Size
+          </Button>
+        </Grid>
+      </Grid>
+    );
+  };
+
+  /** Makes appropriate search by field and query of the data, updates filtered page states */
+  simpleSearch = (field, query) => {
+    var multiFilteredData = [];
+
+    switch (field) {
+      case "nameQuery":
+        multiFilteredData = this.state.filteredData.filter((item) =>
+          item.foodbankName.toLowerCase().includes(query.toLowerCase())
+        );
+        break;
+      case "locationQuery":
+        multiFilteredData = this.state.filteredData.filter((item) =>
+          item.location.toLowerCase().includes(query.toLowerCase())
+        );
+        break;
+      case "tags-search":
+        multiFilteredData = this.state.filteredData.filter((item) =>
+          item.foodbankTags.includes(query)
+        );
+        break;
+      case "loadSizeQuery":
+        multiFilteredData = this.state.filteredData.filter(
+          (item) => parseInt(item.maxLoadSize) > query
+        );
+        break;
+      case "fridgeSpaceQuery":
+        multiFilteredData = this.state.filteredData.filter(
+          (item) => parseInt(item.refrigerationSpaceAvailable) > query
+        );
+        break;
+    }
+
+    this.setState(
+      { filteredData: multiFilteredData },
+      // Update tags with newly filtered data
+      this.populateAllTags
+    );
+  };
+
+  /** Returns additional search features that are collapsed at first glance */
+  extraFiltersAccordion = () => {
+    const { classes } = this.props;
+    const { locationQuery, filteredData } = this.state;
+
+    return (
+      <div>
+        <Grid container spacing={3} alignItem="left">
+          <Grid item xs={6}>
+            <Autocomplete
+              id="location-search"
+              options={filteredData.map((data) => data.location)}
+              value={locationQuery}
+              onSelect={(e) => this.handleStringSearch("locationQuery", e)}
+              fullWidth={true}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Food Bank Locations"
+                  placeholder="Type or Select a Location"
+                  variant="outlined"
+                  onChange={(e) => this.handleStringSearch("locationQuery", e)}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            {this.tagsAutocomplete()}
+          </Grid>
+        </Grid>
+        <Filters database="foodbanks"></Filters>
+        {this.capacityFilters()}
+      </div>
+    );
+  };
+
+  /** Returns the accordion menu that contains all search and filtering options */
+  filteringAccordion = () => {
+    const { classes } = this.props;
+    const { nameQuery, filteredData } = this.state;
+
+    return (
+      <div>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Autocomplete
+              id="nameQuery"
+              options={[
+                ...new Set(filteredData.map((data) => data.foodbankName)),
+              ]}
+              value={nameQuery}
+              onSelect={(e) => this.handleStringSearch("nameQuery", e)}
+              fullWidth={true}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Foodbank Names"
+                  placeholder="Type or Select a Food Bank Name"
+                  variant="outlined"
+                  name="nameQuery"
+                  onChange={(e) => this.handleStringSearch("nameQuery", e)}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <>
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                        {params.InputProps.startAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </AccordionSummary>
+          <AccordionDetails>{this.extraFiltersAccordion()}</AccordionDetails>
+          <Grid container alignItem="left">
+            <Grid item xs={12}>
+              <Box paddingLeft={2} paddingBottom={2}>
+                <Button
+                  className={classes.clearSearchButton}
+                  onClick={this.resetCards}
+                  variant="contained"
+                  color="primary"
+                  size="medium"
+                  startIcon={<ClearIcon />}
+                >
+                  Clear
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
+        </Accordion>
+      </div>
+    );
+  };
+
+  /**
+   * Returns tag filtering menu for searching cards.
+   * Re-using the autocomplete for the add new/edit item form
+   * causes issues with setting a conditional value for
+   * Autocomplete value={}, so separating the two is smoother.
+   */
+  tagsAutocomplete = () => {
+    const { classes } = this.props;
+    const { allTags, tagsQuery } = this.state;
+
+    return (
+      <Autocomplete
+        multiple
+        id="tags-search"
+        onChange={this.handleTagFilter}
+        options={allTags}
+        value={tagsQuery}
+        fullWidth
+        renderTags={(value, getTagProps) =>
+          value.map((option, index) => (
+            <Chip label={option} {...getTagProps({ index })} />
+          ))
+        }
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            label="Food Bank Tags"
+            placeholder="Type or Select a Food Bank Tag"
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: (
+                <>
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                  {params.InputProps.startAdornment}
+                </>
+              ),
+            }}
+          />
+        )}
+      />
+    );
+  };
+
+  /** Updates filteredData with a new array; used with filters.js queries */
+  updateCards = (newValues) => {
+    // newValues comes from filters.js and will be an array currently
+    // If adding more functionality to updateCards(), add more boundary value checks
+    if (newValues && newValues.length === 0) {
+      return;
+    }
+    this.setState({
+      filteredData: [...newValues],
+    });
+  };
+
+  /** Reset filteredData to the original page data, upon clicking reset */
+  resetCards = () => {
+    this.setState(
+      {
+        filteredData: [...this.state.foodbanks],
+        nameQuery: "",
+        locationQuery: "",
+        loadSizeQuery: 0,
+        fridgeSpaceQuery: 0,
+        tagsQuery: [],
+      },
+      this.populateAllTags
+    );
+  };
+
+  /** Renders filtered produce results into Material-UI cards */
+  handleResultsRender = () => {
+    const { classes } = this.props;
+    const { filteredData } = this.state;
+
+    return (
+      <div>
+        <Grid container spacing={2} alignItem="center">
+          {this.state.filteredData.map((foodbank) => (
+            <Grid item xs={12}>
+              <Card
+                className={classes.root}
+                raised={foodbank.foodbankId === this.state.selectedCard}
+                variant={
+                  foodbank.foodbankId === this.state.selectedCard
+                    ? "elevation"
+                    : "outlined"
+                }
+              >
+                <CardContent>
+                  <Typography variant="h5" component="h2">
+                    {foodbank.foodbankName}
+                  </Typography>
+                  {foodbank.foodbankTags.map((tag) => (
+                    <Chip className={classes.chip} label={tag} size="small" />
+                  ))}
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    flexWrap="wrap"
+                    padding={0}
+                    margin={0}
+                  >
+                    <Box padding={3}>
+                      <Typography
+                        className={classes.position}
+                        color="textSecondary"
+                      >
+                        Details:
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        component="p"
+                        className={classes.foodbankLocation}
+                      >
+                        Location of Food Bank: {foodbank.location}
+                        <br />
+                        Refrigeration Space (in pallets):
+                        {foodbank.refrigerationSpaceAvailable}
+                        <br />
+                        Max Load Size (in pallets): {foodbank.maxLoadSize}
+                      </Typography>
+                    </Box>
+                    {/* TODO(andrewhojel): allow user to choose the point of contact! */}
+                    {foodbank.contacts.length > 0 && (
+                      <Box padding={3}>
+                        <Typography
+                          className={classes.position}
+                          color="textSecondary"
+                        >
+                          Point of Contact:
+                        </Typography>
+                        <Typography variant="body2" component="p">
+                          Role: {foodbank.contacts[0]["contactRole"]}
+                          <br />
+                          Name: {foodbank.contacts[0]["contactName"]}
+                          <br />
+                          Phone: {foodbank.contacts[0]["contactPhone"]}
+                          <br />
+                          Email: {foodbank.contacts[0]["contactEmail"]}
+                        </Typography>
+                      </Box>
+                    )}
+                    <Box padding={3}>
+                      <Typography
+                        className={classes.position}
+                        color="textSecondary"
+                      >
+                        Logistics:
+                      </Typography>
+                      <Typography variant="body2" component="p">
+                        Forklift: {foodbank.forklift ? "yes" : "no"}
+                        <br />
+                        Pallet: {foodbank.pallet ? "yes" : "no"}
+                        <br />
+                        Loading Dock: {foodbank.loadingDock ? "yes" : "no"}
+                      </Typography>
+                    </Box>
+                    {/* TODO(andrewhojel): Determine if we should include hours of foodbanks. */}
+                  </Box>
+                </CardContent>
+                <CardActions>
+                  {!this.props.inStepper && (
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => this.handleViewOpen({ foodbank })}
+                    >
+                      View
+                    </Button>
+                  )}
+                  {!this.props.inStepper && (
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => this.handleEditClick({ foodbank })}
+                    >
+                      Edit
+                    </Button>
+                  )}
+                  {!this.props.inStepper && (
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => this.handleDelete({ foodbank })}
+                    >
+                      Delete
+                    </Button>
+                  )}
+                  {this.props.inStepper && (
+                    <Button
+                      size="small"
+                      color="primary"
+                      onClick={() => this.handleSelect({ foodbank })}
+                    >
+                      Select
+                    </Button>
+                  )}
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </div>
+    );
+  };
 
   /**
    * Given an event, this function updates a state (the target of the event)
@@ -233,9 +764,13 @@ class Foodbank extends Component {
   /** Used to update tags in form */
   onTagsChange = (event, values) => {
     this.setState({
-      // food bank state
-      farmTags: values,
+      foodbankTags: values,
     });
+  };
+
+  /** Updates the contacts table */
+  changeContacts = (data) => {
+    this.setState({ contacts: data });
   };
 
   /** Used to update location from address autocomplete component */
@@ -289,9 +824,17 @@ class Foodbank extends Component {
     axios
       .get("/foodbanks")
       .then((response) => {
+        this.setState(
+          {
+            foodbanks: response.data,
+            filteredData: response.data,
+            uiLoading: false,
+          },
+          this.populateAllTags
+        );
+
         this.setState({
-          foodbanks: response.data,
-          uiLoading: false,
+          unfilteredTags: [...this.state.allTags],
         });
       })
       .catch((err) => {
@@ -306,9 +849,7 @@ class Foodbank extends Component {
    * @param data A food bank object
    */
   handleDelete(data) {
-    authMiddleWare(this.props.history);
-    const authToken = localStorage.getItem("AuthToken");
-    axios.defaults.headers.common = { Authorization: `${authToken}` };
+    axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     let foodbankId = data.foodbank.foodbankId;
     axios
       .delete(`foodbanks/${foodbankId}`)
@@ -341,11 +882,9 @@ class Foodbank extends Component {
       foodbankName: data.foodbank.foodbankName,
       location: data.foodbank.location,
       locationId: data.foodbank.locationId,
-      hours: data.foodbank.hours,
+      // TODO(andrewhojel): add the hours feature
       foodbankId: data.foodbank.foodbankId,
-      contactPhone: data.foodbank.contactPhone,
-      contactName: data.foodbank.contactName,
-      contactEmail: data.foodbank.contactEmail,
+      contacts: data.foodbank.contacts,
       forklift: data.foodbank.forklift,
       pallet: data.foodbank.pallet,
       loadingDock: data.foodbank.loadingDock,
@@ -356,6 +895,7 @@ class Foodbank extends Component {
       buttonType: "Edit",
       open: true,
     });
+    tableState.data = data.foodbank.contacts;
   }
 
   /**
@@ -370,10 +910,8 @@ class Foodbank extends Component {
       foodbankName: data.foodbank.foodbankName,
       location: data.foodbank.location,
       locationId: data.foodbank.locationId,
-      hours: data.foodbank.hours,
-      contactPhone: data.foodbank.contactPhone,
-      contactName: data.foodbank.contactName,
-      contactEmail: data.foodbank.contactEmail,
+      // TODO(andrewhojel): add the hours feature
+      contacts: data.foodbank.contacts,
       forklift: data.foodbank.forklift,
       pallet: data.foodbank.pallet,
       loadingDock: data.foodbank.loadingDock,
@@ -413,28 +951,28 @@ class Foodbank extends Component {
     dayjs.extend(relativeTime);
     const { classes } = this.props;
     const { open, errors, viewOpen } = this.state;
+    const { unfilteredTags } = this.state;
 
     /** Set all states to generic value when opening a dialog page */
     const handleAddClick = () => {
       this.setState({
-        // food bank states
+        // Food bank states
         foodbankName: "",
         location: "",
         locationId: "",
-        hours: "",
+        // TODO(andrewhojel): add the hours feature
         foodbankId: "",
-        contactPhone: "(1  )    -    ",
-        contactName: "",
-        contactEmail: "",
+        contacts: [],
         forklift: false,
         pallet: false,
         loadingDock: false,
         maxLoadSize: "",
         refrigerationSpaceAvailable: "",
         foodbankTags: [],
-        // page state
+        // Page state
         open: true,
       });
+      tableState.data = [];
     };
 
     /**
@@ -449,10 +987,8 @@ class Foodbank extends Component {
         foodbankName: this.state.foodbankName,
         location: this.state.location,
         locationId: this.state.locationId,
-        hours: this.state.hours,
-        contactPhone: this.state.contactPhone,
-        contactName: this.state.contactName,
-        contactEmail: this.state.contactEmail,
+        // TODO(andrewhojel): add the hours feature
+        contacts: this.state.contacts,
         forklift: this.state.forklift,
         pallet: this.state.pallet,
         loadingDock: this.state.loadingDock,
@@ -596,61 +1132,13 @@ class Foodbank extends Component {
                     <Address
                       handleLocation={this.handleLocation}
                       location={this.state.location}
+                      searching={false}
                     />
                     {/* can we get the hours from the location query? */}
                   </Grid>
-                  <Grid item xs={3}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="contactName"
-                      label="Point of Contact - Name"
-                      name="contactName"
-                      type="text"
-                      autoComplete="contactName"
-                      helperText={errors.contactName}
-                      value={this.state.contactName}
-                      error={errors.contactName ? true : false}
-                      onChange={this.handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <FormControl fullWidth>
-                      <InputLabel variant="outlined" htmlFor="contactPhone">
-                        Point of Contact - Phone
-                      </InputLabel>
-                      <OutlinedInput
-                        label="Point of Contact - Phone"
-                        value={this.state.contactPhone}
-                        onChange={this.handleChange}
-                        helperText={errors.contactPhone}
-                        error={errors.contactPhone ? true : false}
-                        name="contactPhone"
-                        id="contactPhone"
-                        inputComponent={TextMaskCustom}
-                      />
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <TextField
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="contactEmail"
-                      label="Point of Contact - Email"
-                      name="contactEmail"
-                      type="email"
-                      autoComplete="contactEmail"
-                      helperText={errors.contactEmail}
-                      value={this.state.contactEmail}
-                      error={errors.contactEmail ? true : false}
-                      onChange={this.handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                     <FormControl variant="outlined" fullWidth>
-                      <InputLabel htmlFor="outlined-age-native-simple">
+                      <InputLabel htmlFor="outlined-loadingDoc">
                         Loading Dock Present
                       </InputLabel>
                       <Select
@@ -659,7 +1147,7 @@ class Foodbank extends Component {
                         label="Loading Dock Present"
                         inputProps={{
                           name: "loadingDock",
-                          id: "outlined-age-native-simple",
+                          id: "outlined-loadingDoc",
                         }}
                       >
                         <MenuItem value={true}>Yes</MenuItem>
@@ -667,9 +1155,9 @@ class Foodbank extends Component {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                     <FormControl variant="outlined" fullWidth>
-                      <InputLabel htmlFor="outlined-age-native-simple">
+                      <InputLabel htmlFor="outlined-forklift">
                         Forklift Present
                       </InputLabel>
                       <Select
@@ -678,7 +1166,7 @@ class Foodbank extends Component {
                         label="Forklift Present"
                         inputProps={{
                           name: "forklift",
-                          id: "outlined-age-native-simple",
+                          id: "outlined-forklift",
                         }}
                       >
                         <MenuItem value={true}>Yes</MenuItem>
@@ -686,9 +1174,9 @@ class Foodbank extends Component {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={4}>
                     <FormControl variant="outlined" fullWidth>
-                      <InputLabel htmlFor="outlined-age-native-simple">
+                      <InputLabel htmlFor="outlined-pallet">
                         Pallet Present
                       </InputLabel>
                       <Select
@@ -697,7 +1185,7 @@ class Foodbank extends Component {
                         label="Pallet Present"
                         inputProps={{
                           name: "pallet",
-                          id: "outlined-age-native-simple",
+                          id: "outlined-pallet",
                         }}
                       >
                         <MenuItem value={true}>Yes</MenuItem>
@@ -705,7 +1193,7 @@ class Foodbank extends Component {
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={6}>
                     <TextField
                       variant="outlined"
                       required
@@ -728,7 +1216,7 @@ class Foodbank extends Component {
                       onChange={this.handleChange}
                     />
                   </Grid>
-                  <Grid item xs={3}>
+                  <Grid item xs={6}>
                     <TextField
                       variant="outlined"
                       required
@@ -756,8 +1244,8 @@ class Foodbank extends Component {
                       multiple
                       id="foodbankTags"
                       onChange={this.onTagsChange}
-                      options={TAG_EXAMPLES.map((option) => option.title)}
-                      defaultValue={[this.state.foodbankTags]}
+                      options={unfilteredTags}
+                      defaultValue={this.state.foodbankTags}
                       freeSolo
                       renderTags={(value, getTagProps) =>
                         value.map((option, index) => (
@@ -775,169 +1263,24 @@ class Foodbank extends Component {
                     />
                   </Grid>
                 </Grid>
+                <div className={classes.tablePadding}>
+                  <CustomTable
+                    title="Food Bank Contacts"
+                    tableState={tableState}
+                    data={this.state.contacts}
+                    changeContacts={this.changeContacts}
+                  />
+                </div>
               </form>
             </Container>
           </Dialog>
           <Container maxWidth="lg">
             <Grid container spacing={2} alignItem="center">
               <Grid item xs={12}>
-                <div className={classes.search}>
-                  <div className={classes.searchIcon}>
-                    <SearchIcon />
-                  </div>
-                  <InputBase
-                    fullWidth={true}
-                    placeholder="Search…"
-                    classes={{
-                      root: classes.inputRoot,
-                      input: classes.inputInput,
-                    }}
-                    inputProps={{ "aria-label": "search" }}
-                  />
-                </div>
+                {this.filteringAccordion()}
               </Grid>
-              {this.state.foodbanks.map((foodbank) => (
-                <Grid item xs={12}>
-                  <Card
-                    className={classes.root}
-                    raised={foodbank.foodbankId === this.state.selectedCard}
-                    variant={
-                      foodbank.foodbankId === this.state.selectedCard
-                        ? "elevation"
-                        : "outlined"
-                    }
-                  >
-                    <CardContent>
-                      <Typography variant="h5" component="h2">
-                        {foodbank.foodbankName}
-                      </Typography>
-                      <Chip
-                        className={classes.chip}
-                        label="High Food Insecurity"
-                        size="small"
-                      />
-                      <Chip
-                        className={classes.chip}
-                        label="Major City"
-                        size="small"
-                      />
-                      <Box
-                        display="flex"
-                        flexDirection="row"
-                        flexWrap="wrap"
-                        p={0}
-                        m={0}
-                      >
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Details:
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            component="p"
-                            className={classes.foodbankLocation}
-                          >
-                            Location of Food Bank: {foodbank.location}
-                            <br />
-                            Refrigeration Space (in pallets):
-                            {foodbank.refrigerationSpaceAvailable}
-                            <br />
-                            Max Load Size (in pallets): {foodbank.maxLoadSize}
-                          </Typography>
-                        </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Point of Contact:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Name: {foodbank.contactName}
-                            <br />
-                            Phone: {foodbank.contactPhone}
-                            <br />
-                            Email: {foodbank.contactEmail}
-                          </Typography>
-                        </Box>
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Logistics:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Forklift: {foodbank.forklift ? "yes" : "no"}
-                            <br />
-                            Pallet: {foodbank.pallet ? "yes" : "no"}
-                            <br />
-                            Loading Dock: {foodbank.loadingDock ? "yes" : "no"}
-                          </Typography>
-                        </Box>
-                        {/* --> this will be implemented when we get hours from Place API <--
-                        <Box p={3}>
-                          <Typography
-                            className={classes.pos}
-                            color="textSecondary"
-                          >
-                            Hours of Operation:
-                          </Typography>
-                          <Typography variant="body2" component="p">
-                            Monday-Friday: 9am - 5pm
-                            <br />
-                            Saturday: 10am - 4pm
-                            <br />
-                            Sunday: closed
-                          </Typography>
-                        </Box> */}
-                      </Box>
-                    </CardContent>
-                    <CardActions>
-                      {!this.props.inStepper && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => this.handleViewOpen({ foodbank })}
-                        >
-                          View
-                        </Button>
-                      )}
-                      {!this.props.inStepper && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => this.handleEditClick({ foodbank })}
-                        >
-                          Edit
-                        </Button>
-                      )}
-                      {!this.props.inStepper && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => this.handleDelete({ foodbank })}
-                        >
-                          Delete
-                        </Button>
-                      )}
-                      {this.props.inStepper && (
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => this.handleSelect({ foodbank })}
-                        >
-                          Select
-                        </Button>
-                      )}
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
             </Grid>
+            {this.handleResultsRender()}
           </Container>
 
           <Dialog
@@ -961,11 +1304,14 @@ class Foodbank extends Component {
                 display="flex"
                 flexDirection="row"
                 flexWrap="wrap"
-                p={0}
-                m={0}
+                padding={0}
+                margin={0}
               >
-                <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
+                <Box padding={3}>
+                  <Typography
+                    className={classes.position}
+                    color="textSecondary"
+                  >
                     Details:
                   </Typography>
                   <Typography variant="body2" component="p">
@@ -977,20 +1323,11 @@ class Foodbank extends Component {
                     Max Load Size (in pallets): {this.state.maxLoadSize}
                   </Typography>
                 </Box>
-                <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
-                    Point of Contact:
-                  </Typography>
-                  <Typography variant="body2" component="p">
-                    Name: {this.state.contactName}
-                    <br />
-                    Phone: {this.state.contactPhone}
-                    <br />
-                    Email: {this.state.contactEmail}
-                  </Typography>
-                </Box>
-                <Box p={3}>
-                  <Typography className={classes.pos} color="textSecondary">
+                <Box padding={3}>
+                  <Typography
+                    className={classes.position}
+                    color="textSecondary"
+                  >
                     Logistics:
                   </Typography>
                   <Typography variant="body2" component="p">

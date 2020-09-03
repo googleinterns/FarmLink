@@ -1,10 +1,10 @@
 const { db } = require("../util/admin");
 
-/*
-read a list of all surplus
-GET /surplus
-success response: array of surplus objects (documented in POST /surplus)
-*/
+/**
+ * Read a list of all surplus.
+ * GET /surplus
+ * Success response: array of surplus objects (documented in POST /surplus)
+ */
 exports.getAllSurplus = (request, response) => {
   db.collection("surplus")
     .get()
@@ -14,7 +14,7 @@ exports.getAllSurplus = (request, response) => {
         surplus.push(doc);
       });
 
-      //get produce object that is linked to surplus object
+      // Get produce object that is linked to surplus object.
       function queryProduce(produceId) {
         return new Promise(function (resolve, reject) {
           db.doc(`/produce/${produceId}`)
@@ -28,7 +28,7 @@ exports.getAllSurplus = (request, response) => {
         });
       }
 
-      //get farm object that is linked to surplus object
+      // Get farm object that is linked to surplus object.
       function queryFarms(originFarmId) {
         return new Promise(function (resolve, reject) {
           db.doc(`/farms/${originFarmId}`)
@@ -42,7 +42,7 @@ exports.getAllSurplus = (request, response) => {
         });
       }
 
-      //get produce and farm objects that are linked to surplus object
+      // Get produce and farm objects that are linked to surplus object.
       function queryProduceAndFarms(doc) {
         return new Promise(function (resolve, reject) {
           Promise.all([
@@ -86,11 +86,11 @@ exports.getAllSurplus = (request, response) => {
     });
 };
 
-/*
-read a specific surplus
-GET /surplus/:id
-success response: surplus object (documented in POST /surplus)
-*/
+/**
+ * Read a specific surplus.
+ * GET /surplus/:id
+ * Success response: surplus object (documented in POST /surplus)
+ */
 exports.getOneSurplus = (request, response) => {
   db.doc(`/surplus/${request.params.surplusId}`)
     .get()
@@ -103,10 +103,10 @@ exports.getOneSurplus = (request, response) => {
     });
 };
 
-/*
-create a new surplus
-POST /surplus
-data params:
+/**
+ * Create a new surplus.
+ * POST /surplus
+ * Data params:
 {
     produceId: [string],
     originFarmId: [string],
@@ -115,8 +115,8 @@ data params:
     totalQuantityAvailable: [number],
     packagingType: [string]
 }
-success response: surplus object (documented in POST /surplus)
-*/
+ * Success response: surplus object (documented in POST /surplus)
+ */
 exports.postOneSurplus = (request, response) => {
   const newSurplusItem = {
     produceId: request.body.produceId,
@@ -139,11 +139,11 @@ exports.postOneSurplus = (request, response) => {
     });
 };
 
-/*
-delete a specific surplus
-DELETE /surplus/:id
-success response: {message: 'Delete successfull'}
-*/
+/**
+ * Delete a specific surplus and deals that refer to the surplus.
+ * DELETE /surplus/:id
+ * Success response: {message: 'Delete successfull'}
+ */
 exports.deleteSurplus = (request, response) => {
   const document = db.doc(`/surplus/${request.params.surplusId}`);
   document
@@ -152,6 +152,14 @@ exports.deleteSurplus = (request, response) => {
       if (!doc.exists) {
         return response.status(404).json({ error: "Surplus Object not found" });
       }
+      db.collection("deals")
+        .where("surplusId", "==", doc.id)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            db.doc(`/deals/${doc.id}`).delete();
+          });
+        });
       return document.delete();
     })
     .then(() => {
@@ -163,11 +171,11 @@ exports.deleteSurplus = (request, response) => {
     });
 };
 
-/*
-update a specific surplus
-PUT /surplus/:id
-success response: {message: 'Updated successfully'}
-*/
+/**
+ * Update a specific surplus.
+ * PUT /surplus/:id
+ * Success response: {message: 'Updated successfully'}
+ */
 exports.editSurplus = (request, response) => {
   let document = db.collection("surplus").doc(`${request.params.surplusId}`);
   document
