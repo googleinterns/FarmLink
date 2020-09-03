@@ -102,7 +102,4 @@ app.post("/user/image", auth, uploadProfilePhoto);
 app.get("/user", auth, getUserDetail);
 app.post("/user", auth, updateUserDetails);
 
-//app.use("api", router);
-//const main = express();
-//main.use("/api", app);
 exports.api = functions.https.onRequest(app);
