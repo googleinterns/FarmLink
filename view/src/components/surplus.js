@@ -169,7 +169,7 @@ class Surplus extends Component {
       filteredData: [],
       farmNameQuery: "",
       produceNameQuery: "",
-      originFarmContactNameQuery: "",
+      packagingTypeQuery: "",
       // Surplus state
       surplusObjects: "",
       surplusId: "",
@@ -200,10 +200,6 @@ class Surplus extends Component {
     this.handleStringSearch = this.handleStringSearch.bind(this);
     this.simpleSearch = this.simpleSearch.bind(this);
 
-    this.populateAllFTags = this.populateAllTags.bind(this);
-    this.handleTagFilter = this.handleTagFilter.bind(this);
-    this.searchTagQuery = this.searchTagQuery.bind(this);
-
     this.handleResultsRender = this.handleResultsRender.bind(this);
     this.resetCards = this.resetCards.bind(this);
     this.updateCards = this.updateCards.bind(this);
@@ -226,52 +222,11 @@ class Surplus extends Component {
     }
   };
 
-  /** Search the cards by the current tagQueries. */
-  searchTagQuery = () => {
-    this.state.tagsQuery.map((item) => this.simpleSearch("tags-search", item));
-  };
-
-  /** Combine all tags in filteredData items to update tags that users can select */
-  populateAllTags = () => {
-    const { filteredData } = this.state;
-    let populatedTags = [];
-    filteredData.map((data) =>
-      populatedTags.push.apply(populatedTags, data.foodbankTags)
-    );
-    // Get unique tags only
-    const populatedUniqueTags = [...new Set(populatedTags)];
-
-    this.setState({
-      allTags: populatedUniqueTags,
-    });
-  };
-
-  /** Update tagQueries and search the cards by tags */
-  handleTagFilter = (event, values) => {
-    if (values && values.length === 0) {
-      return;
-    }
-    const prevValues = this.state.tagsQuery;
-    // If the user has removed one of the previous tags, reset all search queries
-    if (values.length < prevValues.length) {
-      this.resetCards();
-    } else {
-      this.setState(
-        {
-          // Search state
-          tagsQuery: [...values],
-        },
-        // Use callback to ensure that tagsQuery has updated before searching tags
-        // Avoid adding parameters: it causes timing issues with the callback
-        this.searchTagQuery
-      );
-    }
-  };
-
   /** Makes appropriate search by field and query of the data, updates filtered page states */
   simpleSearch = (field, query) => {
     var multiFilteredData = [];
     const parsedQuery = query.toLowerCase();
+    console.log("ss query is", parsedQuery);
 
     switch (field) {
       case "farmNameQuery":
@@ -284,9 +239,9 @@ class Surplus extends Component {
           item.produceName.toLowerCase().includes(parsedQuery)
         );
         break;
-      case "originFarmContactNameQuery":
+      case "packagingTypeQuery":
         multiFilteredData = this.state.filteredData.filter((item) =>
-          item.originFarmContactName.toLowerCase().includes(parsedQuery)
+          item.packagingType.toLowerCase().includes(parsedQuery)
         );
         break;
     }
@@ -296,87 +251,79 @@ class Surplus extends Component {
 
   /** Returns additional search features that are collapsed at first glance */
   extraFiltersAccordion = () => {
-    const {
-      produceNameQuery,
-      originFarmContactNameQuery,
-      filteredData,
-    } = this.state;
+    const { produceNameQuery, packagingTypeQuery, filteredData } = this.state;
     return (
-      <div>
-        <Grid container spacing={3} alignItem="left">
-          <Grid item xs={6}>
-            <Autocomplete
-              id="produce-search"
-              options={filteredData.map((data) => data.produceName)}
-              value={produceNameQuery}
-              onSelect={(e) => this.handleStringSearch("produceNameQuery", e)}
-              fullWidth={true}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Produce Names"
-                  placeholder="Type or Select a Produce Name"
-                  variant="outlined"
-                  onChange={(e) =>
-                    this.handleStringSearch("produceNameQuery", e)
-                  }
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment: (
-                      <>
-                        <InputAdornment position="start">
-                          <SearchIcon />
-                        </InputAdornment>
-                        {params.InputProps.startAdornment}
-                      </>
-                    ),
-                  }}
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <Autocomplete
-              id="contact-search"
-              options={filteredData.map((data) => data.originFarmContactName)}
-              value={originFarmContactNameQuery}
-              onSelect={(e) =>
-                this.handleStringSearch("originFarmContactNameQuery", e)
-              }
-              fullWidth={true}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Farm Contact Names"
-                  placeholder="Type or Select a Farm Contact Name"
-                  variant="outlined"
-                  onChange={(e) =>
-                    this.handleStringSearch("originFarmContactNameQuery", e)
-                  }
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment: (
-                      <>
-                        <InputAdornment position="start">
-                          <SearchIcon />
-                        </InputAdornment>
-                        {params.InputProps.startAdornment}
-                      </>
-                    ),
-                  }}
-                />
-              )}
-            />
-          </Grid>
+      <Grid container spacing={3} alignItem="left">
+        <Grid item xs={6}>
+          <Autocomplete
+            id="produce-search"
+            options={[...new Set(filteredData.map((data) => data.produceName))]}
+            value={produceNameQuery}
+            onSelect={(e) => this.handleStringSearch("produceNameQuery", e)}
+            fullWidth={true}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Produce Names"
+                placeholder="Type or Select a Produce Name"
+                variant="outlined"
+                onChange={(e) => this.handleStringSearch("produceNameQuery", e)}
+                InputProps={{
+                  ...params.InputProps,
+                  startAdornment: (
+                    <>
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                      {params.InputProps.startAdornment}
+                    </>
+                  ),
+                }}
+              />
+            )}
+          />
         </Grid>
-      </div>
+        <Grid item xs={6}>
+          <Autocomplete
+            id="packaging-type-search"
+            options={[
+              ...new Set(filteredData.map((data) => data.packagingType)),
+            ]}
+            value={packagingTypeQuery}
+            onSelect={(e) => this.handleStringSearch("packagingTypeQuery", e)}
+            fullWidth={true}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Packaging Types"
+                placeholder="Type or Select a Packaging Type"
+                variant="outlined"
+                onChange={(e) =>
+                  this.handleStringSearch("packagingTypeQuery", e)
+                }
+                InputProps={{
+                  ...params.InputProps,
+                  startAdornment: (
+                    <>
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                      {params.InputProps.startAdornment}
+                    </>
+                  ),
+                }}
+              />
+            )}
+          />
+        </Grid>
+      </Grid>
     );
   };
 
   /** Returns the accordion menu that contains all search and filtering options */
   filteringAccordion = () => {
     const { classes } = this.props;
-    const { nameQuery, filteredData } = this.state;
+    const { farmNameQuery, filteredData } = this.state;
     return (
       <div>
         <Accordion>
@@ -390,14 +337,14 @@ class Surplus extends Component {
               options={[
                 ...new Set(filteredData.map((data) => data.originFarmName)),
               ]}
-              value={nameQuery}
+              value={farmNameQuery}
               onSelect={(e) => this.handleStringSearch("farmNameQuery", e)}
               fullWidth={true}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Foodbank Names"
-                  placeholder="Type or Select a Farm Name"
+                  label="Origin Farm Names"
+                  placeholder="Type or Select an Origin Farm Name"
                   variant="outlined"
                   name="farmNameQuery"
                   onChange={(e) => this.handleStringSearch("farmNameQuery", e)}
@@ -438,52 +385,6 @@ class Surplus extends Component {
     );
   };
 
-  /**
-   * Returns tag filtering menu for searching cards.
-   * Re-using the autocomplete for the add new/edit item form
-   * causes issues with setting a conditional value for
-   * Autocomplete value={}, so separating the two is smoother.
-   */
-  tagsAutocomplete = () => {
-    const { classes } = this.props;
-    const { allTags, tagsQuery } = this.state;
-
-    return (
-      <Autocomplete
-        multiple
-        id="tags-search"
-        onChange={this.handleTagFilter}
-        options={allTags}
-        value={tagsQuery}
-        fullWidth
-        renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip label={option} {...getTagProps({ index })} />
-          ))
-        }
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="outlined"
-            label="Food Bank Tags"
-            placeholder="Type or Select a Food Bank Tag"
-            InputProps={{
-              ...params.InputProps,
-              startAdornment: (
-                <>
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                  {params.InputProps.startAdornment}
-                </>
-              ),
-            }}
-          />
-        )}
-      />
-    );
-  };
-
   /** Updates filteredData with a new array; used with filters.js queries */
   updateCards = (newValues) => {
     // newValues comes from filters.js and will be an array currently
@@ -498,15 +399,12 @@ class Surplus extends Component {
 
   /** Reset filteredData to the original page data, upon clicking reset */
   resetCards = () => {
-    this.setState(
-      {
-        filteredData: [...this.state.foodbanks],
-        nameQuery: "",
-        locationQuery: "",
-        tagsQuery: [],
-      },
-      this.populateAllTags
-    );
+    this.setState({
+      filteredData: [...this.state.surplusObjects],
+      farmNameQuery: "",
+      produceNameQuery: "",
+      packagingTypeQuery: "",
+    });
   };
 
   /** Renders filtered produce results into Material-UI cards */
@@ -517,7 +415,7 @@ class Surplus extends Component {
     return (
       <div>
         <Grid container spacing={2} alignItem="center">
-          {this.state.filteredData.map((surplus) => (
+          {filteredData.map((surplus) => (
             <Grid item xs={12}>
               <Card
                 className={classes.root}
@@ -688,6 +586,7 @@ class Surplus extends Component {
       .then((response) => {
         this.setState({
           surplusObjects: response.data,
+          filteredData: response.data,
           uiLoading: false,
         });
       })
