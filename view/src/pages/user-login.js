@@ -78,7 +78,7 @@ class Login extends Component {
       password: this.state.password,
     };
     axios
-      .post("/api/login", userData)
+      .post("/login", userData)
       .then((response) => {
         console.log(response);
         localStorage.setItem("AuthToken", `Bearer ${response.data.token}`);

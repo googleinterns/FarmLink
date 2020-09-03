@@ -204,7 +204,7 @@ class Home extends Component {
   componentDidMount() {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
-      .get("/api/user")
+      .get("/user")
       .then((response) => {
         console.log(response.data)
         this.setState({

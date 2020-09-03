@@ -8,7 +8,19 @@
       ],
       "rewrites": [
         {
-          "source": "/api/**",
+            "source": "/user-login",
+            "destination": "/index.html"
+          },
+          {
+            "source": "/user-signup",
+            "destination": "/index.html"
+          },
+          {
+            "source": "/",
+            "destination": "/index.html"
+          },
+        {
+          "source": "**",
           "function": "api"
         }
       ]

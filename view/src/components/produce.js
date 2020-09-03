@@ -188,7 +188,7 @@ class Produce extends Component {
   componentDidMount() {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     axios
-      .get("/api/produce")
+      .get("/produce")
       .then((response) => {
         this.setState({
           data: response.data,
@@ -209,7 +209,7 @@ class Produce extends Component {
     axios.defaults.headers.common = { Authorization: `${this.getAuth()}` };
     let produceId = data.produce.produceId;
     axios
-      .delete(`/apiproduce/${produceId}`)
+      .delete(`produce/${produceId}`)
       .then(() => {
         window.location.reload();
         this.props.alert("success", "Produce successfully deleted!");
@@ -512,13 +512,13 @@ class Produce extends Component {
       let options = {};
       if (this.state.buttonType === "Edit") {
         options = {
-          url: `/api/produce/${this.state.produceId}`,
+          url: `produce/${this.state.produceId}`,
           method: "put",
           data: newProduce,
         };
       } else {
         options = {
-          url: "/api/produce",
+          url: "/produce",
           method: "post",
           data: newProduce,
         };
