@@ -48,8 +48,6 @@ const {
   querySurplusByTravelTime,
 } = require("./APIs/queries");
 
-exports.api = functions.https.onRequest(app);
-
 app.get("/produce", auth, getAllProduce);
 app.get("/produce/:produceId", auth, getOneProduce);
 app.post("/produce", auth, postOneProduce);
@@ -95,6 +93,7 @@ const {
   updateUserDetails,
 } = require("./APIs/users");
 
+exports.api = functions.https.onRequest(app);
 // Users
 app.post("/login", loginUser);
 app.post("/signup", signUpUser);
