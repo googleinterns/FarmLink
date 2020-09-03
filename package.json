@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "firebase": "^7.16.1",
+    "react-number-format": "^4.4.1",
     "react-router-dom": "^5.2.0"
   },
   "devDependencies": {},

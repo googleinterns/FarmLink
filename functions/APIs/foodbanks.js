@@ -1,10 +1,10 @@
 const { db } = require("../util/admin");
 
-/*
-read a list of all food banks
-GET /foodbanks
-success response: array of food bank objects (documented in POST /foodbanks)
-*/
+/**
+ * Read a list of all food banks.
+ * GET /foodbanks
+ * Success response: array of food bank objects (documented in POST /foodbanks)
+ */
 exports.getAllFoodBanks = (request, response) => {
   db.collection("foodbanks")
     .get()
@@ -34,11 +34,11 @@ exports.getAllFoodBanks = (request, response) => {
     });
 };
 
-/*
-read a specific food bank
-GET /foodbanks/:id
-success response: food bank object (documented in POST /foodbanks)
-*/
+/**
+ * Read a specific food bank.
+ * GET /foodbanks/:id
+ * Success response: food bank object (documented in POST /foodbanks)
+ */
 exports.getOneFoodBank = (request, response) => {
   db.doc(`/foodbanks/${request.params.foodbankId}`)
     .get()
@@ -51,10 +51,10 @@ exports.getOneFoodBank = (request, response) => {
     });
 };
 
-/*
-create a new food bank
-POST /foodbanks
-data params:
+/**
+ * Create a new food bank.
+ * POST /foodbanks
+ * Data params:
 {
     foodbankName: [string],
     location: [string],
@@ -67,8 +67,8 @@ data params:
     refrigerationSpaceAvailable: [number],
     foodbankTags: [array]
 }
-success response: food bank object (documented in POST /foodbanks)
-*/
+ * Success response: food bank object (documented in POST /foodbanks)
+ */
 exports.postOneFoodBank = (request, response) => {
   const newFoodBankItem = {
     foodbankName: request.body.foodbankName,
@@ -98,11 +98,11 @@ exports.postOneFoodBank = (request, response) => {
     });
 };
 
-/*
-delete a specific food bank
-DELETE /foodbanks/:id
-success response: {message: 'Delete successfull'}
-*/
+/**
+ * Delete a specific food bank and deals that refer to the food bank.
+ * DELETE /foodbanks/:id
+ * Success response: {message: 'Delete successfull'}
+ */
 exports.deleteFoodBank = (request, response) => {
   const document = db.doc(`/foodbanks/${request.params.foodbankId}`);
   document
@@ -113,6 +113,14 @@ exports.deleteFoodBank = (request, response) => {
           .status(404)
           .json({ error: "FoodBank Object not found" });
       }
+      db.collection("deals")
+        .where("foodbankId", "==", doc.id)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            db.doc(`/deals/${doc.id}`).delete();
+          });
+        });
       return document.delete();
     })
     .then(() => {
@@ -124,11 +132,11 @@ exports.deleteFoodBank = (request, response) => {
     });
 };
 
-/*
-update a specific food bank
-PUT /foodbanks/:id
-success response: {message: 'Updated successfully'}
-*/
+/**
+ * Update a specific food bank.
+ * PUT /foodbanks/:id
+ * Success response: {message: 'Updated successfully'}
+ */
 exports.editFoodBank = (request, response) => {
   let document = db.collection("foodbanks").doc(`${request.params.foodbankId}`);
   document

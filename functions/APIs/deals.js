@@ -1,10 +1,10 @@
 const { db } = require("../util/admin");
 
-/*
-read a list of all deals
-GET /deals
-success response: array of deal objects (documented in POST /deals)
-*/
+/**
+ * Read a list of all deals.
+ * GET /deals
+ * Success response: array of deal objects (documented in POST /deals)
+ */
 exports.getAllDeals = (request, response) => {
   db.collection("deals")
     .get()
@@ -42,11 +42,11 @@ exports.getAllDeals = (request, response) => {
     });
 };
 
-/*
-read a specific deal
-GET /deals/:id
-success response: deal object (documented in POST /deals)
-*/
+/**
+ * Read a specific deal.
+ * GET /deals/:id
+ * Success response: deal object (documented in POST /deals)
+ */
 exports.getOneDeal = (request, response) => {
   db.doc(`/deals/${request.params.dealId}`)
     .get()
@@ -59,10 +59,10 @@ exports.getOneDeal = (request, response) => {
     });
 };
 
-/*
-create a new deal
-POST /deals
-data params:
+/**
+ * Create a new deal.
+ * POST /deals
+ * Data params:
 {
     farmId: [string],
     foodbankId: [string],
@@ -84,8 +84,8 @@ data params:
     associatedPress: [array],
     notes: [string]
 }
-success response: deal object (documented in POST /deals)
-*/
+ * Success response: deal object (documented in POST /deals)
+ */
 exports.postOneDeal = (request, response) => {
   const newDealItem = {
     farmId: request.body.farmId,
@@ -121,11 +121,11 @@ exports.postOneDeal = (request, response) => {
     });
 };
 
-/*
-delete a specific deal
-DELETE /deals/:id
-success response: {message: 'Delete successfull'}
-*/
+/**
+ * Delete a specific deal.
+ * DELETE /deals/:id
+ * Success response: {message: 'Delete successfull'}
+ */
 exports.deleteDeal = (request, response) => {
   const document = db.doc(`/deals/${request.params.dealId}`);
   document
@@ -145,11 +145,11 @@ exports.deleteDeal = (request, response) => {
     });
 };
 
-/*
-update a specific deal
-PUT /deals/:id
-success response: {message: 'Updated successfully'}
-*/
+/**
+ * Update a specific deal.
+ * PUT /deals/:id
+ * Success response: {message: 'Updated successfully'}
+ */
 exports.editDeal = (request, response) => {
   let document = db.collection("deals").doc(`${request.params.dealId}`);
   document
