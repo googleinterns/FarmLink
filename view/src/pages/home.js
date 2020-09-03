@@ -206,7 +206,6 @@ class Home extends Component {
     axios
       .get("/user")
       .then((response) => {
-        console.log(response.data)
         this.setState({
           // User states
           firstName: response.data.userCredentials.firstName,
@@ -221,7 +220,7 @@ class Home extends Component {
         });
       })
       .catch((error) => {
-        if (error) { //rror.response.status === 403) {
+        if (error.response.status === 403) {
           console.log(error);
           this.props.history.push("/user-login");
         }

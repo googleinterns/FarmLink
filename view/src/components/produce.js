@@ -512,7 +512,7 @@ class Produce extends Component {
       let options = {};
       if (this.state.buttonType === "Edit") {
         options = {
-          url: `produce/${this.state.produceId}`,
+          url: `/produce/${this.state.produceId}`,
           method: "put",
           data: newProduce,
         };

@@ -3,7 +3,6 @@
 const functions = require("firebase-functions");
 const express = require("express");
 const app = express();
-const router = express.Router();
 const auth = require("./util/auth");
 
 const {
