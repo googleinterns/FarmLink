@@ -290,56 +290,32 @@ class Produce extends Component {
 
     return (
       <div>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <Typography className={classes.heading}>Search by Name</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Autocomplete
-              id="produce-name-search"
-              options={data.map((produce) => produce.name)}
-              value={value}
-              onSelect={this.handleSearch} // Receive the name from data element for value
-              fullWidth={true}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Produce Names"
-                  variant="outlined"
-                  onChange={this.handleSearch}
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment: (
-                      <>
-                        <InputAdornment position="start">
-                          <SearchIcon />
-                        </InputAdornment>
-                        {params.InputProps.startAdornment}
-                      </>
-                    ),
-                  }}
-                />
-              )}
+        <Autocomplete
+          id="produce-name-search"
+          options={data.map((produce) => produce.name)}
+          value={value}
+          onSelect={this.handleSearch} // Receive the name from data element for value
+          fullWidth={true}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Produce Names"
+              variant="outlined"
+              onChange={this.handleSearch}
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <>
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                    {params.InputProps.startAdornment}
+                  </>
+                ),
+              }}
             />
-          </AccordionDetails>
-        </Accordion>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel2a-content"
-            id="panel2a-header"
-          >
-            <Typography className={classes.heading}>Filter by Tags</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            {/* TODO(fatimazali): Add tag filtering) */}
-            <Typography>Select tags to filter by:</Typography>
-          </AccordionDetails>
-        </Accordion>
+          )}
+        />
       </div>
     );
   };
