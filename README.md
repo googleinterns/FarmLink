@@ -2,6 +2,26 @@
 
 Our capstone project is a web application that helps FarmLink, a non-profit organization that moves food surplus from farms around the country to food banks in need, by automating the process of matching a food bank with a farm.
 
+# Demos
+
+## View and update your account or collection items
+
+The landing page presents users the option to find their college's page. Upon typing, an autocomplete dropdown suggests college names
+, along with your collections of produce, surplus, deals, farms, and food banks
+After signing in
+![PagesOverview](https://user-images.githubusercontent.com/43034257/93294303-fb3a0b00-f79e-11ea-8f83-3c54a1e5893e.gif)
+
+## Specify a farm and produce type to create a new surplus item
+
+![CreateASurplus](https://user-images.githubusercontent.com/43034257/93294305-fd9c6500-f79e-11ea-8c19-6d0b405a26fa.gif)
+
+add caption
+
+## Find the ideal food bank to ship a surplus item to and start a new deal
+
+Filter food banks by name, location, food insecurity tags, proximity to a custom location, and transportation and storage constraints
+![CreateADeal](https://user-images.githubusercontent.com/43034257/93294310-fffebf00-f79e-11ea-8066-25867850d854.gif)
+
 # How to get application running!
 
 In this README file we will briefly explain how to get this application up and running on your computer. Feel free to reach out to the contributors to the repo for any further assistance.
