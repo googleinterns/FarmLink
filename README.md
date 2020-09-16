@@ -19,6 +19,7 @@ Autocomplete suggestions help FarmLink organizers link together a farm's surplus
 ## Find the ideal food bank to ship a surplus item to and start a new deal
 
 ![CreateADeal](https://user-images.githubusercontent.com/43034257/93294310-fffebf00-f79e-11ea-8066-25867850d854.gif)
+
 Filter food banks by name, location, food insecurity tags, proximity to a custom location, and transportation and storage constraints.
 
 # How to get application running!
