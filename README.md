@@ -4,23 +4,22 @@ Our capstone project is a web application that helps FarmLink, a non-profit orga
 
 # Demos
 
-## View and update your account or collection items
+## View and update user accounts and collection items
 
-The landing page presents users the option to find their college's page. Upon typing, an autocomplete dropdown suggests college names
-, along with your collections of produce, surplus, deals, farms, and food banks
-After signing in
 ![PagesOverview](https://user-images.githubusercontent.com/43034257/93294303-fb3a0b00-f79e-11ea-8f83-3c54a1e5893e.gif)
+
+After signing in, a FarmLink organizer can maintain their collections of produce, surplus, deals, farms, and food banks.
 
 ## Specify a farm and produce type to create a new surplus item
 
 ![CreateASurplus](https://user-images.githubusercontent.com/43034257/93294305-fd9c6500-f79e-11ea-8c19-6d0b405a26fa.gif)
 
-add caption
+Autocomplete suggestions help FarmLink organizers link together a farm's surplus produce with FarmLink's collection of produce varieties. 
 
 ## Find the ideal food bank to ship a surplus item to and start a new deal
 
-Filter food banks by name, location, food insecurity tags, proximity to a custom location, and transportation and storage constraints
 ![CreateADeal](https://user-images.githubusercontent.com/43034257/93294310-fffebf00-f79e-11ea-8066-25867850d854.gif)
+Filter food banks by name, location, food insecurity tags, proximity to a custom location, and transportation and storage constraints.
 
 # How to get application running!
 
