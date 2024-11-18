@@ -4,7 +4,7 @@
   "description": "a logistics platform built for the farmlink project",
   "main": "index.js",
   "dependencies": {
-    "firebase": "^7.16.1",
+    "firebase": "^10.9.0",
     "react-number-format": "^4.4.1",
     "react-router-dom": "^5.2.0"
   },
